@@ -286,7 +286,7 @@
   </main>
 
   <script>
-            // 1. CONFIGURAÇÃO INICIAL DO THREE.JS
+         // 1. CONFIGURAÇÃO INICIAL DO THREE.JS
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -303,36 +303,36 @@ const material = new THREE.MeshNormalMaterial({
 const torus = new THREE.Mesh(geometry, material);
 scene.add(torus);
 
-// POSIÇÃO INICIAL: Bem próximo (Zoom In)
-camera.position.z = 8; 
+// POSIÇÃO INICIAL: Mais imersivo dentro do objeto
+camera.position.z = 12; 
 
 // 3. INTEGRAÇÃO COM GSAP SCROLLTRIGGER
 gsap.registerPlugin(ScrollTrigger);
 
-// 🚀 ZOOM OUT: Sincroniza o afastamento (Z) com o scroll total da página
+// 🚀 ZOOM OUT SUAVE: O elemento agora permanece visível por mais tempo
 gsap.to(camera.position, {
-  z: 65, 
+  z: 45, // Valor reduzido para não sumir tão rápido
   scrollTrigger: {
     trigger: "body",
     start: "top top",
     end: "bottom bottom",
-    scrub: 1.5
+    scrub: 2 // Scrub maior para suavizar a transição
   }
 });
 
-// 🚀 ROTAÇÃO: Gira o elemento sincronizado ao movimento do scroll
+// 🚀 ROTAÇÃO SINCRONIZADA: Rotação mais complexa durante o scroll
 gsap.to(torus.rotation, {
-  y: Math.PI * 4, 
-  x: Math.PI * 2, 
+  y: Math.PI * 3, 
+  x: Math.PI * 1.5,
   scrollTrigger: {
     trigger: "body",
     start: "top top",
     end: "bottom bottom",
-    scrub: 2
+    scrub: 2.5
   }
 });
 
-// ✨ RESTAURAÇÃO DAS IMAGENS E MÁSCARAS (Para as imagens voltarem a aparecer)
+// ✨ RESTAURAÇÃO DAS IMAGENS E MÁSCARAS
 gsap.utils.toArray('.img-box').forEach(box => {
   gsap.to(box, { 
     clipPath: 'inset(0 0% 0 0)', 
@@ -369,9 +369,22 @@ gsap.utils.toArray('.mask-h').forEach(el => {
   });
 });
 
-// 4. LOOP DE ANIMAÇÃO (Rotação mínima constante)
+// 🖱️ FIX: MOVIMENTO DO CURSOR (Ajuste para a bolinha não ficar parada)
+const cursor = document.getElementById('custom-cursor');
+if (cursor) {
+  window.addEventListener('mousemove', (e) => {
+    gsap.to(cursor, {
+      x: e.clientX,
+      y: e.clientY,
+      duration: 0.1,
+      ease: "power2.out"
+    });
+  });
+}
+
+// 4. LOOP DE ANIMAÇÃO (Rotação constante sutil)
 function animate() {
-  torus.rotation.z += 0.001; 
+  torus.rotation.z += 0.002; 
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 }
@@ -382,8 +395,7 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
-});
-    
+});    
   </script>
 </body>
 </html>
