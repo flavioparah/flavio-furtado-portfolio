@@ -16,274 +16,255 @@
 
   <style>
     :root { --bg: #030303; --fg: #ffffff; }
-    body { background-color: var(--bg); color: var(--fg); font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
-
-    /* Wonjyou Smoothness */
-    html.lenis { height: auto; }
-    .lenis.lenis-smooth { scroll-behavior: auto; }
+    body { background-color: var(--bg); color: var(--fg); font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; cursor: none; }
 
     #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
 
-    /* Cursor Moderno */
-    #cursor { position: fixed; width: 6px; height: 6px; background: #fff; border-radius: 50%; pointer-events: none; z-index: 9999; mix-blend-mode: difference; }
-    #cursor-follower { position: fixed; width: 34px; height: 34px; border: 1px solid rgba(255,255,255,0.4); border-radius: 50%; pointer-events: none; z-index: 9998; transition: transform 0.08s linear; }
+    /* Cursor Interativo */
+    #cursor { position: fixed; width: 8px; height: 8px; background: #fff; border-radius: 50%; pointer-events: none; z-index: 9999; mix-blend-mode: difference; }
+    #cursor-follower { 
+      position: fixed; width: 40px; height: 40px; border: 1px solid white; border-radius: 50%; pointer-events: none; z-index: 9998; mix-blend-mode: difference;
+      transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+    }
 
-    /* Tipografia Brutalista */
-    .giant-title { font-size: clamp(3rem, 14vw, 20rem); font-weight: 900; line-height: 0.8; letter-spacing: -0.06em; text-transform: uppercase; }
+    .giant-title { font-size: clamp(3rem, 12vw, 18rem); font-weight: 900; line-height: 0.8; letter-spacing: -0.06em; text-transform: uppercase; }
     .serif-italic { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 300; text-transform: lowercase; }
 
-    /* Revelações de Texto */
-    .mask-v { clip-path: inset(100% 0 0 0); display: block; }
-    .mask-h { clip-path: inset(0 100% 0 0); display: block; }
+    /* Animações de Máscara */
+    .mask-v { clip-path: inset(100% 0 0 0); display: block; transition: clip-path 1s ease; }
+    .mask-h { clip-path: inset(0 100% 0 0); display: block; transition: clip-path 1s ease; }
 
-    section { position: relative; width: 100%; min-height: 100vh; z-index: 10; display: flex; flex-direction: column; justify-content: center; padding: 15vh 8vw; mix-blend-mode: exclusion; border-bottom: 1px solid rgba(255,255,255,0.03); }
+    section { position: relative; width: 100%; min-height: 100vh; z-index: 10; display: flex; flex-direction: column; justify-content: center; padding: 15vh 8vw; mix-blend-mode: exclusion; border-bottom: 1px solid rgba(255,255,255,0.05); }
     
     .tag { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.6em; opacity: 0.5; margin-bottom: 1.5rem; display: block; }
     
-    /* Imagens estilizadas */
-    .img-box { position: relative; width: 100%; height: 65vh; overflow: hidden; background: #111; margin: 4rem 0; clip-path: inset(0 100% 0 0); border-radius: 4px; }
-    .img-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transform: scale(1.4); transition: transform 0.3s ease-out; }
+    /* Box de Imagem com Reveal */
+    .img-box { position: relative; width: 100%; height: 70vh; overflow: hidden; background: #111; margin: 3rem 0; clip-path: inset(0 100% 0 0); border-radius: 2px; }
+    .img-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transform: scale(1.2); }
 
-    /* Navegação */
-    .nav-link { font-weight: 900; font-size: 10px; text-transform: uppercase; tracking-widest: 0.4em; transition: opacity 0.3s; }
+    /* Side Nav */
     .side-nav { position: fixed; right: 2rem; top: 50%; transform: translateY(-50%); z-index: 100; display: flex; flex-direction: column; gap: 0.8rem; mix-blend-mode: difference; }
-    .side-dot-container { display: flex; align-items: center; justify-content: flex-end; gap: 10px; group; }
-    .side-dot-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.2em; opacity: 0; transform: translateX(10px); transition: all 0.3s ease; pointer-events: none; }
-    .side-dot-container:hover .side-dot-label { opacity: 0.5; transform: translateX(0); }
     .side-dot { width: 6px; height: 6px; border: 1px solid white; border-radius: 50%; transition: all 0.3s ease; cursor: pointer; }
-    .side-dot:hover { background: white; transform: scale(1.5); }
-    .side-dot.active { background: white; height: 18px; border-radius: 10px; }
+    .side-dot.active { background: white; height: 20px; border-radius: 10px; }
 
-    /* Ajuste para textos */
-    .reveal-content { opacity: 0; transform: translateY(30px); }
-    
-    .award-card { border-top: 1px solid rgba(255,255,255,0.1); padding: 2rem 0; }
+    /* Links de Seção Brutalistas */
+    .section-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 2rem;
+      padding: 1rem 2.5rem;
+      border: 1px solid rgba(255,255,255,0.3);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      transition: all 0.4s ease;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(5px);
+    }
+    .section-link:hover {
+      background: white;
+      color: black;
+      padding-left: 3.5rem;
+    }
+
+    #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: #fff; width: 0%; z-index: 1000; }
   </style>
 </head>
 <body>
 
+  <div id="progress-bar"></div>
   <div id="cursor"></div>
   <div id="cursor-follower"></div>
   <div id="canvas-container"></div>
 
-  <!-- Navegação Lateral (Todas as 11 sessões) -->
+  <!-- Navegação Lateral -->
   <div class="side-nav hidden lg:flex">
-    <a href="#hero" class="side-dot-container"><span class="side-dot-label">Conceito</span><div class="side-dot"></div></a>
-    <a href="#awards" class="side-dot-container"><span class="side-dot-label">Prêmios</span><div class="side-dot"></div></a>
-    <a href="#games" class="side-dot-container"><span class="side-dot-label">Games</span><div class="side-dot"></div></a>
-    <a href="#ad" class="side-dot-container"><span class="side-dot-label">Propaganda</span><div class="side-dot"></div></a>
-    <a href="#startups" class="side-dot-container"><span class="side-dot-label">Startups</span><div class="side-dot"></div></a>
-    <a href="#illustrations" class="side-dot-container"><span class="side-dot-label">Ilustrações</span><div class="side-dot"></div></a>
-    <a href="#uiux" class="side-dot-container"><span class="side-dot-label">UI/UX</span><div class="side-dot"></div></a>
-    <a href="#ongs" class="side-dot-container"><span class="side-dot-label">ONGS</span><div class="side-dot"></div></a>
-    <a href="#philosophy" class="side-dot-container"><span class="side-dot-label">Filosofia</span><div class="side-dot"></div></a>
-    <a href="#about" class="side-dot-container"><span class="side-dot-label">Sobre</span><div class="side-dot"></div></a>
-    <a href="#contact" class="side-dot-container"><span class="side-dot-label">Contato</span><div class="side-dot"></div></a>
+    <a href="#hero" class="side-dot"></a>
+    <a href="#awards" class="side-dot"></a>
+    <a href="#games" class="side-dot"></a>
+    <a href="#ad" class="side-dot"></a>
+    <a href="#startups" class="side-dot"></a>
+    <a href="#illustrations" class="side-dot"></a>
+    <a href="#uiux" class="side-dot"></a>
+    <a href="#ongs" class="side-dot"></a>
+    <a href="#philosophy" class="side-dot"></a>
+    <a href="#about" class="side-dot"></a>
+    <a href="#contact" class="side-dot"></a>
   </div>
 
   <header class="fixed top-0 left-0 w-full p-8 z-[100] flex justify-between items-start mix-blend-difference">
-    <div class="font-black text-xl tracking-tighter cursor-pointer" onclick="lenis.scrollTo('#hero')">FF STUDIO</div>
-    <nav class="flex flex-col gap-2 text-right">
-      <a href="#hero" class="nav-link hover:opacity-40">Concept</a>
-      <a href="#awards" class="nav-link hover:opacity-40">Awards</a>
-      <a href="#games" class="nav-link hover:opacity-40">Projects</a>
-      <a href="#about" class="nav-link hover:opacity-40">Profile</a>
-      <a href="#contact" class="nav-link hover:opacity-40">Contact</a>
+    <div class="font-black text-xl tracking-tighter">FF STUDIO</div>
+    <nav class="flex flex-col gap-2 text-right text-[10px] font-black uppercase tracking-widest opacity-60">
+      <a href="#hero" class="hover:opacity-100">Valor</a>
+      <a href="#games" class="hover:opacity-100">Projetos</a>
+      <a href="#about" class="hover:opacity-100">Perfil</a>
     </nav>
   </header>
 
   <main>
     <!-- 01. CONCEITO -->
     <section id="hero">
-      <span class="tag">01 Concept</span>
+      <span class="tag">01 Conceito</span>
       <div class="mask-v"><h1 class="giant-title">VALOR</h1></div>
-      <div class="mask-h"><h1 class="giant-title serif-italic">percepção</h1></div>
-      <div class="reveal-content mt-12">
-        <p class="max-w-md text-[11px] opacity-60 uppercase tracking-[0.4em] leading-relaxed">
-          "Valor e percepção é o que eu crio." Elevando a estética ao nível da substância pura.
+      <div class="mask-h"><h1 class="giant-title serif-italic">& percepção</h1></div>
+      <div class="mt-12 max-w-lg">
+        <p class="text-[11px] opacity-60 uppercase tracking-[0.4em] leading-relaxed">
+          Especialista em criar propostas de valor impactantes para startups inovadoras. Onde a estética encontra a substância pura.
         </p>
+        <a href="#about" class="section-link">Descobrir Visão</a>
       </div>
     </section>
 
     <!-- 02. PRÊMIOS -->
     <section id="awards">
-      <span class="tag">02 Recognition</span>
-      <div class="mask-v"><h2 class="text-6xl md:text-[8vw] font-black mb-16">CONQUISTAS</h2></div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-20">
-        <div class="award-card reveal-content">
-          <span class="text-[10px] opacity-30">2024 / HACKERNOON</span>
-          <h3 class="text-2xl font-bold mt-2 uppercase tracking-tighter">Startup of the Year — 2º Lugar</h3>
-          <p class="text-sm opacity-50 mt-2">Parampara Game Studio na categoria Jogos, entre 1.177 startups globais.</p>
+      <span class="tag">02 Reconhecimento</span>
+      <div class="img-box"><img src="https://images.unsplash.com/photo-1569091791842-7cfb64e04797?q=80&w=2070" alt="Awards and Recognition"></div>
+      <div class="mask-v"><h2 class="text-6xl md:text-[8vw] font-black">AWARDS</h2></div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mt-10">
+        <div class="border-t border-white/20 pt-6">
+          <h4 class="font-black uppercase text-xl">HackerNoon 2024</h4>
+          <p class="text-sm opacity-40 uppercase tracking-widest mt-2">2º Lugar Startup do Ano (Games)</p>
         </div>
-        <div class="award-card reveal-content">
-          <span class="text-[10px] opacity-30">2019 / GAME JAM PLUS</span>
-          <h3 class="text-2xl font-bold mt-2 uppercase tracking-tighter">Best Narrative Design</h3>
-          <p class="text-sm opacity-50 mt-2">Prêmio de Melhor Narrativa pelo jogo "Ghostein".</p>
-        </div>
-        <div class="award-card reveal-content">
-          <span class="text-[10px] opacity-30">PORTUGAL / MADEIRA</span>
-          <h3 class="text-2xl font-bold mt-2 uppercase tracking-tighter">Gaming Startup Retreat</h3>
-          <p class="text-sm opacity-50 mt-2">Participação no hub de vanguarda para inovação em videogames.</p>
-        </div>
-        <div class="award-card reveal-content">
-          <span class="text-[10px] opacity-30">EDUCATION / ADVERTISING</span>
-          <h3 class="text-2xl font-bold mt-2 uppercase tracking-tighter">Miami Ad School SP</h3>
-          <p class="text-sm opacity-50 mt-2">Formação sólida em Direção de Arte e Estratégia Criativa.</p>
+        <div class="border-t border-white/20 pt-6">
+          <h4 class="font-black uppercase text-xl">Game Jam Plus</h4>
+          <p class="text-sm opacity-40 uppercase tracking-widest mt-2">Melhor Design de Narrativa — Ghostein</p>
         </div>
       </div>
+      <!-- LINK DA SESSÃO -->
+      <a href="https://hackernoon.com" target="_blank" class="section-link">Ver Premiação</a>
     </section>
 
     <!-- 03. GAMES -->
     <section id="games">
-      <span class="tag">03 Interactive World</span>
-      <div class="img-box"><img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2070" alt="Games Concept Art"></div>
+      <span class="tag">03 Mundos Interactivos</span>
+      <div class="img-box"><img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070" alt="Game Design Context"></div>
       <div class="mask-h"><h2 class="giant-title">GAMES</h2></div>
-      <div class="reveal-content">
-        <p class="text-2xl font-light max-w-xl mt-6 opacity-60">Fundador da Parampara. Onde o gameplay visceral encontra a narrativa cinemática de vanguarda.</p>
-      </div>
+      <p class="max-w-xl text-xl font-light opacity-60 mt-6">Narrativa cinemática e gameplay visceral. Fundador da Parampara Game Studio.</p>
+      <!-- LINK DA SESSÃO -->
+      <a href="https://parampara.studio" target="_blank" class="section-link">Explore Parampara</a>
     </section>
 
     <!-- 04. PROPAGANDA -->
     <section id="ad">
-      <span class="tag">04 Creative Strategy</span>
-      <div class="flex flex-col md:items-end">
-        <div class="mask-v"><h2 class="giant-title text-right">PROPAGANDA</h2></div>
-        <div class="max-w-2xl text-right mt-10 reveal-content">
-          <p class="text-3xl font-light leading-tight">Liderança de iniciativas criativas em grandes agências. Traduzindo complexidade em impacto visual cru e imediato.</p>
-        </div>
+      <span class="tag">04 Estratégia Criativa</span>
+      <div class="mask-v"><h2 class="giant-title text-right">PROPAGANDA</h2></div>
+      <div class="img-box h-[50vh]"><img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=2074" alt="Advertising Portfolio"></div>
+      <div class="text-right">
+        <p class="text-3xl font-light italic serif-italic">Liderança criativa em grandes agências.</p>
+        <!-- LINK DA SESSÃO -->
+        <a href="#" class="section-link">Portfólio Criativo</a>
       </div>
-      <div class="img-box h-[45vh] mt-10"><img src="https://images.unsplash.com/photo-1533750349088-cd871a92f312?q=80&w=2070" alt="Advertising Direction"></div>
     </section>
 
     <!-- 05. STARTUPS -->
     <section id="startups">
-      <span class="tag">05 New Ventures</span>
+      <span class="tag">05 Novos Negócios</span>
+      <div class="img-box h-[40vh]"><img src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?q=80&w=2070" alt="Startup Innovation"></div>
       <div class="mask-h"><h2 class="giant-title">STARTUPS</h2></div>
-      <div class="grid md:grid-cols-2 gap-6 mt-16">
-        <div class="p-12 border border-white/10 hover:bg-white hover:text-black transition-all group reveal-content">
-          <h4 class="font-black text-2xl group-hover:tracking-widest transition-all">PYROLYZER</h4>
-          <p class="text-[10px] mt-6 opacity-50 uppercase tracking-widest">Resíduos em Riqueza (pyzcoin.org)</p>
-        </div>
-        <div class="p-12 border border-white/10 hover:bg-white hover:text-black transition-all group reveal-content">
-          <h4 class="font-black text-2xl group-hover:tracking-widest transition-all">WE3 / AI</h4>
-          <p class="text-[10px] mt-6 opacity-50 uppercase tracking-widest">IA & Blockchain Architecture</p>
-        </div>
+      <div class="mt-8 space-y-4">
+        <h3 class="text-4xl font-black">PYROLYZER</h3>
+        <p class="opacity-50 uppercase tracking-[0.3em]">Transformando resíduos em riqueza (pyzcoin.org)</p>
+        <!-- LINK DA SESSÃO -->
+        <a href="https://pyzcoin.org" target="_blank" class="section-link">Aceder Pyrolyzer</a>
       </div>
     </section>
 
     <!-- 06. ILUSTRAÇÕES -->
     <section id="illustrations">
-      <span class="tag">06 Visual Craft</span>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-        <div class="img-box !h-[75vh] !m-0"><img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964" alt="Digital Illustration Craft"></div>
-        <div class="flex flex-col justify-center">
-          <div class="mask-v"><h2 class="text-[12vw] font-black leading-none">ILUSTRA</h2></div>
-          <div class="mask-v"><h2 class="text-[12vw] font-black leading-none serif-italic ml-20">ções</h2></div>
+      <span class="tag">06 Craft Visual</span>
+      <div class="grid md:grid-cols-2 gap-12 items-center">
+        <div class="img-box !h-[70vh] !m-0"><img src="https://images.unsplash.com/photo-1614728263952-84ea206f25ab?q=80&w=1974" alt="Digital Illustration"></div>
+        <div>
+          <div class="mask-v"><h2 class="text-7xl md:text-9xl font-black">ART</h2></div>
+          <div class="mask-v"><h2 class="text-7xl md:text-9xl font-black serif-italic">craft</h2></div>
+          <!-- LINK DA SESSÃO -->
+          <a href="#" class="section-link">Ver Galeria</a>
         </div>
       </div>
     </section>
 
     <!-- 07. UI/UX -->
     <section id="uiux">
-      <span class="tag">07 Digital Systems</span>
+      <span class="tag">07 Sistemas Digitais</span>
       <div class="mask-v"><h2 class="giant-title text-center">UI / UX</h2></div>
-      <div class="img-box h-[55vh]"><img src="https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?q=80&w=2070" alt="UI Design System"></div>
-      <div class="reveal-content text-center mt-10">
-        <p class="text-sm opacity-40 uppercase tracking-[0.6em]">A função é a alma da forma digital.</p>
+      <div class="img-box h-[50vh]"><img src="https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=1964" alt="UI Design"></div>
+      <div class="text-center mt-10">
+        <p class="uppercase tracking-[0.5em] opacity-40">A alma da forma digital é a função.</p>
+        <!-- LINK DA SESSÃO -->
+        <a href="#" class="section-link">Case Studies</a>
       </div>
     </section>
 
     <!-- 08. ONGS -->
     <section id="ongs">
-      <span class="tag">08 Social Impact</span>
-      <div class="max-w-5xl">
-        <div class="mask-h"><h2 class="text-[15vw] font-black leading-[0.8]">ONGS</h2></div>
-        <div class="reveal-content mt-12">
-          <p class="text-4xl md:text-5xl font-light italic serif-italic leading-tight opacity-70">O design como ferramenta de mudança sistêmica e impacto real.</p>
-        </div>
-      </div>
+      <span class="tag">08 Impacto Social</span>
+      <div class="mask-h"><h2 class="text-[14vw] font-black leading-none">ONGS</h2></div>
+      <div class="img-box h-[40vh]"><img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070" alt="Social Impact"></div>
+      <p class="text-4xl font-light serif-italic opacity-70">Design como ferramenta de mudança sistémica.</p>
+      <!-- LINK DA SESSÃO -->
+      <a href="#" class="section-link">Projectos Sociais</a>
     </section>
 
     <!-- 09. FILOSOFIA -->
     <section id="philosophy">
-      <span class="tag">09 Human Ethos</span>
-      <div class="flex flex-col items-center">
-        <div class="mask-v"><h2 class="giant-title">FILOSOFIA</h2></div>
-        <div class="reveal-content max-w-3xl text-center mt-16">
-          <p class="text-3xl md:text-5xl font-light leading-snug opacity-70">
-            "Transformar desafios em oportunidades através da inovação que gera valor positivo."
-          </p>
-        </div>
+      <span class="tag">09 Ethos Humano</span>
+      <div class="text-center py-20">
+        <div class="mask-v"><h2 class="giant-title">VALOR</h2></div>
+        <p class="text-3xl md:text-5xl font-light leading-snug opacity-70 mt-10">
+          "Transformar desafios em oportunidades através da inovação que gera valor positivo."
+        </p>
+        <div class="img-box h-[40vh] mt-10"><img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=2070" alt="Philosophy"></div>
       </div>
     </section>
 
     <!-- 10. SOBRE -->
     <section id="about">
-      <span class="tag">10 Profile</span>
+      <span class="tag">10 Perfil</span>
       <div class="grid grid-cols-12 gap-10">
-        <div class="col-span-12 lg:col-span-8">
-          <div class="mask-v"><h2 class="text-6xl md:text-8xl font-black mb-12 leading-tight">DIREÇÃO DE ARTE<br>& INOVAÇÃO</h2></div>
-          <div class="reveal-content text-lg md:text-xl font-light opacity-60 leading-relaxed space-y-6">
-            <p>
-              Empreendedor criativo com sólida formação pela <strong>Miami Ad School SP</strong>. Destaco-me na criação de propostas de valor impactantes para startups inovadoras e liderança criativa em grandes agências.
-            </p>
-            <p>
-              Minha expertise estende-se aos campos dinâmicos de <strong>Jogos, IA, Web3 e Blockchain</strong>. Com um perfil generalista, foco na direção criativa e construção de empreendimentos que gerem impacto significativo no mundo.
-            </p>
+        <div class="col-span-12 lg:col-span-7">
+          <div class="mask-v"><h2 class="text-6xl font-black mb-8">DIREÇÃO DE ARTE<br>& INOVAÇÃO</h2></div>
+          <div class="space-y-6 text-lg opacity-60 leading-relaxed font-light">
+            <p>Empreendedor criativo com sólida formação pela <strong>Miami Ad School SP</strong>. Especialista em propostas de valor para o futuro.</p>
+            <p>Expertise em <strong>Jogos, IA, Web3 e Blockchain</strong>. Um perfil generalista focado em direção criativa e impacto global.</p>
           </div>
+          <a href="https://linkedin.com" target="_blank" class="section-link">LinkedIn Perfil</a>
         </div>
-        <div class="col-span-12 lg:col-span-4 img-box !h-[60vh] !m-0 grayscale">
-          <img src="https://images.unsplash.com/photo-1519085185753-b4aa2984e242?q=80&w=1974" alt="Flavio Furtado Creative Profile">
+        <div class="col-span-12 lg:col-span-5">
+           <div class="img-box !h-[60vh] !m-0 grayscale"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974" alt="Flavio Furtado Profile"></div>
         </div>
       </div>
     </section>
 
     <!-- 11. CONTATO -->
-    <footer id="contact" class="min-h-screen flex flex-col justify-between p-8 pt-40 relative z-10 mix-blend-exclusion">
-      <div class="text-center">
-        <span class="tag">Open for Partnerships</span>
-        <div class="mask-v inline-block">
-          <a href="mailto:contato@flaviofurtado.com" class="text-[12vw] font-black hover:opacity-20 transition-all leading-none">LET'S TALK</a>
-        </div>
+    <footer id="contact" class="min-h-screen flex flex-col justify-center items-center p-8 relative z-10 mix-blend-exclusion">
+      <span class="tag">Disponível para Parcerias</span>
+      <div class="mask-v text-center">
+        <a href="mailto:contato@flaviofurtado.com" class="text-[12vw] font-black hover:opacity-20 transition-all leading-none">LET'S TALK</a>
       </div>
-      
-      <div class="flex flex-col md:flex-row justify-between items-end border-t border-white/10 pt-10 pb-4 gap-8">
-        <div class="text-[10px] font-black uppercase tracking-[0.5em] flex gap-12">
-          <a href="#" class="hover:opacity-50">LinkedIn</a>
-          <a href="#" class="hover:opacity-50">Behance</a>
-          <a href="https://pyzcoin.org" class="hover:opacity-50" target="_blank">Pyrolyzer</a>
-        </div>
-        <div class="text-[10px] opacity-20 uppercase tracking-[0.6em]">Portugal · Madeira · São Paulo</div>
+      <div class="absolute bottom-10 w-full px-20 flex justify-between text-[10px] uppercase tracking-widest opacity-30">
+        <div>Portugal · Madeira · São Paulo</div>
+        <div>FF Studio © 2024</div>
       </div>
     </footer>
   </main>
 
   <script>
     // 1. Lenis Smooth Scroll
-    const lenis = new Lenis({ 
-      duration: 1.4, 
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) 
-    });
+    const lenis = new Lenis({ duration: 1.4, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
     function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
     requestAnimationFrame(raf);
 
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function(e) {
-        e.preventDefault();
-        lenis.scrollTo(this.getAttribute('href'));
-      });
-    });
-
-    // 2. Cursor
+    // 2. Cursor Blend Mode
     const cursor = document.getElementById('cursor');
     const follower = document.getElementById('cursor-follower');
     window.addEventListener('mousemove', (e) => {
       gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0 });
-      gsap.to(follower, { x: e.clientX - 17, y: e.clientY - 17, duration: 0.1 });
+      gsap.to(follower, { x: e.clientX - 20, y: e.clientY - 20, duration: 0.15 });
     });
 
-    // 3. Three.js -Wonjyou Style
+    // 3. Three.js - Objeto Massivo Inicial
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -291,91 +272,85 @@
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-    const geometry = new THREE.TorusKnotGeometry(4, 1.2, 250, 24);
-    const material = new THREE.MeshNormalMaterial({ wireframe: true, transparent: true, opacity: 0.12 });
+    const geometry = new THREE.TorusKnotGeometry(4, 1.2, 150, 20);
+    const material = new THREE.MeshNormalMaterial({ wireframe: true, transparent: true, opacity: 0.15 });
     const torus = new THREE.Mesh(geometry, material);
     scene.add(torus);
-    camera.position.z = 15;
+    
+    // Escala massiva no início
+    torus.scale.set(10, 10, 10);
+    camera.position.z = 20;
+
+    // Pixel Stream
+    const pCount = 1000;
+    const pGeo = new THREE.BufferGeometry();
+    const pPos = new Float32Array(pCount * 3);
+    for(let i=0; i<pCount*3; i++) pPos[i] = (Math.random() - 0.5) * 50;
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+    const pMat = new THREE.PointsMaterial({ size: 0.05, color: 0xffffff, transparent: true, opacity: 0.3 });
+    const pixels = new THREE.Points(pGeo, pMat);
+    scene.add(pixels);
 
     // 4. GSAP ScrollTrigger
     gsap.registerPlugin(ScrollTrigger);
 
-    gsap.utils.toArray('.mask-v').forEach(el => {
-      gsap.to(el, {
-        clipPath: 'inset(0% 0 0 0)',
-        scrollTrigger: { trigger: el, start: 'top 95%', end: 'top 70%', scrub: 1 }
-      });
+    // Redução do Torus massivo para escala normal
+    gsap.to(torus.scale, {
+      x: 0.5, y: 0.5, z: 0.5,
+      scrollTrigger: { trigger: 'main', start: 'top top', end: 'bottom bottom', scrub: 1 }
     });
 
-    gsap.utils.toArray('.mask-h').forEach(el => {
-      gsap.to(el, {
-        clipPath: 'inset(0 0% 0 0)',
-        scrollTrigger: { trigger: el, start: 'top 95%', end: 'top 75%', scrub: 1.2 }
-      });
+    gsap.to(torus.rotation, {
+      x: Math.PI * 2, y: Math.PI * 4,
+      scrollTrigger: { trigger: 'main', start: 'top top', end: 'bottom bottom', scrub: 1.5 }
     });
 
-    gsap.utils.toArray('.reveal-content').forEach(el => {
-      gsap.to(el, {
-        opacity: 1, y: 0, duration: 1.2, ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 90%', toggleActions: 'play none none reverse' }
-      });
-    });
-
+    // Revelação das Imagens e Máscaras
     gsap.utils.toArray('.img-box').forEach(box => {
       gsap.to(box, {
-        clipPath: 'inset(0 0% 0 0)', duration: 2, ease: 'power4.inOut',
-        scrollTrigger: { trigger: box, start: 'top 85%' }
+        clipPath: 'inset(0 0% 0 0)',
+        scrollTrigger: { trigger: box, start: 'top 80%', end: 'top 30%', scrub: 1 }
       });
       gsap.to(box.querySelector('img'), {
-        y: -100, scale: 1,
+        scale: 1, y: -20,
         scrollTrigger: { trigger: box, scrub: true }
       });
     });
 
-    // Torus Animation
-    gsap.set(torus.scale, { x: 3, y: 3, z: 3 });
-    gsap.to(torus.scale, {
-      x: 0.4, y: 0.4, z: 0.4,
-      scrollTrigger: { trigger: 'main', start: 'top top', end: 'bottom bottom', scrub: 1 }
+    gsap.utils.toArray('.mask-v, .mask-h').forEach(el => {
+      gsap.to(el, {
+        clipPath: el.classList.contains('mask-v') ? 'inset(0% 0 0 0)' : 'inset(0 0% 0 0)',
+        scrollTrigger: { trigger: el, start: 'top 95%', end: 'top 60%', scrub: 1 }
+      });
     });
-    
-    gsap.to(torus.rotation, {
-      x: Math.PI * 2, y: Math.PI * 3,
-      scrollTrigger: { trigger: 'main', start: 'top top', end: 'bottom bottom', scrub: 2 }
+
+    // Side Nav e Progresso
+    window.addEventListener('scroll', () => {
+      const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+      document.getElementById('progress-bar').style.width = scrolled + '%';
+      
+      let current = "";
+      document.querySelectorAll('section, footer').forEach(s => {
+        if(pageYOffset >= s.offsetTop - 300) current = s.getAttribute('id');
+      });
+      document.querySelectorAll('.side-dot').forEach(d => {
+        d.classList.toggle('active', d.getAttribute('href') === `#${current}`);
+      });
     });
 
     function animate() {
       torus.rotation.z += 0.002;
+      pixels.rotation.y += 0.0005;
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     }
     animate();
-
-    // Side Nav States
-    const dots = document.querySelectorAll('.side-dot');
-    const sections = document.querySelectorAll('section, footer');
-    window.addEventListener('scroll', () => {
-      let current = "";
-      sections.forEach(section => {
-        const sectionTop = section.offsetTop;
-        if (pageYOffset >= sectionTop - 300) {
-          current = section.getAttribute('id');
-        }
-      });
-      dots.forEach(dot => {
-        dot.classList.remove('active');
-        if (dot.parentElement.getAttribute('href') === `#${current}`) {
-          dot.classList.add('active');
-        }
-      });
-    });
 
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
-
   </script>
 </body>
 </html>
