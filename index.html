@@ -286,116 +286,46 @@
   </main>
 
   <script>
-         // 1. CONFIGURAÇÃO INICIAL DO THREE.JS
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.getElementById('canvas-container').appendChild(renderer.domElement);
+    const lenis = new Lenis({ duration: 1.4 });
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
 
-// 2. CRIAÇÃO DO OBJETO (TORUS KNOT)
-const geometry = new THREE.TorusKnotGeometry(4, 1.2, 150, 20);
-const material = new THREE.MeshNormalMaterial({ 
-  wireframe: true, 
-  transparent: true, 
-  opacity: 0.15 
-});
-const torus = new THREE.Mesh(geometry, material);
-scene.add(torus);
-
-// POSIÇÃO INICIAL: Mais imersivo dentro do objeto
-camera.position.z = 12; 
-
-// 3. INTEGRAÇÃO COM GSAP SCROLLTRIGGER
-gsap.registerPlugin(ScrollTrigger);
-
-// 🚀 ZOOM OUT SUAVE: O elemento agora permanece visível por mais tempo
-gsap.to(camera.position, {
-  z: 45, // Valor reduzido para não sumir tão rápido
-  scrollTrigger: {
-    trigger: "body",
-    start: "top top",
-    end: "bottom bottom",
-    scrub: 2 // Scrub maior para suavizar a transição
-  }
-});
-
-// 🚀 ROTAÇÃO SINCRONIZADA: Rotação mais complexa durante o scroll
-gsap.to(torus.rotation, {
-  y: Math.PI * 3, 
-  x: Math.PI * 1.5,
-  scrollTrigger: {
-    trigger: "body",
-    start: "top top",
-    end: "bottom bottom",
-    scrub: 2.5
-  }
-});
-
-// ✨ RESTAURAÇÃO DAS IMAGENS E MÁSCARAS
-gsap.utils.toArray('.img-box').forEach(box => {
-  gsap.to(box, { 
-    clipPath: 'inset(0 0% 0 0)', 
-    scrollTrigger: { 
-      trigger: box, 
-      start: 'top 85%', 
-      end: 'top 40%', 
-      scrub: 1 
-    } 
-  });
-});
-
-gsap.utils.toArray('.mask-v').forEach(el => {
-  gsap.to(el, { 
-    clipPath: 'inset(0% 0 0 0)', 
-    scrollTrigger: { 
-      trigger: el, 
-      start: 'top 95%', 
-      end: 'top 75%', 
-      scrub: 0.5 
-    } 
-  });
-});
-
-gsap.utils.toArray('.mask-h').forEach(el => {
-  gsap.to(el, { 
-    clipPath: 'inset(0 0% 0 0)', 
-    scrollTrigger: { 
-      trigger: el, 
-      start: 'top 95%', 
-      end: 'top 75%', 
-      scrub: 0.5 
-    } 
-  });
-});
-
-// 🖱️ FIX: MOVIMENTO DO CURSOR (Ajuste para a bolinha não ficar parada)
-const cursor = document.getElementById('custom-cursor');
-if (cursor) {
-  window.addEventListener('mousemove', (e) => {
-    gsap.to(cursor, {
-      x: e.clientX,
-      y: e.clientY,
-      duration: 0.1,
-      ease: "power2.out"
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursor-follower');
+    window.addEventListener('mousemove', (e) => {
+      gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0 });
+      gsap.to(follower, { x: e.clientX - 20, y: e.clientY - 20, duration: 0.15 });
     });
-  });
-}
 
-// 4. LOOP DE ANIMAÇÃO (Rotação constante sutil)
-function animate() {
-  torus.rotation.z += 0.002; 
-  renderer.render(scene, camera);
-  requestAnimationFrame(animate);
-}
-animate();
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-// 5. RESPONSIVIDADE
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});    
+    const torus = new THREE.Mesh(new THREE.TorusKnotGeometry(4, 1.2, 150, 20), new THREE.MeshNormalMaterial({ wireframe: true, transparent: true, opacity: 0.1 }));
+    scene.add(torus);
+    torus.scale.set(10, 10, 10);
+    camera.position.z = 20;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    gsap.utils.toArray('.img-box').forEach(box => {
+      gsap.to(box, { clipPath: 'inset(0 0% 0 0)', scrollTrigger: { trigger: box, start: 'top 85%', end: 'top 40%', scrub: 1 } });
+    });
+
+    gsap.utils.toArray('.mask-v, .mask-h').forEach(el => {
+      gsap.to(el, { clipPath: el.classList.contains('mask-v') ? 'inset(0% 0 0 0)' : 'inset(0 0% 0 0)', scrollTrigger: { trigger: el, start: 'top 95%', end: 'top 75%', scrub: 0.5 } });
+    });
+
+    function animate() { torus.rotation.z += 0.001; renderer.render(scene, camera); requestAnimationFrame(animate); }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
   </script>
 </body>
 </html>
