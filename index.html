@@ -46,17 +46,25 @@
     }
     #cursor.hover { width: 40px; height: 40px; }
 
-    /* ══ HERO (AJUSTADO PARA RESPONSIVIDADE) ════════════ */
+    /* ══ HERO ══════════════════════════════════════════
+       Estrutura de camadas (de baixo para cima):
+       1. Fundo texturizado / elemento de conceito
+       2. Nome "FLAVIO" (metade esquerda, atrás da foto)
+       3. Foto do Flavio (centro)
+       4. Nome "FURTADO" (metade direita, atrás da foto)
+       5. UI: nav, conceito, tagline, sociais, bottom bar
+       O efeito "atrás da foto" é feito com z-index:
+       foto tem z-index maior que o nome.
+    ══════════════════════════════════════════════════ */
     #hero {
       position: relative;
       height: 100vh;
       width: 100%;
       overflow: hidden;
       background: #9b9b93;
-      display: flex;
-      flex-direction: column;
     }
 
+    /* Fundo com conceito — grade de linhas finas que remete a esboço/estrutura */
     .hero-bg {
       position: absolute; inset: 0; z-index: 0;
       background:
@@ -64,14 +72,17 @@
         linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
       background-size: 60px 60px;
     }
+    /* Gradiente radial que ilumina o centro onde está a foto */
     .hero-bg::after {
       content: '';
       position: absolute; inset: 0;
       background: radial-gradient(ellipse 70% 80% at 50% 60%, rgba(0,0,0,0.18) 0%, transparent 70%);
     }
 
+    /* Nav */
     #hero-nav {
-      position: relative; z-index: 50; padding: 24px clamp(24px, 5vw, 64px);
+      position: absolute; top: 0; left: 0; width: 100%;
+      z-index: 50; padding: 24px 64px;
       display: flex; align-items: center; justify-content: space-between;
     }
     .nav-brand { color: rgba(255,255,255,0.6); }
@@ -79,81 +90,116 @@
     .nav-links a { color: rgba(255,255,255,0.6); text-decoration: none; transition: color .3s; }
     .nav-links a:hover { color: white; }
 
+    /* Conceito — "Valor. É o que crio." */
     .hero-concept {
       position: absolute;
-      top: 20%; left: 50%;
+      /* ✏️ Posição do conceito: top/left ajustam onde ele aparece */
+      top: 22%;
+      left: 50%;
       transform: translateX(-50%);
       z-index: 40;
       text-align: center;
       pointer-events: none;
-      width: 100%;
-      padding: 0 24px;
+      white-space: nowrap;
     }
     .hero-concept-line {
       display: block;
-      font-size: clamp(10px, 1.4vw, 18px);
+      font-size: clamp(13px, 1.4vw, 18px);
       font-weight: 300;
       letter-spacing: 0.35em;
       text-transform: uppercase;
       color: rgba(255,255,255,0.75);
+      line-height: 2;
     }
     .hero-concept-main {
       display: block;
-      font-size: clamp(24px, 4.5vw, 56px);
+      font-size: clamp(28px, 4vw, 56px);
       font-weight: 600;
       letter-spacing: -0.02em;
       color: white;
-      line-height: 1.1;
-      margin-top: 8px;
+      line-height: 1;
+      margin-top: 4px;
     }
     .hero-concept-dot { color: rgba(255,255,255,0.4); }
 
+    /* Área central — onde ficam os nomes e a foto empilhados */
     .hero-stage {
-      flex: 1;
-      position: relative;
+      position: absolute;
+      inset: 0;
       display: flex;
-      align-items: flex-end;
+      align-items: flex-end;      /* nomes e foto ancorados na base */
       justify-content: center;
-      z-index: 5;
+      z-index: 0;
+      padding-bottom: 0;
     }
 
-    .hero-name-left, .hero-name-right {
+    /* Nome FLAVIO — fica ATRÁS da foto (z-index menor) */
+    .hero-name-left {
       position: absolute;
-      bottom: -0.05em;
-      z-index: 10;
-      font-size: clamp(60px, 16vw, 200px);
+      bottom: 0;
+      /* alinhado para o centro, depois deslocamos para a esquerda com right */
+      right: 50%;
+      z-index: 10;              /* ABAIXO da foto (z-index 20) */
+      line-height: 0.85;
+      font-size: clamp(70px, 12vw, 200px);
       color: white;
+      text-align: right;
+      transform-origin: bottom right;
+      /* padding-right faz o texto chegar até bem perto da foto */
+      padding-right: 0.08em;
       pointer-events: none;
       will-change: transform;
-      line-height: 0.85;
     }
-    .hero-name-left { right: 50%; padding-right: 0.05em; }
-    .hero-name-right { left: 50%; padding-left: 0.05em; }
 
+    /* Nome FURTADO — fica ATRÁS da foto (z-index menor) */
+    .hero-name-right {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      z-index: 10;              /* ABAIXO da foto (z-index 20) */
+      line-height: 0.85;
+      font-size: clamp(70px, 12vw, 200px);
+      color: white;
+      text-align: left;
+      transform-origin: bottom left;
+      padding-left: 0.08em;
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    /* Foto do Flavio — FRENTE dos nomes (z-index maior) */
     .hero-portrait-wrap {
-      position: relative;
-      z-index: 20;
-      width: clamp(240px, 32vw, 460px);
-      display: flex;
-      align-items: flex-end;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;              /* ACIMA dos nomes (z-index 10) */
+      /* ✏️ Largura da foto — ajuste conforme necessário */
+      width: clamp(220px, 28vw, 460px);
+      pointer-events: none;
+      will-change: transform;
     }
     .hero-portrait {
-      width: 100%; height: auto; display: block;
+      width: 100%; height: auto; display: block; object-fit: contain;
+      /* Máscara: dissolve o topo da foto no fundo para integrar com a grade */
       mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 100%);
       -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 100%);
     }
 
+    /* Badge acima da foto */
     .hero-badge {
       position: absolute;
       z-index: 30;
-      bottom: 50%;
+      /* Posicionado acima do topo da foto — ajuste o "bottom" conforme a altura da foto */
+      bottom: calc(clamp(220px, 28vw, 460px) * 1.25);
       left: 50%;
       transform: translateX(-50%);
       color: rgba(255,255,255,0.45);
       white-space: nowrap;
-      font-size: clamp(8px, 1vw, 10px);
+      will-change: transform;
     }
 
+    /* Bloco inferior da hero: tagline + sociais */
     .hero-sides {
       position: absolute;
       bottom: 80px;
@@ -162,82 +208,189 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
-      padding: 0 clamp(24px, 5vw, 64px);
+      padding: 0 64px;
       pointer-events: none;
     }
     .hero-tagline {
       color: rgba(255,255,255,0.55);
-      font-size: 12px;
+      font-size: 13px;
       max-width: 200px;
       line-height: 1.6;
     }
-    .hero-socials { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-    .hero-socials a { color: rgba(255,255,255,0.4); text-decoration: none; transition: 0.3s; pointer-events: all; }
+    .hero-socials {
+      display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
+    }
+    .hero-socials a {
+      color: rgba(255,255,255,0.4); text-decoration: none;
+      transition: color .3s; pointer-events: all;
+    }
     .hero-socials a:hover { color: white; }
 
     .hero-bottom {
-      position: relative; z-index: 50;
-      padding: 18px clamp(24px, 5vw, 64px);
+      position: absolute; bottom: 0; left: 0; width: 100%; z-index: 50;
+      padding: 18px 64px;
       display: flex; align-items: center; justify-content: space-between;
       border-top: 1px solid rgba(255,255,255,0.1);
     }
     .hero-bottom p { color: rgba(255,255,255,0.3); }
 
-    /* ══ RESTO DAS SEÇÕES ORIGINAIS ════════════════════ */
+    /* ══ ABOUT ════════════════════════════════════════ */
     #about { position: relative; width: 100%; background: #050505; }
+
     .about-header { max-width: 1100px; margin: 0 auto; padding: 128px 64px 80px; }
     .about-label  { color: rgba(255,255,255,0.5); margin-bottom: 24px; }
     .about-headline { color: white; font-size: clamp(36px, 6vw, 80px); margin-bottom: 32px; }
     .about-desc { color: rgba(255,255,255,0.6); font-size: 18px; max-width: 600px; }
 
-    .gallery-grid { max-width: 1200px; margin: 0 auto; padding: 0 32px 64px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .gallery-wrap { overflow: hidden; }
+    .gallery-grid {
+      max-width: 1200px; margin: 0 auto;
+      padding: 0 32px 64px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+    }
+    .gallery-col { display: flex; flex-direction: column; gap: 20px; }
     .gallery-col.col-2 { padding-top: 128px; }
     .gallery-img-wrap { overflow: hidden; }
     .gallery-img-wrap img { width: 100%; height: auto; object-fit: cover; display: block; }
     .gallery-img-label { color: rgba(255,255,255,0.25); margin-top: 12px; }
 
-    .about-stats { max-width: 1200px; margin: 0 auto; padding: 0 64px 96px; background: #050505; }
-    .about-stats-inner { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 48px; }
+    .about-stats {
+      position: relative; z-index: 10;
+      max-width: 1200px; margin: 0 auto;
+      padding: 0 64px 96px; background: #050505;
+    }
+    .about-stats-inner {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
+      border-top: 1px solid rgba(255,255,255,0.1); padding-top: 48px;
+    }
     .stat-value { font-size: clamp(36px, 4vw, 56px); color: white; margin-bottom: 8px; }
     .stat-label { color: rgba(255,255,255,0.4); }
 
-    .about-bottom { max-width: 1200px; margin: 0 auto; padding: 0 64px 128px; background: #050505; }
+    .about-bottom {
+      position: relative; z-index: 10;
+      max-width: 1200px; margin: 0 auto;
+      padding: 0 64px 128px; background: #050505;
+    }
     .about-bottom-grid { display: grid; grid-template-columns: repeat(12, 1fr); }
     .about-bottom-text { grid-column: 8 / span 5; color: rgba(255,255,255,0.5); font-size: 16px; }
 
+    /* ══ PROJECTS GRID ════════════════════════════════ */
     #projects { position: relative; width: 100%; background: #050505; padding: 128px 64px; }
-    .projects-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
-    .project-card-img-wrap { aspect-ratio: 4/3; overflow: hidden; }
-    .project-card-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: 0.7s; }
-    .project-card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); }
-    .project-card-text { position: absolute; bottom: 0; padding: 24px; }
 
+    .projects-header { max-width: 1200px; margin: 0 auto 64px; }
+    .section-label   { color: rgba(255,255,255,0.5); margin-bottom: 16px; }
+    .section-headline { color: white; font-size: clamp(36px, 5.5vw, 80px); }
+
+    .projects-grid {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;
+    }
+    .project-card { position: relative; overflow: hidden; cursor: none; }
+    .project-card-img-wrap { position: relative; aspect-ratio: 4/3; overflow: hidden; }
+    .project-card-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform .7s ease-out; display: block; }
+    .project-card:hover .project-card-img-wrap img { transform: scale(1.05); }
+    .project-card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.2) 50%, transparent); }
+    .project-card-text { position: absolute; bottom: 0; left: 0; width: 100%; padding: 24px 32px; }
+    .project-card-date  { color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+    .project-card-title { color: white; font-size: clamp(18px, 2vw, 28px); }
+    .project-card-border { position: absolute; inset: 0; border: 1px solid rgba(255,255,255,0); transition: border-color .5s; pointer-events: none; }
+    .project-card:hover .project-card-border { border-color: rgba(255,255,255,0.2); }
+
+    .projects-cta { max-width: 1200px; margin: 48px auto 0; display: flex; justify-content: center; }
+    .btn-outline { border: 1px solid rgba(255,255,255,0.2); padding: 16px 40px; color: white; background: transparent; cursor: none; transition: background .3s, color .3s; }
+    .btn-outline:hover { background: white; color: #050505; }
+
+    /* ══ FEATURED (stacking) ══════════════════════════ */
     #featured { position: relative; width: 100%; background: #f0f0f0; }
-    .stack-card { min-height: 100vh; display: flex; align-items: center; }
-    .stack-card-inner { max-width: 1200px; margin: 0 auto; padding: 64px; display: grid; grid-template-columns: 7fr 5fr; gap: 48px; }
+
+    .featured-header { max-width: 1200px; margin: 0 auto; padding: 128px 64px 32px; }
+    .featured-label  { color: rgba(26,26,26,0.4); margin-bottom: 16px; }
+    .featured-headline { color: #1a1a1a; font-size: clamp(36px, 5.5vw, 80px); }
+
+    .stacking-cards { position: relative; }
+    .stack-card { position: relative; width: 100%; min-height: 100vh; background: #f0f0f0; display: flex; align-items: center; }
+    .stack-card-inner {
+      max-width: 1200px; margin: 0 auto; padding: 64px;
+      display: grid; grid-template-columns: 7fr 5fr; gap: 48px;
+      align-items: center; width: 100%;
+    }
     .stack-card.reverse .stack-card-inner { direction: rtl; }
     .stack-card.reverse .stack-card-inner > * { direction: ltr; }
+    .stack-card-img { overflow: hidden; }
+    .stack-card-img img { width: 100%; height: auto; object-fit: cover; aspect-ratio: 16/10; display: block; }
+    .stack-card-year  { color: rgba(26,26,26,0.3); margin-bottom: 12px; }
+    .stack-card-title { color: #1a1a1a; font-size: clamp(24px, 3.5vw, 52px); margin-bottom: 16px; }
+    .stack-card-desc  { color: rgba(26,26,26,0.55); font-size: 15px; margin-bottom: 32px; max-width: 400px; }
+    .btn-dark { display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(26,26,26,0.2); padding: 12px 24px; color: #1a1a1a; background: transparent; cursor: none; transition: background .3s, color .3s; }
+    .btn-dark:hover { background: #1a1a1a; color: #f0f0f0; }
 
-    #awards { background: #9b9b93; padding: 128px 64px; }
+    /* ══ AWARDS ═══════════════════════════════════════ */
+    #awards { position: relative; width: 100%; background: #9b9b93; padding: 128px 64px; }
     .awards-inner { max-width: 900px; margin: 0 auto; text-align: center; }
-    .awards-quote { color: white; font-size: clamp(22px, 3vw, 40px); line-height: 1.5; }
+    .awards-quote-icon { margin-bottom: 48px; }
+    .awards-quote { color: white; font-size: clamp(22px, 3vw, 40px); line-height: 1.5; margin-bottom: 48px; }
+    .awards-author { display: flex; align-items: center; justify-content: center; gap: 24px; }
+    .awards-avatar { width: 80px; height: 80px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(255,255,255,0.2); }
+    .awards-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .awards-name { color: white; font-size: 18px; font-weight: 600; }
+    .awards-title-text { color: rgba(255,255,255,0.5); margin-top: 4px; }
+    .awards-line { margin-top: 96px; display: flex; justify-content: center; }
+    .awards-line div { width: 96px; height: 1px; background: rgba(255,255,255,0.2); }
 
-    #contact { background: #050505; padding: 128px 64px; }
-    .contact-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
-    .info-card { padding: 32px; border: 1px solid rgba(255,255,255,0.1); }
+    /* ══ CONTACT ══════════════════════════════════════ */
+    #contact { position: relative; width: 100%; background: #050505; padding: 128px 64px; }
+    .contact-header { max-width: 1200px; margin: 0 auto 64px; }
+    .contact-headline { color: white; font-size: clamp(36px, 5vw, 72px); margin-bottom: 32px; }
+    .contact-desc { color: rgba(255,255,255,0.6); font-size: 18px; max-width: 600px; }
+    .contact-cards { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+    .info-card { padding: 32px; border: 1px solid rgba(255,255,255,0.1); transition: border-color .3s; }
+    .info-card:hover { border-color: rgba(255,255,255,0.2); }
+    .info-card-icon { margin-bottom: 24px; color: rgba(255,255,255,0.5); }
+    .info-card-title { color: white; font-size: 20px; font-weight: 600; margin-bottom: 12px; }
+    .info-card-content { color: rgba(255,255,255,0.6); font-size: 14px; line-height: 1.7; }
 
-    footer { background: #9b9b93; }
-    .marquee-track span { font-size: 15vw; font-weight: 600; color: rgba(255,255,255,0.1); }
+    /* ══ FOOTER ═══════════════════════════════════════ */
+    footer { position: relative; width: 100%; background: #9b9b93; overflow: hidden; }
+    .marquee-wrap { padding: 80px 0; overflow: hidden; border-top: 1px solid rgba(255,255,255,0.1); }
+    .marquee-track { display: flex; white-space: nowrap; animation: marquee 30s linear infinite; }
+    .marquee-track span { font-size: 15vw; font-weight: 600; letter-spacing: -0.03em; color: rgba(255,255,255,0.1); -webkit-text-stroke: 1px rgba(255,255,255,0.1); margin: 0 32px; }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
-    @media (max-width: 768px) {
-      .nav-links { display: none; }
-      .hero-concept { top: 15%; }
-      .hero-name-left, .hero-name-right { font-size: clamp(50px, 20vw, 100px); bottom: 10px; }
-      .hero-badge { bottom: 60%; }
-      .hero-sides { bottom: 120px; flex-direction: column; align-items: center; text-align: center; gap: 20px; }
-      .hero-socials { flex-direction: row; gap: 15px; }
-      .hero-tagline { max-width: 100%; order: 2; }
-      .about-stats-inner, .projects-grid, .contact-cards, .stack-card-inner { grid-template-columns: 1fr; }
+    .footer-content { padding: 64px; border-top: 1px solid rgba(255,255,255,0.1); }
+    .footer-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 48px; margin-bottom: 64px; }
+    .footer-brand-name { color: white; font-size: 24px; font-weight: 600; margin-bottom: 16px; }
+    .footer-brand-desc { color: rgba(255,255,255,0.6); font-size: 14px; max-width: 320px; margin-bottom: 24px; }
+    .footer-socials { display: flex; gap: 16px; }
+    .footer-social-btn { width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.6); text-decoration: none; transition: color .3s, border-color .3s; font-size: 12px; }
+    .footer-social-btn:hover { color: white; border-color: rgba(255,255,255,0.4); }
+    .footer-col-title { color: rgba(255,255,255,0.5); margin-bottom: 24px; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .footer-col ul li a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px; transition: color .3s; }
+    .footer-col ul li a:hover { color: white; }
+    .footer-contact-item { color: rgba(255,255,255,0.7); font-size: 14px; }
+    .footer-bottom { max-width: 1200px; margin: 0 auto; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
+    .footer-bottom p { color: rgba(255,255,255,0.4); font-size: 12px; }
+    .footer-bottom-links { display: flex; gap: 24px; }
+    .footer-bottom-links a { color: rgba(255,255,255,0.4); font-size: 12px; text-decoration: none; transition: color .3s; }
+    .footer-bottom-links a:hover { color: rgba(255,255,255,0.7); }
+
+    /* ══ RESPONSIVO ═══════════════════════════════════ */
+    @media (max-width: 900px) {
+      #hero-nav, .hero-bottom, .hero-sides { padding-left: 24px; padding-right: 24px; }
+      .hero-concept { width: 90%; white-space: normal; }
+      .about-header, .about-stats, .about-bottom { padding-left: 24px; padding-right: 24px; }
+      .gallery-grid { padding: 0 16px 64px; gap: 12px; }
+      .about-stats-inner { grid-template-columns: repeat(2, 1fr); }
+      .about-bottom-text { grid-column: 1 / -1; }
+      #projects, #contact, #awards { padding: 80px 24px; }
+      .projects-grid, .contact-cards { grid-template-columns: 1fr; }
+      .featured-header { padding: 80px 24px 32px; }
+      .stack-card-inner { grid-template-columns: 1fr; padding: 40px 24px; }
+      .stack-card.reverse .stack-card-inner { direction: ltr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .footer-content { padding: 40px 24px; }
+      .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+      .hero-name-left, .hero-name-right { font-size: clamp(48px, 14vw, 120px); }
     }
   </style>
 </head>
@@ -245,9 +398,17 @@
 
 <div id="cursor"></div>
 
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
 <div id="hero-section">
 <section id="hero">
+
+  <!-- Fundo: grade de linhas finas (conceito visual de estrutura/valor) -->
   <div class="hero-bg"></div>
+
+  <!-- Navegação -->
+  <!-- ✏️ MENU: edite os href e textos dos links -->
   <nav id="hero-nav">
     <div class="museo-label nav-brand">FLAVIO FURTADO</div>
     <div class="nav-links">
@@ -257,47 +418,118 @@
     </div>
   </nav>
 
+  <!-- Conceito — aparece acima da foto, abaixo do nav -->
+  <!-- ✏️ CONCEITO: edite o texto aqui -->
   <div class="hero-concept" id="hero-concept">
     <span class="hero-concept-line museo-label">Creative Art Director</span>
     <span class="hero-concept-main">Valor<span class="hero-concept-dot">.</span> É o que crio<span class="hero-concept-dot">.</span></span>
   </div>
 
+  <!-- Stage: nomes atrás da foto + foto na frente -->
   <div class="hero-stage">
-    <div class="hero-badge museo-label" id="hero-badge">Based in Brazil — Available Worldwide</div>
+
+    <!-- Badge acima da foto -->
+    <!-- ✏️ BADGE: edite o texto do crachá -->
+    <div class="hero-badge museo-label" id="hero-badge">
+      Based in Brazil — Available Worldwide
+    </div>
+
+    <!-- Nome FLAVIO — z-index 10, fica atrás da foto (z-index 20) -->
     <div class="hero-name-left museo-headline" id="hero-name-left">FLAVIO</div>
+
+    <!-- ✏️ FOTO: substitua o src pelo caminho da sua imagem
+             src="https://github.com/.../hero-portrait.png" (URL do GitHub)  -->
     <div class="hero-portrait-wrap" id="hero-portrait">
       <img class="hero-portrait" src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/hero-portrait.png" alt="Flavio Furtado" />
     </div>
-    <div class="hero-name-right museo-headline" id="hero-name-right">FURTADO</div>
-  </div>
 
+    <!-- Nome FURTADO — z-index 10, fica atrás da foto (z-index 20) -->
+    <div class="hero-name-right museo-headline" id="hero-name-right">FURTADO</div>
+
+  </div><!-- /hero-stage -->
+
+  <!-- Bloco lateral inferior: tagline (esq) + sociais (dir) -->
   <div class="hero-sides" id="hero-sides">
-    <p class="museo-body hero-tagline">Crafting visual stories through games,<br/>brands &amp; digital experiences.</p>
+    <!-- ✏️ TAGLINE: frase curta abaixo do nome -->
+    <p class="museo-body hero-tagline">
+      Crafting visual stories through games,<br/>brands &amp; digital experiences.
+    </p>
+    <!-- ✏️ REDES SOCIAIS: edite os href -->
     <div class="hero-socials">
-      <a href="#" class="museo-label">Behance</a>
-      <a href="#" class="museo-label">LinkedIn</a>
-      <a href="#" class="museo-label">Instagram</a>
+      <a href="https://behance.net"                    class="museo-label">Behance</a>
+      <a href="https://linkedin.com/in/flaviofurtado"  class="museo-label">LinkedIn</a>
+      <a href="https://instagram.com/flaviofurtado"    class="museo-label">Instagram</a>
     </div>
   </div>
 
+  <!-- Barra inferior da hero -->
   <div class="hero-bottom" id="hero-bottom">
     <p class="museo-label">Scroll to explore</p>
+    <!-- ✏️ E-MAIL: visível no rodapé da hero -->
     <p class="museo-label">flaviofurtado@gmail.com</p>
   </div>
+
 </section>
 </div>
 
+<!-- ══════════════════════════════════════════
+     ABOUT
+══════════════════════════════════════════ -->
 <section id="about">
   <div class="about-header">
+    <!-- ✏️ Label / headline / descrição da seção About -->
     <p class="museo-label about-label reveal-text">About the Director</p>
-    <h2 class="museo-headline about-headline reveal-text">Crafting Visual Stories<br/>That Move People</h2>
-    <p class="museo-body about-desc reveal-text">I'm Flavio Furtado, a Creative Art Director with over a decade of experience.</p>
+    <h2 class="museo-headline about-headline reveal-text">
+      Crafting Visual Stories<br/>That Move People
+    </h2>
+    <p class="museo-body about-desc reveal-text">
+      I'm Flavio Furtado, a Creative Art Director with over a decade of experience
+      transforming ideas into immersive visual experiences. From award-winning games
+      to impactful brand campaigns, my work bridges art and strategy.
+    </p>
   </div>
-  <div class="gallery-grid">
-      <div class="gallery-col col-1"><div class="gallery-img-wrap"><img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/about-1.jpg" /><p class="gallery-img-label museo-label">Game Design</p></div></div>
-      <div class="gallery-col col-2"><div class="gallery-img-wrap"><img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/about-3.jpg" /><p class="gallery-img-label museo-label">Typography</p></div></div>
-      <div class="gallery-col col-3"><div class="gallery-img-wrap"><img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/about-5.jpg" /><p class="gallery-img-label museo-label">Process</p></div></div>
+
+  <!-- Galeria 3 colunas com parallax -->
+  <!-- ✏️ GALERIA: substitua cada src="images/about-N.jpg" pela sua imagem -->
+  <div class="gallery-wrap">
+    <div class="gallery-grid">
+      <!-- Coluna 1 — sobe ao rolar (speed negativo) -->
+      <div class="gallery-col col-1" data-speed="-80">
+        <div class="gallery-img-wrap" data-offset="60">
+          <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/about-1.jpg" alt="Space Waste Arcade Cabinet" style="aspect-ratio:3/4" />
+          <p class="gallery-img-label museo-label">Game Design</p>
+        </div>
+        <div class="gallery-img-wrap" data-offset="120">
+          <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/about-2.jpg" alt="Beat It Up Characters" style="aspect-ratio:4/5" />
+          <p class="gallery-img-label museo-label">Pixel Art</p>
+        </div>
+      </div>
+      <!-- Coluna 2 — desce ao rolar; offset visual com padding-top -->
+      <div class="gallery-col col-2" data-speed="100">
+        <div class="gallery-img-wrap" data-offset="80">
+          <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/about-3.jpg" alt="Caminito Typography" style="aspect-ratio:3/4" />
+          <p class="gallery-img-label museo-label">Typography</p>
+        </div>
+        <div class="gallery-img-wrap" data-offset="160">
+          <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/about-4.jpg" alt="Club 4 Branding" style="aspect-ratio:3/4" />
+          <p class="gallery-img-label museo-label">Branding</p>
+        </div>
+      </div>
+      <!-- Coluna 3 — sobe mais rápido -->
+      <div class="gallery-col col-3" data-speed="-120">
+        <div class="gallery-img-wrap" data-offset="40">
+          <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/about-5.jpg" alt="Creative Workspace" style="aspect-ratio:4/5" />
+          <p class="gallery-img-label museo-label">Process</p>
+        </div>
+        <div class="gallery-img-wrap" data-offset="140">
+          <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/about-6.jpg" alt="Digital Illustration" style="aspect-ratio:3/4" />
+          <p class="gallery-img-label museo-label">Illustration</p>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <!-- ✏️ STATS: edite os números e labels -->
   <div class="about-stats">
     <div class="about-stats-inner">
       <div class="stat-item"><p class="museo-headline stat-value">10+</p><p class="museo-label stat-label">Years of Experience</p></div>
@@ -306,80 +538,490 @@
       <div class="stat-item"><p class="museo-headline stat-value">3</p><p class="museo-label stat-label">Creative Disciplines</p></div>
     </div>
   </div>
-</section>
 
-<section id="projects">
-  <div class="projects-grid">
-    <div class="project-card exhibit-card">
-      <div class="project-card-img-wrap"><img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/grid-space-waste.jpg" /><div class="project-card-overlay"></div></div>
-      <div class="project-card-text"><h3 class="museo-headline">Space Waste</h3></div>
-    </div>
-    <div class="project-card exhibit-card">
-      <div class="project-card-img-wrap"><img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/grid-beat-it-up.jpg" /><div class="project-card-overlay"></div></div>
-      <div class="project-card-text"><h3 class="museo-headline">Beat It Up</h3></div>
+  <div class="about-bottom">
+    <div class="about-bottom-grid">
+      <!-- ✏️ Texto complementar da seção About -->
+      <p class="museo-body about-bottom-text reveal-text">
+        From pixel-perfect interfaces to immersive game worlds, every project is an
+        opportunity to push creative boundaries. Based in Belem, Pará — collaborating worldwide.
+      </p>
     </div>
   </div>
 </section>
 
+<!-- ══════════════════════════════════════════
+     PROJECTS GRID (2×2)
+══════════════════════════════════════════ -->
+<section id="projects">
+  <div class="projects-header">
+    <!-- ✏️ Label e headline da seção de projetos -->
+    <p class="museo-label section-label reveal-header">Selected Work</p>
+    <h2 class="museo-headline section-headline reveal-header">
+      Projects That Define<br/>My Creative Journey
+    </h2>
+  </div>
+
+  <div class="projects-grid">
+    <!-- ✏️ PROJETO 1: edite src da imagem, data e título -->
+    <div class="project-card exhibit-card">
+      <div class="project-card-img-wrap">
+        <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/grid-space-waste.jpg" alt="Space Waste" />
+        <div class="project-card-overlay"></div>
+      </div>
+      <div class="project-card-text">
+        <p class="museo-label project-card-date">Game Design &amp; Direction — Vale</p>
+        <h3 class="museo-headline project-card-title">Space Waste</h3>
+      </div>
+      <div class="project-card-border"></div>
+    </div>
+
+    <!-- ✏️ PROJETO 2 -->
+    <div class="project-card exhibit-card">
+      <div class="project-card-img-wrap">
+        <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/grid-beat-it-up.jpg" alt="Beat It Up" />
+        <div class="project-card-overlay"></div>
+      </div>
+      <div class="project-card-text">
+        <p class="museo-label project-card-date">Game Development &amp; Art</p>
+        <h3 class="museo-headline project-card-title">Beat It Up</h3>
+      </div>
+      <div class="project-card-border"></div>
+    </div>
+
+    <!-- ✏️ PROJETO 3 -->
+    <div class="project-card exhibit-card">
+      <div class="project-card-img-wrap">
+        <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/grid-rios-paz.jpg" alt="Rios pela Paz" />
+        <div class="project-card-overlay"></div>
+      </div>
+      <div class="project-card-text">
+        <p class="museo-label project-card-date">Social Campaign — Governo do Pará</p>
+        <h3 class="museo-headline project-card-title">Rios pela Paz</h3>
+      </div>
+      <div class="project-card-border"></div>
+    </div>
+
+    <!-- ✏️ PROJETO 4 -->
+    <div class="project-card exhibit-card">
+      <div class="project-card-img-wrap">
+        <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/grid-naturalle.jpg" alt="Naturalle" />
+        <div class="project-card-overlay"></div>
+      </div>
+      <div class="project-card-text">
+        <p class="museo-label project-card-date">Brand Identity &amp; Packaging</p>
+        <h3 class="museo-headline project-card-title">Naturalle</h3>
+      </div>
+      <div class="project-card-border"></div>
+    </div>
+  </div>
+
+  <!-- ✏️ Texto do botão -->
+  <div class="projects-cta">
+    <button class="btn-outline museo-label">View All Projects</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FEATURED PROJECTS (stacking cards)
+══════════════════════════════════════════ -->
 <section id="featured">
+  <div class="featured-header">
+    <!-- ✏️ Label e headline dos featured -->
+    <p class="museo-label featured-label reveal-header">Featured Projects</p>
+    <h2 class="museo-headline featured-headline reveal-header">
+      Deep Dives Into<br/>Creative Process
+    </h2>
+  </div>
+
   <div class="stacking-cards">
-    <div class="stack-card" id="stack-0">
+    <!-- ✏️ FEATURED 1: edite src, ano, título, descrição -->
+    <div class="stack-card" id="stack-0" style="z-index:1">
       <div class="stack-card-inner">
-        <div class="stack-card-img"><img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/coll-space-waste.jpg" /></div>
-        <div class="stack-card-text"><h3 class="museo-headline stack-card-title coll-text-el">Space Waste</h3><p class="museo-body stack-card-desc coll-text-el">Game Jam Plus Award Winner.</p></div>
+        <div class="stack-card-img">
+          <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/coll-space-waste.jpg" alt="Space Waste" />
+        </div>
+        <div class="stack-card-text">
+          <p class="museo-label stack-card-year coll-text-el">2023</p>
+          <h3 class="museo-headline stack-card-title coll-text-el">Space Waste</h3>
+          <p class="museo-body stack-card-desc coll-text-el">
+            An arcade-style space shooter created for Vale, blending environmental education
+            with addictive gameplay. Awarded Best Narrative at Game Jam Plus.
+            Available on Nintendo Switch.
+          </p>
+          <button class="btn-dark museo-label coll-text-el">View Project <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12m0 0L8 2m5 5L8 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✏️ FEATURED 2 (imagem aparece à direita por causa da classe "reverse") -->
+    <div class="stack-card reverse" id="stack-1" style="z-index:2">
+      <div class="stack-card-inner">
+        <div class="stack-card-img">
+          <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/coll-caminito.jpg" alt="Caminito" />
+        </div>
+        <div class="stack-card-text">
+          <p class="museo-label stack-card-year coll-text-el">2022</p>
+          <h3 class="museo-headline stack-card-title coll-text-el">Caminito</h3>
+          <p class="museo-body stack-card-desc coll-text-el">
+            A vibrant visual identity celebrating Argentine culture through bold typography,
+            handcrafted textures, and a palette drawn from Buenos Aires street art.
+          </p>
+          <button class="btn-dark museo-label coll-text-el">View Project <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12m0 0L8 2m5 5L8 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✏️ FEATURED 3 -->
+    <div class="stack-card" id="stack-2" style="z-index:3">
+      <div class="stack-card-inner">
+        <div class="stack-card-img">
+          <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/coll-club4.jpg" alt="Club 4" />
+        </div>
+        <div class="stack-card-text">
+          <p class="museo-label stack-card-year coll-text-el">2021</p>
+          <h3 class="museo-headline stack-card-title coll-text-el">Club 4</h3>
+          <p class="museo-body stack-card-desc coll-text-el">
+            Complete art direction for an exclusive nightlife brand — logo, identity,
+            environmental design and digital presence. Dark, sophisticated with neon accents.
+          </p>
+          <button class="btn-dark museo-label coll-text-el">View Project <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12m0 0L8 2m5 5L8 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ✏️ FEATURED 4 -->
+    <div class="stack-card reverse" id="stack-3" style="z-index:4">
+      <div class="stack-card-inner">
+        <div class="stack-card-img">
+          <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/coll-fg.jpg" alt="Flavio Games" />
+        </div>
+        <div class="stack-card-text">
+          <p class="museo-label stack-card-year coll-text-el">2020</p>
+          <h3 class="museo-headline stack-card-title coll-text-el">Flavio Games</h3>
+          <p class="museo-body stack-card-desc coll-text-el">
+            The personal game development studio where experimental ideas become playable
+            realities — a sandbox for art-driven game design.
+          </p>
+          <button class="btn-dark museo-label coll-text-el">View Project <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12m0 0L8 2m5 5L8 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- ══════════════════════════════════════════
+     AWARDS
+══════════════════════════════════════════ -->
 <div id="testimonials-section">
 <section id="awards">
   <div class="awards-inner">
-    <blockquote class="museo-headline awards-quote reveal-item">"Best of Meio e Mensagem Regional Advertising."</blockquote>
+    <div class="awards-quote-icon reveal-item">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1">
+        <path d="M10 40 C10 20 20 12 32 12 C44 12 54 20 54 40"/>
+        <path d="M10 40 L10 52 L22 52 L22 40 Z M34 40 L34 52 L46 52 L46 40 Z"/>
+      </svg>
+    </div>
+    <!-- ✏️ Citação / prêmio -->
+    <blockquote class="museo-headline awards-quote reveal-item">
+      "Best of Meio e Mensagem Regional Advertising — recognized for pushing creative
+      boundaries in the Brazilian market with work that connects brands to culture
+      and creates meaningful impact through visual storytelling."
+    </blockquote>
+    <div class="awards-author reveal-item">
+      <div class="awards-avatar">
+        <!-- ✏️ Avatar: substitua pelo caminho da sua foto -->
+        <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/avatar-flavio.jpg" alt="Flavio Furtado" />
+      </div>
+      <div>
+        <!-- ✏️ Nome e cargo do prêmio -->
+        <p class="museo-headline awards-name">Best Narrative</p>
+        <p class="museo-label awards-title-text">Game Jam Plus Award Winner</p>
+      </div>
+    </div>
+    <div class="awards-line reveal-item"><div></div></div>
   </div>
 </section>
 </div>
 
+<!-- ══════════════════════════════════════════
+     CONTACT
+══════════════════════════════════════════ -->
 <section id="contact">
+  <div class="contact-header">
+    <!-- ✏️ Headline e descrição do contato -->
+    <p class="museo-label section-label">Get in Touch</p>
+    <h2 class="museo-headline contact-headline">Let's Create<br/>Something Together</h2>
+    <p class="museo-body contact-desc">
+      Whether it's a full campaign, a game concept, or a brand refresh — I'd love
+      to hear about your project and explore how we can create something extraordinary.
+    </p>
+  </div>
   <div class="contact-cards">
-    <div class="info-card"><h3 class="museo-headline info-card-title">Email</h3><p class="museo-body info-card-content">flaviofurtado@gmail.com</p></div>
-    <div class="info-card"><h3 class="museo-headline info-card-title">Location</h3><p class="museo-body info-card-content">Belem, Pará</p></div>
+    <!-- ✏️ CARD 1: e-mail -->
+    <div class="info-card">
+      <div class="info-card-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="8" width="24" height="16" rx="2"/><path d="M4 10 L16 18 L28 10"/></svg></div>
+      <h3 class="museo-headline info-card-title">Email</h3>
+      <p class="museo-body info-card-content">flaviofurtado@gmail.com</p>
+    </div>
+    <!-- ✏️ CARD 2: telefone -->
+    <div class="info-card">
+      <div class="info-card-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 6 C6 6 8 4 10 4 C12 4 14 8 14 8 C14 8 15 10 14 12 C13 14 12 14 12 14 C12 14 16 20 18 20 C18 20 18 19 20 18 C22 17 24 18 24 18 C24 18 28 20 28 22 C28 24 26 26 26 26 C24 28 6 20 6 6Z"/></svg></div>
+      <h3 class="museo-headline info-card-title">Phone</h3>
+      <p class="museo-body info-card-content">+55 91 98194-3695</p>
+    </div>
+    <!-- ✏️ CARD 3: localização -->
+    <div class="info-card">
+      <div class="info-card-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="16" cy="13" r="5"/><path d="M16 28 C16 28 6 20 6 13 C6 7 10.5 4 16 4 C21.5 4 26 7 26 13 C26 20 16 28 16 28Z"/></svg></div>
+      <h3 class="museo-headline info-card-title">Location</h3>
+      <p class="museo-body info-card-content">Belem, Pará<br/>Brazil</p>
+    </div>
+    <!-- ✏️ CARD 4: social -->
+    <div class="info-card">
+      <div class="info-card-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="16" cy="16" r="12"/><path d="M4 16 Q10 10 16 16 Q22 22 28 16"/><line x1="16" y1="4" x2="16" y2="28"/></svg></div>
+      <h3 class="museo-headline info-card-title">Social</h3>
+      <p class="museo-body info-card-content">WhatsApp, LinkedIn, Instagram</p>
+    </div>
   </div>
 </section>
 
+<!-- ══════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════ -->
 <div id="footer-section">
 <footer>
-  <div class="marquee-wrap"><div class="marquee-track"><span>FLAVIO FURTADO — ART DIRECTOR</span><span>FLAVIO FURTADO — ART DIRECTOR</span></div></div>
+  <!-- ✏️ MARQUEE: edite o texto que rola -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span>FLAVIO FURTADO — CREATIVE ART DIRECTOR</span>
+      <span>FLAVIO FURTADO — CREATIVE ART DIRECTOR</span>
+      <span>FLAVIO FURTADO — CREATIVE ART DIRECTOR</span>
+      <span>FLAVIO FURTADO — CREATIVE ART DIRECTOR</span>
+    </div>
+  </div>
+  <div class="footer-content">
+    <div class="footer-grid">
+      <div>
+        <!-- ✏️ Nome e descrição do footer -->
+        <h3 class="museo-headline footer-brand-name">Flavio Furtado</h3>
+        <p class="museo-body footer-brand-desc">
+          Creative Art Director specializing in game design, brand identity,
+          illustration, and UI/UX. Transforming ideas into visual experiences.
+        </p>
+        <!-- ✏️ REDES SOCIAIS DO FOOTER: edite os href -->
+        <div class="footer-socials">
+          <a href="https://instagram.com/flaviofurtado" class="footer-social-btn museo-label" target="_blank">Ig</a>
+          <a href="https://linkedin.com/in/flaviofurtado" class="footer-social-btn museo-label" target="_blank">Li</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4 class="museo-label footer-col-title">Quick Links</h4>
+        <ul>
+          <!-- ✏️ Links de navegação do footer -->
+          <li><a href="#projects" class="museo-body">Work</a></li>
+          <li><a href="#about"    class="museo-body">About</a></li>
+          <li><a href="#featured" class="museo-body">Featured</a></li>
+          <li><a href="#contact"  class="museo-body">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 class="museo-label footer-col-title">Contact</h4>
+        <ul>
+          <!-- ✏️ Dados de contato do footer -->
+          <li><span class="footer-contact-item museo-body">flaviofurtado@gmail.com</span></li>
+          <li><span class="footer-contact-item museo-body">+55 91 98194-3695</span></li>
+          <li><span class="footer-contact-item museo-body">Belem, Pará — Brazil</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <!-- ✏️ Ano e links legais -->
+      <p class="museo-body">2024 Flavio Furtado. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="#" class="museo-label">Privacy</a>
+        <a href="#" class="museo-label">Terms</a>
+      </div>
+    </div>
+  </div>
 </footer>
 </div>
 
+<!-- ══════════════════════════════════════════
+     JAVASCRIPT — GSAP Animations
+══════════════════════════════════════════ -->
 <script>
   gsap.registerPlugin(ScrollTrigger);
 
   // Cursor
   const cursor = document.getElementById('cursor');
-  document.addEventListener('mousemove', e => {
-    gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.1 });
+  let mouseX = 0, mouseY = 0, curX = 0, curY = 0;
+  document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+  (function loop() {
+    curX += (mouseX - curX) * 0.15;
+    curY += (mouseY - curY) * 0.15;
+    cursor.style.left = curX + 'px';
+    cursor.style.top  = curY + 'px';
+    requestAnimationFrame(loop);
+  })();
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
   });
 
-  // Entrada Hero
-  const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-  tl.from('#hero-portrait', { opacity: 0, y: 50, duration: 1.2 })
-    .from('#hero-name-left', { opacity: 0, x: 50, duration: 1 }, "-=0.8")
-    .from('#hero-name-right', { opacity: 0, x: -50, duration: 1 }, "-=1")
-    .from('#hero-concept, #hero-nav, #hero-sides, #hero-bottom', { opacity: 0, y: 20, stagger: 0.1 }, "-=0.5");
-
-  // Transições de Fundo
+  // Transições de cor por seção
   [
-    ['#hero-section', '#9b9b93'],
-    ['#about', '#050505'],
-    ['#featured', '#f0f0f0'],
-    ['#contact', '#050505']
+    ['#hero-section',         '#9b9b93'],
+    ['#about',                '#050505'],
+    ['#projects',             '#050505'],
+    ['#featured',             '#f0f0f0'],
+    ['#testimonials-section', '#9b9b93'],
+    ['#contact',              '#050505'],
+    ['#footer-section',       '#9b9b93'],
   ].forEach(([sel, color]) => {
+    const el = document.querySelector(sel);
+    if (!el) return;
     ScrollTrigger.create({
-      trigger: sel, start: 'top 60%',
-      onEnter: () => gsap.to('body', { backgroundColor: color }),
-      onEnterBack: () => gsap.to('body', { backgroundColor: color })
+      trigger: el, start: 'top 60%', end: 'bottom 40%',
+      onEnter:     () => gsap.to('body', { backgroundColor: color, duration: 0.6, ease: 'power2.out' }),
+      onEnterBack: () => gsap.to('body', { backgroundColor: color, duration: 0.6, ease: 'power2.out' }),
+    });
+  });
+
+  // ── Hero: entrada dos elementos ────────────────────────
+  const nameLeft  = document.getElementById('hero-name-left');
+  const nameRight = document.getElementById('hero-name-right');
+  const portrait  = document.getElementById('hero-portrait');
+  const heroNav   = document.getElementById('hero-nav');
+  const heroConcept = document.getElementById('hero-concept');
+  const heroBadge = document.getElementById('hero-badge');
+  const heroSides = document.getElementById('hero-sides');
+  const heroBottom = document.getElementById('hero-bottom');
+
+  // Estado inicial — nomes saem de trás da foto ao entrar
+  // Os nomes começam "dentro" da foto (escala pequena, sem offset)
+  // e se revelam deslizando para os lados
+  gsap.set(nameLeft,    { opacity: 0, x: 80,  clipPath: 'inset(0 0 0 100%)' });
+  gsap.set(nameRight,   { opacity: 0, x: -80, clipPath: 'inset(0 100% 0 0)' });
+  gsap.set(portrait,    { opacity: 0, y: 40, scale: 1.06 });
+  gsap.set(heroConcept, { opacity: 0, y: -20 });
+  gsap.set(heroBadge,   { opacity: 0, y: 12 });
+  gsap.set(heroNav,     { opacity: 0, y: -16 });
+  gsap.set(heroSides,   { opacity: 0 });
+  gsap.set(heroBottom,  { opacity: 0 });
+
+  // Timeline: foto entra primeiro, depois os nomes "saem de trás" dela
+  gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 0.2 })
+    .to(heroNav,     { opacity: 1, y: 0, duration: 0.6 })
+    .to(portrait,    { opacity: 1, y: 0, scale: 1, duration: 1.2 }, '-=0.3')
+    .to(heroConcept, { opacity: 1, y: 0, duration: 0.8 }, '-=0.8')
+    // Nomes revelam depois da foto, como se emergissem de trás dela
+    .to(nameLeft,    { opacity: 1, x: 0, clipPath: 'inset(0 0% 0 0)', duration: 1.1, ease: 'power2.out' }, '-=0.4')
+    .to(nameRight,   { opacity: 1, x: 0, clipPath: 'inset(0 0 0 0%)', duration: 1.1, ease: 'power2.out' }, '<')
+    .to(heroBadge,   { opacity: 1, y: 0, duration: 0.5 }, '-=0.5')
+    .to(heroSides,   { opacity: 1, duration: 0.5 }, '-=0.3')
+    .to(heroBottom,  { opacity: 1, duration: 0.4 }, '-=0.2');
+
+  // Parallax ao rolar
+  ScrollTrigger.create({
+    trigger: document.getElementById('hero'),
+    start: 'top top', end: 'bottom top', scrub: 0.6,
+    onUpdate: self => {
+      const p = self.progress;
+      gsap.set(portrait,  { y: p * 80 });
+      gsap.set(nameLeft,  { y: p * 160, x: p * -40 });
+      gsap.set(nameRight, { y: p * 140, x: p * 40 });
+      gsap.set(heroConcept, { y: p * 120 });
+      gsap.set(heroBadge,   { y: p * 60 });
+    },
+  });
+
+  // ── Reveal textos genéricos ────────────────────────────
+  document.querySelectorAll('.reveal-text, .reveal-header').forEach(el => {
+    gsap.set(el, { opacity: 0, y: 40 });
+    ScrollTrigger.create({
+      trigger: el, start: 'top 85%',
+      onEnter: () => gsap.to(el, { opacity: 1, y: 0, duration: 1, ease: 'power3.out' }),
+    });
+  });
+
+  // ── Galeria About: parallax por coluna ────────────────
+  const galleryGrid = document.querySelector('.gallery-grid');
+  if (galleryGrid) {
+    document.querySelectorAll('.gallery-col').forEach(col => {
+      const speed = parseFloat(col.dataset.speed || '0');
+      ScrollTrigger.create({
+        trigger: galleryGrid, start: 'top bottom', end: 'bottom top', scrub: 0.5,
+        onUpdate: s => gsap.set(col, { y: s.progress * speed }),
+      });
+    });
+    document.querySelectorAll('.gallery-img-wrap').forEach(wrap => {
+      const offset = parseFloat(wrap.dataset.offset || '0');
+      gsap.set(wrap, { opacity: 0.4, y: offset });
+      ScrollTrigger.create({
+        trigger: wrap, start: 'top 92%', end: 'top 40%', scrub: 0.6,
+        onUpdate: s => gsap.set(wrap, { opacity: 0.4 + s.progress * 0.6, y: offset * (1 - s.progress) }),
+      });
+    });
+  }
+
+  // ── Stats ──────────────────────────────────────────────
+  document.querySelectorAll('.stat-item').forEach((el, i) => {
+    gsap.set(el, { opacity: 0, y: 40 });
+    ScrollTrigger.create({
+      trigger: el, start: 'top 90%',
+      onEnter: () => gsap.to(el, { opacity: 1, y: 0, duration: 0.8, delay: i * 0.1, ease: 'power3.out' }),
+    });
+  });
+
+  // ── Project cards ──────────────────────────────────────
+  document.querySelectorAll('.exhibit-card').forEach((card, i) => {
+    const yOff = [0, 100, 200, 300][i] || 0;
+    gsap.set(card, { opacity: 0.4, y: yOff });
+    ScrollTrigger.create({
+      trigger: card, start: 'top 95%', end: 'top 30%', scrub: 0.5,
+      onUpdate: s => gsap.set(card, { opacity: 0.4 + s.progress * 0.6, y: yOff * (1 - s.progress) }),
+    });
+  });
+
+  // ── Stacking cards ─────────────────────────────────────
+  const stackCards = Array.from(document.querySelectorAll('.stack-card'));
+  stackCards.forEach((card, i) => {
+    if (i === stackCards.length - 1) return;
+    ScrollTrigger.create({
+      trigger: card, start: 'top top',
+      endTrigger: stackCards[i + 1], end: 'top top',
+      pin: true, pinSpacing: false,
+    });
+    ScrollTrigger.create({
+      trigger: stackCards[i + 1], start: 'top bottom', end: 'top top', scrub: 0.3,
+      onUpdate: s => gsap.set(card, { scale: 1 - s.progress * 0.05, filter: `brightness(${1 - s.progress * 0.3})` }),
+    });
+  });
+  stackCards.forEach(card => {
+    card.querySelectorAll('.coll-text-el').forEach((el, i) => {
+      gsap.set(el, { opacity: 0, y: 30 });
+      ScrollTrigger.create({
+        trigger: card, start: 'top 60%',
+        onEnter: () => gsap.to(el, { opacity: 1, y: 0, duration: 0.7, delay: 0.15 + i * 0.08, ease: 'power3.out' }),
+      });
+    });
+  });
+
+  // ── Awards ─────────────────────────────────────────────
+  document.querySelectorAll('.reveal-item').forEach((el, i) => {
+    gsap.set(el, { opacity: 0, y: 30 });
+    ScrollTrigger.create({
+      trigger: el, start: 'top 85%',
+      onEnter: () => gsap.to(el, { opacity: 1, y: 0, duration: 0.8, delay: i * 0.1, ease: 'power3.out' }),
+    });
+  });
+
+  // ── Contact cards ──────────────────────────────────────
+  document.querySelectorAll('.info-card').forEach((card, i) => {
+    gsap.set(card, { opacity: 0, y: 40 });
+    ScrollTrigger.create({
+      trigger: card, start: 'top 85%',
+      onEnter: () => gsap.to(card, { opacity: 1, y: 0, duration: 0.6, delay: i * 0.15, ease: 'power3.out' }),
     });
   });
 </script>
