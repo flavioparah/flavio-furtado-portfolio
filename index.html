@@ -31,14 +31,14 @@
     .serif-italic { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 300; text-transform: lowercase; }
 
     /* Animações de Máscara */
-    .mask-v { clip-path: inset(100% 0 0 0); display: block; transition: clip-path 1s ease; }
-    .mask-h { clip-path: inset(0 100% 0 0); display: block; transition: clip-path 1s ease; }
+    .mask-v { clip-path: inset(100% 0 0 0); display: block; transition: clip-path 0.6s cubic-bezier(0.19, 1, 0.22, 1); }
+    .mask-h { clip-path: inset(0 100% 0 0); display: block; transition: clip-path 0.6s cubic-bezier(0.19, 1, 0.22, 1); }
 
     section { position: relative; width: 100%; min-height: 100vh; z-index: 10; display: flex; flex-direction: column; justify-content: center; padding: 15vh 8vw; mix-blend-mode: exclusion; border-bottom: 1px solid rgba(255,255,255,0.05); }
     
     .tag { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.6em; opacity: 0.5; margin-bottom: 1.5rem; display: block; }
     
-    /* Box de Imagem com Reveal */
+    /* Box de Imagem */
     .img-box { position: relative; width: 100%; height: 70vh; overflow: hidden; background: #111; margin: 3rem 0; clip-path: inset(0 100% 0 0); border-radius: 2px; }
     .img-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transform: scale(1.2); }
 
@@ -47,12 +47,12 @@
     .side-dot { width: 6px; height: 6px; border: 1px solid white; border-radius: 50%; transition: all 0.3s ease; cursor: pointer; }
     .side-dot.active { background: white; height: 20px; border-radius: 10px; }
 
-    /* Links de Seção Brutalistas */
+    /* Links de Seção */
     .section-link {
       display: inline-flex;
       align-items: center;
       gap: 1rem;
-      margin-top: 2rem;
+      margin-top: 1rem;
       padding: 1rem 2.5rem;
       border: 1px solid rgba(255,255,255,0.3);
       font-size: 11px;
@@ -70,6 +70,21 @@
     }
 
     #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: #fff; width: 0%; z-index: 1000; }
+
+    .insight-card {
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 2rem;
+      transition: all 0.4s ease;
+      cursor: pointer;
+      display: block;
+      text-decoration: none;
+      color: inherit;
+    }
+    .insight-card:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.6);
+      transform: translateY(-5px);
+    }
   </style>
 </head>
 <body>
@@ -79,7 +94,6 @@
   <div id="cursor-follower"></div>
   <div id="canvas-container"></div>
 
-  <!-- Navegação Lateral -->
   <div class="side-nav hidden lg:flex">
     <a href="#hero" class="side-dot"></a>
     <a href="#awards" class="side-dot"></a>
@@ -90,6 +104,7 @@
     <a href="#uiux" class="side-dot"></a>
     <a href="#ongs" class="side-dot"></a>
     <a href="#philosophy" class="side-dot"></a>
+    <a href="#insights" class="side-dot"></a>
     <a href="#about" class="side-dot"></a>
     <a href="#contact" class="side-dot"></a>
   </div>
@@ -99,6 +114,7 @@
     <nav class="flex flex-col gap-2 text-right text-[10px] font-black uppercase tracking-widest opacity-60">
       <a href="#hero" class="hover:opacity-100">Valor</a>
       <a href="#games" class="hover:opacity-100">Projetos</a>
+      <a href="#insights" class="hover:opacity-100">Insights</a>
       <a href="#about" class="hover:opacity-100">Perfil</a>
     </nav>
   </header>
@@ -132,7 +148,6 @@
           <p class="text-sm opacity-40 uppercase tracking-widest mt-2">Melhor Design de Narrativa — Ghostein</p>
         </div>
       </div>
-      <!-- LINK DA SESSÃO -->
       <a href="https://hackernoon.com" target="_blank" class="section-link">Ver Premiação</a>
     </section>
 
@@ -142,7 +157,6 @@
       <div class="img-box"><img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070" alt="Game Design Context"></div>
       <div class="mask-h"><h2 class="giant-title">GAMES</h2></div>
       <p class="max-w-xl text-xl font-light opacity-60 mt-6">Narrativa cinemática e gameplay visceral. Fundador da Parampara Game Studio.</p>
-      <!-- LINK DA SESSÃO -->
       <a href="https://parampara.studio" target="_blank" class="section-link">Explore Parampara</a>
     </section>
 
@@ -153,8 +167,7 @@
       <div class="img-box h-[50vh]"><img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=2074" alt="Advertising Portfolio"></div>
       <div class="text-right">
         <p class="text-3xl font-light italic serif-italic">Liderança criativa em grandes agências.</p>
-        <!-- LINK DA SESSÃO -->
-        <a href="#" class="section-link">Portfólio Criativo</a>
+        <a href="portfolio-ad.html" class="section-link">Portfólio Criativo</a>
       </div>
     </section>
 
@@ -163,11 +176,22 @@
       <span class="tag">05 Novos Negócios</span>
       <div class="img-box h-[40vh]"><img src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?q=80&w=2070" alt="Startup Innovation"></div>
       <div class="mask-h"><h2 class="giant-title">STARTUPS</h2></div>
-      <div class="mt-8 space-y-4">
-        <h3 class="text-4xl font-black">PYROLYZER</h3>
-        <p class="opacity-50 uppercase tracking-[0.3em]">Transformando resíduos em riqueza (pyzcoin.org)</p>
-        <!-- LINK DA SESSÃO -->
-        <a href="https://pyzcoin.org" target="_blank" class="section-link">Aceder Pyrolyzer</a>
+      
+      <!-- Container das Startups -->
+      <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-12">
+        <!-- Startup 01 -->
+        <div class="space-y-4">
+          <h3 class="text-4xl font-black">PYROLYZER</h3>
+          <p class="opacity-50 uppercase tracking-[0.3em] text-xs">Transformando resíduos em riqueza.</p>
+          <a href="https://pyzcoin.org" target="_blank" class="section-link">Aceder Pyrolyzer</a>
+        </div>
+        
+        <!-- Startup 02 (Nova) -->
+        <div class="space-y-4">
+          <h3 class="text-4xl font-black">ATMAI</h3>
+          <p class="opacity-50 uppercase tracking-[0.3em] text-xs">Inteligência aplicada e design de alma.</p>
+          <a href="https://atmai.me" target="_blank" class="section-link">Aceder Atmai</a>
+        </div>
       </div>
     </section>
 
@@ -179,57 +203,66 @@
         <div>
           <div class="mask-v"><h2 class="text-7xl md:text-9xl font-black">ART</h2></div>
           <div class="mask-v"><h2 class="text-7xl md:text-9xl font-black serif-italic">craft</h2></div>
-          <!-- LINK DA SESSÃO -->
-          <a href="#" class="section-link">Ver Galeria</a>
+          <a href="ilustrações.html" class="section-link">Ver Galeria</a>
         </div>
       </div>
-    </section>
-
-    <!-- 07. UI/UX -->
-    <section id="uiux">
-      <span class="tag">07 Sistemas Digitais</span>
-      <div class="mask-v"><h2 class="giant-title text-center">UI / UX</h2></div>
-      <div class="img-box h-[50vh]"><img src="https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=1964" alt="UI Design"></div>
-      <div class="text-center mt-10">
-        <p class="uppercase tracking-[0.5em] opacity-40">A alma da forma digital é a função.</p>
-        <!-- LINK DA SESSÃO -->
-        <a href="#" class="section-link">Case Studies</a>
-      </div>
-    </section>
-
-    <!-- 08. ONGS -->
-    <section id="ongs">
-      <span class="tag">08 Impacto Social</span>
-      <div class="mask-h"><h2 class="text-[14vw] font-black leading-none">ONGS</h2></div>
-      <div class="img-box h-[40vh]"><img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070" alt="Social Impact"></div>
-      <p class="text-4xl font-light serif-italic opacity-70">Design como ferramenta de mudança sistémica.</p>
-      <!-- LINK DA SESSÃO -->
-      <a href="#" class="section-link">Projectos Sociais</a>
     </section>
 
     <!-- 09. FILOSOFIA -->
     <section id="philosophy">
       <span class="tag">09 Ethos Humano</span>
       <div class="text-center py-20">
-        <div class="mask-v"><h2 class="giant-title">VALOR</h2></div>
-        <p class="text-3xl md:text-5xl font-light leading-snug opacity-70 mt-10">
+        <div class="mask-v"><h2 class="giant-title">FILOSOFIA</h2></div>
+        <p class="max-w-3xl mx-auto text-xl font-light opacity-60 leading-relaxed mt-10">
           "Transformar desafios em oportunidades através da inovação que gera valor positivo."
         </p>
-        <div class="img-box h-[40vh] mt-10"><img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=2070" alt="Philosophy"></div>
+        <div class="img-box h-[40vh] mt-10"><img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=2070" alt="Filosofia Criativa"></div>
+        <p class="text-[10px] uppercase tracking-[0.4em] opacity-40 max-w-2xl mx-auto mb-8">
+          Explora o manifesto completo e a visão estratégica sobre design e impacto.
+        </p>
+        <a href="https://flaviofurtado.com.br" target="_blank" class="section-link">Aceder Manifesto</a>
       </div>
     </section>
 
-    <!-- 10. SOBRE -->
+    <!-- 10. INSIGHTS -->
+    <section id="insights">
+      <span class="tag">10 Pensamento Crítico</span>
+      <div class="mask-h"><h2 class="giant-title serif-italic">insights</h2></div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+        
+        <a href="https://flaviofurtado.com.br/artigo-01" target="_blank" class="insight-card">
+          <span class="text-[9px] opacity-40">INSIGHT — 01</span>
+          <h4 class="text-xl font-black mt-4 mb-2 uppercase">Percepção é Realidade</h4>
+          <p class="text-xs opacity-50 leading-relaxed uppercase tracking-widest">Como a estética define o valor de mercado de uma startup.</p>
+        </a>
+
+        <a href="https://flaviofurtado.com.br/artigo-02" target="_blank" class="insight-card">
+          <span class="text-[9px] opacity-40">INSIGHT — 02</span>
+          <h4 class="text-xl font-black mt-4 mb-2 uppercase">IA & Curadoria</h4>
+          <p class="text-xs opacity-50 leading-relaxed uppercase tracking-widest">A inteligência artificial não substitui o gosto.</p>
+        </a>
+
+        <a href="https://flaviofurtado.com.br/artigo-03" target="_blank" class="insight-card">
+          <span class="text-[9px] opacity-40">INSIGHT — 03</span>
+          <h4 class="text-xl font-black mt-4 mb-2 uppercase">Valor Sistémico</h4>
+          <p class="text-xs opacity-50 leading-relaxed uppercase tracking-widest">Resolver problemas globais exige empatia.</p>
+        </a>
+
+      </div>
+      <div class="img-box h-[30vh] mt-12"><img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070" alt="Tech and Digital Insights"></div>
+      <a href="https://flaviofurtado.com.br" target="_blank" class="section-link">Ler Todos os Insights</a>
+    </section>
+
+    <!-- 11. SOBRE -->
     <section id="about">
-      <span class="tag">10 Perfil</span>
+      <span class="tag">11 Perfil</span>
       <div class="grid grid-cols-12 gap-10">
         <div class="col-span-12 lg:col-span-7">
           <div class="mask-v"><h2 class="text-6xl font-black mb-8">DIREÇÃO DE ARTE<br>& INOVAÇÃO</h2></div>
           <div class="space-y-6 text-lg opacity-60 leading-relaxed font-light">
-            <p>Empreendedor criativo com sólida formação pela <strong>Miami Ad School SP</strong>. Especialista em propostas de valor para o futuro.</p>
-            <p>Expertise em <strong>Jogos, IA, Web3 e Blockchain</strong>. Um perfil generalista focado em direção criativa e impacto global.</p>
+            <p>Empreendedor criativo com sólida formação pela <strong>Miami Ad School SP</strong>.</p>
           </div>
-          <a href="https://linkedin.com" target="_blank" class="section-link">LinkedIn Perfil</a>
+          <a href="https://www.linkedin.com/in/flaviofurtado/" target="_blank" class="section-link">LinkedIn Perfil</a>
         </div>
         <div class="col-span-12 lg:col-span-5">
            <div class="img-box !h-[60vh] !m-0 grayscale"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974" alt="Flavio Furtado Profile"></div>
@@ -237,7 +270,7 @@
       </div>
     </section>
 
-    <!-- 11. CONTATO -->
+    <!-- 12. CONTATO -->
     <footer id="contact" class="min-h-screen flex flex-col justify-center items-center p-8 relative z-10 mix-blend-exclusion">
       <span class="tag">Disponível para Parcerias</span>
       <div class="mask-v text-center">
@@ -256,7 +289,7 @@
     function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
     requestAnimationFrame(raf);
 
-    // 2. Cursor Blend Mode
+    // 2. Cursor
     const cursor = document.getElementById('cursor');
     const follower = document.getElementById('cursor-follower');
     window.addEventListener('mousemove', (e) => {
@@ -264,83 +297,46 @@
       gsap.to(follower, { x: e.clientX - 20, y: e.clientY - 20, duration: 0.15 });
     });
 
-    // 3. Three.js - Objeto Massivo Inicial
+    // 3. Three.js Background
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     document.getElementById('canvas-container').appendChild(renderer.domElement);
 
     const geometry = new THREE.TorusKnotGeometry(4, 1.2, 150, 20);
-    const material = new THREE.MeshNormalMaterial({ wireframe: true, transparent: true, opacity: 0.15 });
+    const material = new THREE.MeshNormalMaterial({ wireframe: true, transparent: true, opacity: 0.1 });
     const torus = new THREE.Mesh(geometry, material);
     scene.add(torus);
-    
-    // Escala massiva no início
     torus.scale.set(10, 10, 10);
     camera.position.z = 20;
-
-    // Pixel Stream
-    const pCount = 1000;
-    const pGeo = new THREE.BufferGeometry();
-    const pPos = new Float32Array(pCount * 3);
-    for(let i=0; i<pCount*3; i++) pPos[i] = (Math.random() - 0.5) * 50;
-    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-    const pMat = new THREE.PointsMaterial({ size: 0.05, color: 0xffffff, transparent: true, opacity: 0.3 });
-    const pixels = new THREE.Points(pGeo, pMat);
-    scene.add(pixels);
 
     // 4. GSAP ScrollTrigger
     gsap.registerPlugin(ScrollTrigger);
 
-    // Redução do Torus massivo para escala normal
-    gsap.to(torus.scale, {
-      x: 0.5, y: 0.5, z: 0.5,
-      scrollTrigger: { trigger: 'main', start: 'top top', end: 'bottom bottom', scrub: 1 }
-    });
-
-    gsap.to(torus.rotation, {
-      x: Math.PI * 2, y: Math.PI * 4,
-      scrollTrigger: { trigger: 'main', start: 'top top', end: 'bottom bottom', scrub: 1.5 }
-    });
-
-    // Revelação das Imagens e Máscaras
+    // Imagens: Revelação
     gsap.utils.toArray('.img-box').forEach(box => {
       gsap.to(box, {
         clipPath: 'inset(0 0% 0 0)',
-        scrollTrigger: { trigger: box, start: 'top 80%', end: 'top 30%', scrub: 1 }
-      });
-      gsap.to(box.querySelector('img'), {
-        scale: 1, y: -20,
-        scrollTrigger: { trigger: box, scrub: true }
+        scrollTrigger: { trigger: box, start: 'top 85%', end: 'top 40%', scrub: 1 }
       });
     });
 
+    // Títulos: Mascaramento Reativo
     gsap.utils.toArray('.mask-v, .mask-h').forEach(el => {
       gsap.to(el, {
         clipPath: el.classList.contains('mask-v') ? 'inset(0% 0 0 0)' : 'inset(0 0% 0 0)',
-        scrollTrigger: { trigger: el, start: 'top 95%', end: 'top 60%', scrub: 1 }
-      });
-    });
-
-    // Side Nav e Progresso
-    window.addEventListener('scroll', () => {
-      const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
-      document.getElementById('progress-bar').style.width = scrolled + '%';
-      
-      let current = "";
-      document.querySelectorAll('section, footer').forEach(s => {
-        if(pageYOffset >= s.offsetTop - 300) current = s.getAttribute('id');
-      });
-      document.querySelectorAll('.side-dot').forEach(d => {
-        d.classList.toggle('active', d.getAttribute('href') === `#${current}`);
+        scrollTrigger: { 
+          trigger: el, 
+          start: 'top 95%', 
+          end: 'top 75%',   
+          scrub: 0.5        
+        }
       });
     });
 
     function animate() {
-      torus.rotation.z += 0.002;
-      pixels.rotation.y += 0.0005;
+      torus.rotation.z += 0.001;
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     }
