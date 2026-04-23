@@ -3,416 +3,372 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flavio Furtado — Creative Entrepreneur</title>
+  <title>Flavio Furtado — Valor & Percepção</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;400;900&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;900&family=Playfair+Display:ital,wght@1,300&display=swap" rel="stylesheet" />
   
-  <!-- Dependências Críticas -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    :root {
-      --bg: #050505;
-      --fg: #ffffff;
-      --accent: #9b9b93;
-    }
+    :root { --bg: #030303; --fg: #ffffff; }
+    body { background-color: var(--bg); color: var(--fg); font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg);
-      color: var(--fg);
-      margin: 0;
-      overflow-x: hidden;
-      overscroll-behavior: none;
-    }
+    /* Wonjyou Smoothness */
+    html.lenis { height: auto; }
+    .lenis.lenis-smooth { scroll-behavior: auto; }
 
-    #canvas-container {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: -1;
-      pointer-events: none;
-    }
+    #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
 
-    .font-serif { font-family: 'Playfair Display', serif; }
+    /* Cursor Moderno */
+    #cursor { position: fixed; width: 6px; height: 6px; background: #fff; border-radius: 50%; pointer-events: none; z-index: 9999; mix-blend-mode: difference; }
+    #cursor-follower { position: fixed; width: 34px; height: 34px; border: 1px solid rgba(255,255,255,0.4); border-radius: 50%; pointer-events: none; z-index: 9998; transition: transform 0.08s linear; }
 
-    /* ── LAYOUT DE STACKING 3D ────────────────────────── */
-    .viewport {
-      position: relative;
-      width: 100%;
-    }
+    /* Tipografia Brutalista */
+    .giant-title { font-size: clamp(3rem, 14vw, 20rem); font-weight: 900; line-height: 0.8; letter-spacing: -0.06em; text-transform: uppercase; }
+    .serif-italic { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 300; text-transform: lowercase; }
 
-    .stack-section {
-      height: 100vh;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: sticky;
-      top: 0;
-      overflow: hidden;
-      padding: 0 5vw;
-    }
+    /* Revelações de Texto */
+    .mask-v { clip-path: inset(100% 0 0 0); display: block; }
+    .mask-h { clip-path: inset(0 100% 0 0); display: block; }
 
-    .content-wrapper {
-      width: 100%;
-      max-width: 1400px;
-      position: relative;
-      z-index: 2;
-    }
+    section { position: relative; width: 100%; min-height: 100vh; z-index: 10; display: flex; flex-direction: column; justify-content: center; padding: 15vh 8vw; mix-blend-mode: exclusion; border-bottom: 1px solid rgba(255,255,255,0.03); }
+    
+    .tag { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.6em; opacity: 0.5; margin-bottom: 1.5rem; display: block; }
+    
+    /* Imagens estilizadas */
+    .img-box { position: relative; width: 100%; height: 65vh; overflow: hidden; background: #111; margin: 4rem 0; clip-path: inset(0 100% 0 0); border-radius: 4px; }
+    .img-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transform: scale(1.4); transition: transform 0.3s ease-out; }
 
-    /* ── TEXTO RESPONSIVO ─────────────────────────────── */
-    .hero-title {
-      font-size: clamp(2.5rem, 10vw, 12rem);
-      line-height: 0.85;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: -0.05em;
-    }
+    /* Navegação */
+    .nav-link { font-weight: 900; font-size: 10px; text-transform: uppercase; tracking-widest: 0.4em; transition: opacity 0.3s; }
+    .side-nav { position: fixed; right: 2rem; top: 50%; transform: translateY(-50%); z-index: 100; display: flex; flex-direction: column; gap: 0.8rem; mix-blend-mode: difference; }
+    .side-dot-container { display: flex; align-items: center; justify-content: flex-end; gap: 10px; group; }
+    .side-dot-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.2em; opacity: 0; transform: translateX(10px); transition: all 0.3s ease; pointer-events: none; }
+    .side-dot-container:hover .side-dot-label { opacity: 0.5; transform: translateX(0); }
+    .side-dot { width: 6px; height: 6px; border: 1px solid white; border-radius: 50%; transition: all 0.3s ease; cursor: pointer; }
+    .side-dot:hover { background: white; transform: scale(1.5); }
+    .side-dot.active { background: white; height: 18px; border-radius: 10px; }
 
-    .sub-title {
-      font-size: clamp(0.7rem, 1.5vw, 1rem);
-      text-transform: uppercase;
-      letter-spacing: 0.5em;
-      opacity: 0.4;
-      margin-bottom: 2rem;
-      display: block;
-    }
-
-    /* ── BOTÕES E LINKS ───────────────────────────────── */
-    .btn-action {
-      display: inline-flex;
-      align-items: center;
-      gap: 1rem;
-      margin-top: 2rem;
-      padding: 1rem 2rem;
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 3rem;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-      background: rgba(255,255,255,0.02);
-      backdrop-filter: blur(5px);
-    }
-
-    .btn-action:hover {
-      background: var(--fg);
-      color: var(--bg);
-      border-color: var(--fg);
-      transform: translateY(-5px);
-    }
-
-    .link-underlined {
-      position: relative;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.2em;
-      opacity: 0.6;
-      transition: opacity 0.3s;
-    }
-
-    .link-underlined::after {
-      content: '';
-      position: absolute;
-      bottom: -5px; left: 0;
-      width: 0%; height: 1px;
-      background: currentColor;
-      transition: width 0.3s;
-    }
-
-    .link-underlined:hover { opacity: 1; }
-    .link-underlined:hover::after { width: 100%; }
-
-    /* ── ELEMENTOS DE IMAGEM IMERSIVOS ─────────────────── */
-    .media-box {
-      position: absolute;
-      width: 35vw;
-      height: 50vh;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      border-radius: 1rem;
-      overflow: hidden;
-      box-shadow: 0 50px 100px rgba(0,0,0,0.5);
-      z-index: 1;
-    }
-
-    .media-box img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      filter: saturate(0);
-      transition: filter 0.8s ease;
-    }
-
-    .stack-section:hover .media-box img {
-      filter: saturate(1);
-    }
-
-    /* ── GRID DE PREMIOS ──────────────────────────────── */
-    .award-card {
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.05);
-      padding: 2.5rem;
-      border-radius: 1.5rem;
-      backdrop-filter: blur(10px);
-      transition: transform 0.4s;
-    }
-    .award-card:hover { transform: translateY(-10px); }
-
-    /* ── UTILS ────────────────────────────────────────── */
-    .text-stroke {
-      color: transparent;
-      -webkit-text-stroke: 1px rgba(255,255,255,0.3);
-    }
-
-    @media (max-width: 1024px) {
-      .media-box {
-        position: relative;
-        width: 100%;
-        height: 35vh;
-        right: auto;
-        top: auto;
-        transform: none;
-        margin-top: 3rem;
-      }
-      .stack-section {
-        flex-direction: column;
-        justify-content: center;
-        height: auto;
-        min-height: 100vh;
-        padding: 120px 5vw;
-      }
-    }
+    /* Ajuste para textos */
+    .reveal-content { opacity: 0; transform: translateY(30px); }
+    
+    .award-card { border-top: 1px solid rgba(255,255,255,0.1); padding: 2rem 0; }
   </style>
 </head>
 <body>
 
+  <div id="cursor"></div>
+  <div id="cursor-follower"></div>
   <div id="canvas-container"></div>
 
-  <!-- NAVEGAÇÃO -->
-  <header class="fixed top-0 left-0 w-full p-8 z-[100] flex justify-between items-center mix-blend-difference">
-    <div class="text-xl font-black tracking-tighter">F. FURTADO</div>
-    <div class="flex gap-10">
-      <a href="#awards" class="link-underlined hidden md:block">Prêmios</a>
-      <a href="#work" class="link-underlined hidden md:block">Projetos</a>
-      <a href="#contact" class="link-underlined">Contacto</a>
-    </div>
+  <!-- Navegação Lateral (Todas as 11 sessões) -->
+  <div class="side-nav hidden lg:flex">
+    <a href="#hero" class="side-dot-container"><span class="side-dot-label">Conceito</span><div class="side-dot"></div></a>
+    <a href="#awards" class="side-dot-container"><span class="side-dot-label">Prêmios</span><div class="side-dot"></div></a>
+    <a href="#games" class="side-dot-container"><span class="side-dot-label">Games</span><div class="side-dot"></div></a>
+    <a href="#ad" class="side-dot-container"><span class="side-dot-label">Propaganda</span><div class="side-dot"></div></a>
+    <a href="#startups" class="side-dot-container"><span class="side-dot-label">Startups</span><div class="side-dot"></div></a>
+    <a href="#illustrations" class="side-dot-container"><span class="side-dot-label">Ilustrações</span><div class="side-dot"></div></a>
+    <a href="#uiux" class="side-dot-container"><span class="side-dot-label">UI/UX</span><div class="side-dot"></div></a>
+    <a href="#ongs" class="side-dot-container"><span class="side-dot-label">ONGS</span><div class="side-dot"></div></a>
+    <a href="#philosophy" class="side-dot-container"><span class="side-dot-label">Filosofia</span><div class="side-dot"></div></a>
+    <a href="#about" class="side-dot-container"><span class="side-dot-label">Sobre</span><div class="side-dot"></div></a>
+    <a href="#contact" class="side-dot-container"><span class="side-dot-label">Contato</span><div class="side-dot"></div></a>
+  </div>
+
+  <header class="fixed top-0 left-0 w-full p-8 z-[100] flex justify-between items-start mix-blend-difference">
+    <div class="font-black text-xl tracking-tighter cursor-pointer" onclick="lenis.scrollTo('#hero')">FF STUDIO</div>
+    <nav class="flex flex-col gap-2 text-right">
+      <a href="#hero" class="nav-link hover:opacity-40">Concept</a>
+      <a href="#awards" class="nav-link hover:opacity-40">Awards</a>
+      <a href="#games" class="nav-link hover:opacity-40">Projects</a>
+      <a href="#about" class="nav-link hover:opacity-40">Profile</a>
+      <a href="#contact" class="nav-link hover:opacity-40">Contact</a>
+    </nav>
   </header>
 
-  <main class="viewport">
-    
+  <main>
     <!-- 01. CONCEITO -->
-    <section class="stack-section">
-      <div class="content-wrapper">
-        <span class="sub-title">The Vision</span>
-        <h1 class="hero-title">VALOR <span class="text-stroke font-serif">&</span><br>PERCEPÇÃO</h1>
-        <p class="mt-8 text-xl md:text-3xl font-light opacity-50 max-w-2xl">
-          "Valor e percepção é o que eu crio."
+    <section id="hero">
+      <span class="tag">01 Concept</span>
+      <div class="mask-v"><h1 class="giant-title">VALOR</h1></div>
+      <div class="mask-h"><h1 class="giant-title serif-italic">percepção</h1></div>
+      <div class="reveal-content mt-12">
+        <p class="max-w-md text-[11px] opacity-60 uppercase tracking-[0.4em] leading-relaxed">
+          "Valor e percepção é o que eu crio." Elevando a estética ao nível da substância pura.
         </p>
-        <a href="#work" class="btn-action">
-          Explorar Portfólio 
-          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.14645 3.14645C8.34171 2.95118 8.65829 2.95118 8.85355 3.14645L12.8536 7.14645C13.0488 7.34171 13.0488 7.65829 12.8536 7.85355L8.85355 11.8536C8.65829 12.0488 8.34171 12.0488 8.14645 11.8536C7.95118 11.6583 7.95118 11.3417 8.14645 11.1464L11.2929 8H2.5C2.22386 8 2 7.77614 2 7.5C2 7.22386 2.22386 7 2.5 7H11.2929L8.14645 3.85355C7.95118 3.65829 7.95118 3.34171 8.14645 3.14645Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
-        </a>
       </div>
     </section>
 
     <!-- 02. PRÊMIOS -->
-    <section class="stack-section" id="awards">
-      <div class="content-wrapper">
-        <span class="sub-title">Recognition</span>
-        <h2 class="hero-title mb-12">PRÊMIOS</h2>
-        <div class="grid md:grid-cols-3 gap-6">
-          <div class="award-card">
-            <p class="text-[10px] opacity-40 mb-4">2024 / HACKERNOON</p>
-            <h4 class="text-xl font-bold uppercase">Startup of the Year</h4>
-            <p class="text-sm opacity-50 mt-2 mb-6">Runner-up mundial (Games) com Parampara Game Studio.</p>
-            <a href="https://hackernoon.com" target="_blank" class="link-underlined">Ver Prémio</a>
-          </div>
-          <div class="award-card">
-            <p class="text-[10px] opacity-40 mb-4">2019 / GAME JAM PLUS</p>
-            <h4 class="text-xl font-bold uppercase">Best Narrative</h4>
-            <p class="text-sm opacity-50 mt-2 mb-6">Premiado pela narrativa imersiva de Ghostein.</p>
-            <a href="#" class="link-underlined">Ver Case Study</a>
-          </div>
-          <div class="award-card">
-            <p class="text-[10px] opacity-40 mb-4">PORTUGAL / RETREAT</p>
-            <h4 class="text-xl font-bold uppercase">Gaming Startup</h4>
-            <p class="text-sm opacity-50 mt-2 mb-6">Gaming Startup Retreat em Madeira.</p>
-            <a href="#" class="link-underlined">Detalhes</a>
-          </div>
+    <section id="awards">
+      <span class="tag">02 Recognition</span>
+      <div class="mask-v"><h2 class="text-6xl md:text-[8vw] font-black mb-16">CONQUISTAS</h2></div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-20">
+        <div class="award-card reveal-content">
+          <span class="text-[10px] opacity-30">2024 / HACKERNOON</span>
+          <h3 class="text-2xl font-bold mt-2 uppercase tracking-tighter">Startup of the Year — 2º Lugar</h3>
+          <p class="text-sm opacity-50 mt-2">Parampara Game Studio na categoria Jogos, entre 1.177 startups globais.</p>
+        </div>
+        <div class="award-card reveal-content">
+          <span class="text-[10px] opacity-30">2019 / GAME JAM PLUS</span>
+          <h3 class="text-2xl font-bold mt-2 uppercase tracking-tighter">Best Narrative Design</h3>
+          <p class="text-sm opacity-50 mt-2">Prêmio de Melhor Narrativa pelo jogo "Ghostein".</p>
+        </div>
+        <div class="award-card reveal-content">
+          <span class="text-[10px] opacity-30">PORTUGAL / MADEIRA</span>
+          <h3 class="text-2xl font-bold mt-2 uppercase tracking-tighter">Gaming Startup Retreat</h3>
+          <p class="text-sm opacity-50 mt-2">Participação no hub de vanguarda para inovação em videogames.</p>
+        </div>
+        <div class="award-card reveal-content">
+          <span class="text-[10px] opacity-30">EDUCATION / ADVERTISING</span>
+          <h3 class="text-2xl font-bold mt-2 uppercase tracking-tighter">Miami Ad School SP</h3>
+          <p class="text-sm opacity-50 mt-2">Formação sólida em Direção de Arte e Estratégia Criativa.</p>
         </div>
       </div>
     </section>
 
     <!-- 03. GAMES -->
-    <section class="stack-section" id="work">
-      <div class="content-wrapper">
-        <span class="sub-title">Interactive Worlds</span>
-        <h2 class="hero-title">GAMES</h2>
-        <div class="media-box">
-          <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1600" alt="Games Projects">
-        </div>
-        <p class="max-w-md opacity-50 mt-4 italic font-serif">"Parampara & Ghostein: Narrativas que ganham vida."</p>
-        <a href="https://behance.net" target="_blank" class="btn-action">Ver Portfólio Games</a>
+    <section id="games">
+      <span class="tag">03 Interactive World</span>
+      <div class="img-box"><img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2070" alt="Games Concept Art"></div>
+      <div class="mask-h"><h2 class="giant-title">GAMES</h2></div>
+      <div class="reveal-content">
+        <p class="text-2xl font-light max-w-xl mt-6 opacity-60">Fundador da Parampara. Onde o gameplay visceral encontra a narrativa cinemática de vanguarda.</p>
       </div>
     </section>
 
     <!-- 04. PROPAGANDA -->
-    <section class="stack-section">
-      <div class="content-wrapper">
-        <span class="sub-title">Art Direction</span>
-        <h2 class="hero-title text-stroke">ADVERTISING</h2>
-        <div class="grid md:grid-cols-2 mt-12 items-end gap-10">
-          <p class="text-2xl font-light leading-snug">
-            Campanhas conceituais e direção de arte focada em <span class="text-white font-bold">ideias puras</span> e propostas de valor.
-          </p>
-          <div>
-            <a href="#" class="btn-action">Ver Campanhas</a>
-          </div>
+    <section id="ad">
+      <span class="tag">04 Creative Strategy</span>
+      <div class="flex flex-col md:items-end">
+        <div class="mask-v"><h2 class="giant-title text-right">PROPAGANDA</h2></div>
+        <div class="max-w-2xl text-right mt-10 reveal-content">
+          <p class="text-3xl font-light leading-tight">Liderança de iniciativas criativas em grandes agências. Traduzindo complexidade em impacto visual cru e imediato.</p>
         </div>
       </div>
+      <div class="img-box h-[45vh] mt-10"><img src="https://images.unsplash.com/photo-1533750349088-cd871a92f312?q=80&w=2070" alt="Advertising Direction"></div>
     </section>
 
     <!-- 05. STARTUPS -->
-    <section class="stack-section">
-      <div class="content-wrapper">
-        <span class="sub-title">Future Ventures</span>
-        <h2 class="hero-title">STARTUPS</h2>
-        <div class="media-box">
-          <img src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=1600" alt="Startups Work">
+    <section id="startups">
+      <span class="tag">05 New Ventures</span>
+      <div class="mask-h"><h2 class="giant-title">STARTUPS</h2></div>
+      <div class="grid md:grid-cols-2 gap-6 mt-16">
+        <div class="p-12 border border-white/10 hover:bg-white hover:text-black transition-all group reveal-content">
+          <h4 class="font-black text-2xl group-hover:tracking-widest transition-all">PYROLYZER</h4>
+          <p class="text-[10px] mt-6 opacity-50 uppercase tracking-widest">Resíduos em Riqueza (pyzcoin.org)</p>
         </div>
-        <div class="mt-8">
-          <p class="text-3xl font-black">PYROLYZER</p>
-          <p class="text-sm opacity-40 uppercase tracking-widest mb-6">Transforming waste into wealth (pyzcoin.org)</p>
-          <a href="https://pyzcoin.org" target="_blank" class="btn-action">Visitar Pyrolyzer</a>
+        <div class="p-12 border border-white/10 hover:bg-white hover:text-black transition-all group reveal-content">
+          <h4 class="font-black text-2xl group-hover:tracking-widest transition-all">WE3 / AI</h4>
+          <p class="text-[10px] mt-6 opacity-50 uppercase tracking-widest">IA & Blockchain Architecture</p>
         </div>
       </div>
     </section>
 
     <!-- 06. ILUSTRAÇÕES -->
-    <section class="stack-section">
-      <div class="content-wrapper">
-        <span class="sub-title">Visual Artistry</span>
-        <h2 class="hero-title text-stroke">ILUSTRAÇÕES</h2>
-        <div class="flex gap-4 mt-12 overflow-x-auto pb-8 no-scrollbar">
-          <div class="min-w-[300px] h-[400px] bg-white/5 rounded-2xl overflow-hidden group relative">
-             <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800" class="w-full h-full object-cover">
-             <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-               <a href="#" class="link-underlined">Ampliar</a>
-             </div>
-          </div>
-          <div class="min-w-[300px] h-[400px] bg-white/5 rounded-2xl overflow-hidden group relative">
-             <img src="https://images.unsplash.com/photo-1633167606207-d840b5070fc2?q=80&w=800" class="w-full h-full object-cover">
-             <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-               <a href="#" class="link-underlined">Ampliar</a>
-             </div>
-          </div>
+    <section id="illustrations">
+      <span class="tag">06 Visual Craft</span>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+        <div class="img-box !h-[75vh] !m-0"><img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964" alt="Digital Illustration Craft"></div>
+        <div class="flex flex-col justify-center">
+          <div class="mask-v"><h2 class="text-[12vw] font-black leading-none">ILUSTRA</h2></div>
+          <div class="mask-v"><h2 class="text-[12vw] font-black leading-none serif-italic ml-20">ções</h2></div>
         </div>
-        <a href="#" class="btn-action mt-8">Ver Galeria Completa</a>
       </div>
     </section>
 
     <!-- 07. UI/UX -->
-    <section class="stack-section">
-      <div class="content-wrapper">
-        <span class="sub-title">Digital Ecosystems</span>
-        <h2 class="hero-title">UI <span class="text-stroke">&</span> UX</h2>
-        <p class="mt-12 text-2xl font-light max-w-xl opacity-60">Design de sistemas complexos para Web3 e AI.</p>
-        <a href="#" class="btn-action">Ver Interfaces</a>
+    <section id="uiux">
+      <span class="tag">07 Digital Systems</span>
+      <div class="mask-v"><h2 class="giant-title text-center">UI / UX</h2></div>
+      <div class="img-box h-[55vh]"><img src="https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?q=80&w=2070" alt="UI Design System"></div>
+      <div class="reveal-content text-center mt-10">
+        <p class="text-sm opacity-40 uppercase tracking-[0.6em]">A função é a alma da forma digital.</p>
       </div>
     </section>
 
     <!-- 08. ONGS -->
-    <section class="stack-section">
-      <div class="content-wrapper">
-        <span class="sub-title">Social Impact</span>
-        <h2 class="hero-title">ONGS</h2>
-        <p class="text-5xl font-bold tracking-tighter opacity-40 mt-10 mb-10">MUDANDO A <br> PERCEPÇÃO SOCIAL.</p>
-        <a href="#" class="link-underlined">Conhecer Projetos Sociais</a>
+    <section id="ongs">
+      <span class="tag">08 Social Impact</span>
+      <div class="max-w-5xl">
+        <div class="mask-h"><h2 class="text-[15vw] font-black leading-[0.8]">ONGS</h2></div>
+        <div class="reveal-content mt-12">
+          <p class="text-4xl md:text-5xl font-light italic serif-italic leading-tight opacity-70">O design como ferramenta de mudança sistêmica e impacto real.</p>
+        </div>
       </div>
     </section>
 
     <!-- 09. FILOSOFIA -->
-    <section class="stack-section">
-      <div class="content-wrapper text-center">
-        <h2 class="hero-title font-serif italic lowercase tracking-tight mb-8">Filosofia</h2>
-        <p class="text-2xl md:text-5xl font-light leading-tight text-neutral-400">
-          "Reduzir o ruído para encontrar a essência."
-        </p>
-        <a href="#about" class="btn-action">Ler Manifesto</a>
+    <section id="philosophy">
+      <span class="tag">09 Human Ethos</span>
+      <div class="flex flex-col items-center">
+        <div class="mask-v"><h2 class="giant-title">FILOSOFIA</h2></div>
+        <div class="reveal-content max-w-3xl text-center mt-16">
+          <p class="text-3xl md:text-5xl font-light leading-snug opacity-70">
+            "Transformar desafios em oportunidades através da inovação que gera valor positivo."
+          </p>
+        </div>
       </div>
     </section>
 
     <!-- 10. SOBRE -->
-    <section class="stack-section" id="about">
-      <div class="content-wrapper">
-        <div class="grid md:grid-cols-2 gap-20 items-center">
-          <h2 class="hero-title">SOBRE</h2>
-          <div class="space-y-6 text-xl opacity-60 font-light">
-            <p>Empreendedor criativo focado no futuro do Gaming, AI e Web3.</p>
-            <a href="#" class="link-underlined block">Download CV (PDF)</a>
+    <section id="about">
+      <span class="tag">10 Profile</span>
+      <div class="grid grid-cols-12 gap-10">
+        <div class="col-span-12 lg:col-span-8">
+          <div class="mask-v"><h2 class="text-6xl md:text-8xl font-black mb-12 leading-tight">DIREÇÃO DE ARTE<br>& INOVAÇÃO</h2></div>
+          <div class="reveal-content text-lg md:text-xl font-light opacity-60 leading-relaxed space-y-6">
+            <p>
+              Empreendedor criativo com sólida formação pela <strong>Miami Ad School SP</strong>. Destaco-me na criação de propostas de valor impactantes para startups inovadoras e liderança criativa em grandes agências.
+            </p>
+            <p>
+              Minha expertise estende-se aos campos dinâmicos de <strong>Jogos, IA, Web3 e Blockchain</strong>. Com um perfil generalista, foco na direção criativa e construção de empreendimentos que gerem impacto significativo no mundo.
+            </p>
           </div>
+        </div>
+        <div class="col-span-12 lg:col-span-4 img-box !h-[60vh] !m-0 grayscale">
+          <img src="https://images.unsplash.com/photo-1519085185753-b4aa2984e242?q=80&w=1974" alt="Flavio Furtado Creative Profile">
         </div>
       </div>
     </section>
 
     <!-- 11. CONTATO -->
-    <section class="stack-section" id="contact">
-      <div class="content-wrapper text-center">
-        <span class="sub-title">Let's build together</span>
-        <h2 class="hero-title mb-10">CONTATO</h2>
-        <div class="flex flex-col md:flex-row justify-center gap-10 items-center">
-          <a href="mailto:contato@flaviofurtado.com" class="btn-action">Enviar Email</a>
-          <a href="https://linkedin.com" target="_blank" class="link-underlined">LinkedIn</a>
-          <a href="https://instagram.com" target="_blank" class="link-underlined">Instagram</a>
+    <footer id="contact" class="min-h-screen flex flex-col justify-between p-8 pt-40 relative z-10 mix-blend-exclusion">
+      <div class="text-center">
+        <span class="tag">Open for Partnerships</span>
+        <div class="mask-v inline-block">
+          <a href="mailto:contato@flaviofurtado.com" class="text-[12vw] font-black hover:opacity-20 transition-all leading-none">LET'S TALK</a>
         </div>
       </div>
-    </section>
-
+      
+      <div class="flex flex-col md:flex-row justify-between items-end border-t border-white/10 pt-10 pb-4 gap-8">
+        <div class="text-[10px] font-black uppercase tracking-[0.5em] flex gap-12">
+          <a href="#" class="hover:opacity-50">LinkedIn</a>
+          <a href="#" class="hover:opacity-50">Behance</a>
+          <a href="https://pyzcoin.org" class="hover:opacity-50" target="_blank">Pyrolyzer</a>
+        </div>
+        <div class="text-[10px] opacity-20 uppercase tracking-[0.6em]">Portugal · Madeira · São Paulo</div>
+      </div>
+    </footer>
   </main>
 
   <script>
-    gsap.registerPlugin(ScrollTrigger);
+    // 1. Lenis Smooth Scroll
+    const lenis = new Lenis({ 
+      duration: 1.4, 
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) 
+    });
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
 
-    // ── THREE.JS: LIQUID PLANE BACKGROUND ─────────────────
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        lenis.scrollTo(this.getAttribute('href'));
+      });
+    });
+
+    // 2. Cursor
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursor-follower');
+    window.addEventListener('mousemove', (e) => {
+      gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0 });
+      gsap.to(follower, { x: e.clientX - 17, y: e.clientY - 17, duration: 0.1 });
+    });
+
+    // 3. Three.js -Wonjyou Style
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-    const geometry = new THREE.PlaneGeometry(20, 12, 60, 60);
-    const material = new THREE.MeshBasicMaterial({ 
-      color: 0x9b9b93, 
-      wireframe: true, 
-      transparent: true, 
-      opacity: 0.12 
+    const geometry = new THREE.TorusKnotGeometry(4, 1.2, 250, 24);
+    const material = new THREE.MeshNormalMaterial({ wireframe: true, transparent: true, opacity: 0.12 });
+    const torus = new THREE.Mesh(geometry, material);
+    scene.add(torus);
+    camera.position.z = 15;
+
+    // 4. GSAP ScrollTrigger
+    gsap.registerPlugin(ScrollTrigger);
+
+    gsap.utils.toArray('.mask-v').forEach(el => {
+      gsap.to(el, {
+        clipPath: 'inset(0% 0 0 0)',
+        scrollTrigger: { trigger: el, start: 'top 95%', end: 'top 70%', scrub: 1 }
+      });
     });
-    const plane = new THREE.Mesh(geometry, material);
-    scene.add(plane);
-    plane.rotation.x = -0.6;
-    camera.position.z = 6;
+
+    gsap.utils.toArray('.mask-h').forEach(el => {
+      gsap.to(el, {
+        clipPath: 'inset(0 0% 0 0)',
+        scrollTrigger: { trigger: el, start: 'top 95%', end: 'top 75%', scrub: 1.2 }
+      });
+    });
+
+    gsap.utils.toArray('.reveal-content').forEach(el => {
+      gsap.to(el, {
+        opacity: 1, y: 0, duration: 1.2, ease: 'power3.out',
+        scrollTrigger: { trigger: el, start: 'top 90%', toggleActions: 'play none none reverse' }
+      });
+    });
+
+    gsap.utils.toArray('.img-box').forEach(box => {
+      gsap.to(box, {
+        clipPath: 'inset(0 0% 0 0)', duration: 2, ease: 'power4.inOut',
+        scrollTrigger: { trigger: box, start: 'top 85%' }
+      });
+      gsap.to(box.querySelector('img'), {
+        y: -100, scale: 1,
+        scrollTrigger: { trigger: box, scrub: true }
+      });
+    });
+
+    // Torus Animation
+    gsap.set(torus.scale, { x: 3, y: 3, z: 3 });
+    gsap.to(torus.scale, {
+      x: 0.4, y: 0.4, z: 0.4,
+      scrollTrigger: { trigger: 'main', start: 'top top', end: 'bottom bottom', scrub: 1 }
+    });
+    
+    gsap.to(torus.rotation, {
+      x: Math.PI * 2, y: Math.PI * 3,
+      scrollTrigger: { trigger: 'main', start: 'top top', end: 'bottom bottom', scrub: 2 }
+    });
 
     function animate() {
-      requestAnimationFrame(animate);
-      const time = Date.now() * 0.0008;
-      
-      const positions = plane.geometry.attributes.position.array;
-      for (let i = 0; i < positions.length; i += 3) {
-        const x = positions[i];
-        const y = positions[i + 1];
-        positions[i + 2] = Math.sin(x * 0.5 + time) * 0.3 + Math.cos(y * 0.5 + time) * 0.3;
-      }
-      plane.geometry.attributes.position.needsUpdate = true;
+      torus.rotation.z += 0.002;
       renderer.render(scene, camera);
+      requestAnimationFrame(animate);
     }
     animate();
+
+    // Side Nav States
+    const dots = document.querySelectorAll('.side-dot');
+    const sections = document.querySelectorAll('section, footer');
+    window.addEventListener('scroll', () => {
+      let current = "";
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (pageYOffset >= sectionTop - 300) {
+          current = section.getAttribute('id');
+        }
+      });
+      dots.forEach(dot => {
+        dot.classList.remove('active');
+        if (dot.parentElement.getAttribute('href') === `#${current}`) {
+          dot.classList.add('active');
+        }
+      });
+    });
 
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -420,47 +376,6 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    // ── GSAP: STACKING SCROLL ──────────────────────────
-    const sections = gsap.utils.toArray('.stack-section');
-
-    sections.forEach((section, i) => {
-      if (i !== sections.length - 1) {
-        gsap.to(section, {
-          scrollTrigger: {
-            trigger: section,
-            start: "top top",
-            end: "bottom top",
-            scrub: true,
-            pin: true,
-            pinSpacing: false
-          },
-          scale: 0.85,
-          opacity: 0,
-          filter: "blur(15px)",
-          z: -400
-        });
-      }
-
-      gsap.to(plane.rotation, {
-        y: (i * 0.15),
-        z: (i * 0.05),
-        scrollTrigger: {
-          trigger: section,
-          scrub: 2
-        }
-      });
-    });
-
-    // Animação suave para links âncora
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if(target) {
-          gsap.to(window, {duration: 1.5, scrollTo: target.offsetTop, ease: "power4.inOut"});
-        }
-      });
-    });
   </script>
 </body>
 </html>
