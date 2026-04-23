@@ -9,6 +9,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <style>
+    /* ══ VARIÁVEIS DE COR ══════════════════════════════ */
     :root {
       --grey:     #9b9b93;
       --black:    #050505;
@@ -33,6 +34,7 @@
     .museo-body     { font-weight: 300; line-height: 1.7; }
     .museo-label    { font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; font-weight: 500; }
 
+    /* ══ CURSOR ════════════════════════════════════════ */
     #cursor {
       position: fixed; width: 12px; height: 12px;
       background: white; border-radius: 50%;
@@ -44,14 +46,13 @@
     }
     #cursor.hover { width: 40px; height: 40px; }
 
-    /* ══ HERO MELHORADO (RESPONSIVO) ════════════════════ */
+    /* ══ HERO (AJUSTADO PARA RESPONSIVIDADE) ════════════ */
     #hero {
       position: relative;
       height: 100vh;
-      height: 100svh;
       width: 100%;
       overflow: hidden;
-      background: var(--grey);
+      background: #9b9b93;
       display: flex;
       flex-direction: column;
     }
@@ -70,8 +71,7 @@
     }
 
     #hero-nav {
-      position: relative; z-index: 100;
-      padding: 32px clamp(24px, 5vw, 64px);
+      position: relative; z-index: 50; padding: 24px clamp(24px, 5vw, 64px);
       display: flex; align-items: center; justify-content: space-between;
     }
     .nav-brand { color: rgba(255,255,255,0.6); }
@@ -81,32 +81,32 @@
 
     .hero-concept {
       position: absolute;
-      top: 18%; left: 50%;
+      top: 20%; left: 50%;
       transform: translateX(-50%);
-      z-index: 60;
+      z-index: 40;
       text-align: center;
+      pointer-events: none;
       width: 100%;
       padding: 0 24px;
-      pointer-events: none;
     }
     .hero-concept-line {
       display: block;
-      font-size: clamp(10px, 1.2vw, 14px);
-      font-weight: 400;
-      letter-spacing: 0.4em;
+      font-size: clamp(10px, 1.4vw, 18px);
+      font-weight: 300;
+      letter-spacing: 0.35em;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.7);
-      margin-bottom: 8px;
+      color: rgba(255,255,255,0.75);
     }
     .hero-concept-main {
       display: block;
-      font-size: clamp(28px, 4.5vw, 64px);
+      font-size: clamp(24px, 4.5vw, 56px);
       font-weight: 600;
       letter-spacing: -0.02em;
       color: white;
       line-height: 1.1;
+      margin-top: 8px;
     }
-    .hero-concept-dot { color: rgba(255,255,255,0.3); }
+    .hero-concept-dot { color: rgba(255,255,255,0.4); }
 
     .hero-stage {
       flex: 1;
@@ -114,56 +114,51 @@
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      z-index: 10;
+      z-index: 5;
     }
 
     .hero-name-left, .hero-name-right {
       position: absolute;
-      bottom: -0.08em;
-      z-index: 15;
-      font-size: clamp(80px, 18vw, 280px);
+      bottom: -0.05em;
+      z-index: 10;
+      font-size: clamp(60px, 16vw, 200px);
       color: white;
       pointer-events: none;
       will-change: transform;
-      line-height: 0.8;
+      line-height: 0.85;
     }
     .hero-name-left { right: 50%; padding-right: 0.05em; }
     .hero-name-right { left: 50%; padding-left: 0.05em; }
 
     .hero-portrait-wrap {
       position: relative;
-      z-index: 30;
-      width: clamp(280px, 35vw, 550px);
-      max-height: 85vh;
+      z-index: 20;
+      width: clamp(240px, 32vw, 460px);
       display: flex;
       align-items: flex-end;
     }
     .hero-portrait {
       width: 100%; height: auto; display: block;
-      mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 100%);
-      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 100%);
+      mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 100%);
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 100%);
     }
 
     .hero-badge {
       position: absolute;
-      z-index: 50;
-      bottom: 45%;
+      z-index: 30;
+      bottom: 50%;
       left: 50%;
       transform: translateX(-50%);
-      color: rgba(255,255,255,0.5);
+      color: rgba(255,255,255,0.45);
       white-space: nowrap;
-      background: rgba(255,255,255,0.05);
-      padding: 8px 16px;
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.1);
+      font-size: clamp(8px, 1vw, 10px);
     }
 
     .hero-sides {
       position: absolute;
-      bottom: 110px;
+      bottom: 80px;
       left: 0; right: 0;
-      z-index: 70;
+      z-index: 40;
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
@@ -171,91 +166,61 @@
       pointer-events: none;
     }
     .hero-tagline {
-      color: rgba(255,255,255,0.6);
-      font-size: 13px;
-      max-width: 240px;
-      line-height: 1.5;
+      color: rgba(255,255,255,0.55);
+      font-size: 12px;
+      max-width: 200px;
+      line-height: 1.6;
     }
-    .hero-socials { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
-    .hero-socials a { color: rgba(255,255,255,0.5); text-decoration: none; transition: 0.3s; pointer-events: all; }
-    .hero-socials a:hover { color: white; transform: translateX(-5px); }
+    .hero-socials { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+    .hero-socials a { color: rgba(255,255,255,0.4); text-decoration: none; pointer-events: all; transition: 0.3s; }
+    .hero-socials a:hover { color: white; }
 
     .hero-bottom {
-      position: relative; z-index: 80;
-      padding: 24px clamp(24px, 5vw, 64px);
+      position: relative; z-index: 50;
+      padding: 18px clamp(24px, 5vw, 64px);
       display: flex; align-items: center; justify-content: space-between;
       border-top: 1px solid rgba(255,255,255,0.1);
     }
-    .hero-bottom p { color: rgba(255,255,255,0.4); }
+    .hero-bottom p { color: rgba(255,255,255,0.3); }
 
-    /* Mobile Adaptativo */
     @media (max-width: 768px) {
       .nav-links { display: none; }
       .hero-concept { top: 15%; }
-      .hero-name-left, .hero-name-right {
-        right: auto; left: 50%;
-        transform: translateX(-50%);
-        text-align: center;
-        padding: 0;
-        font-size: clamp(60px, 25vw, 120px);
+      .hero-name-left, .hero-name-right { 
+        font-size: clamp(50px, 20vw, 100px);
+        bottom: 10px;
       }
-      .hero-name-left { bottom: 120px; z-index: 5; opacity: 0.3; }
-      .hero-name-right { bottom: 30px; z-index: 40; }
-      
-      .hero-portrait-wrap { width: 85vw; }
-      .hero-badge { bottom: 65%; font-size: 8px; }
-      .hero-sides { bottom: 140px; flex-direction: column; align-items: center; gap: 20px; text-align: center; }
+      .hero-badge { bottom: 60%; }
+      .hero-sides { bottom: 120px; flex-direction: column; align-items: center; text-align: center; gap: 20px; }
+      .hero-socials { flex-direction: row; gap: 15px; }
       .hero-tagline { max-width: 100%; order: 2; }
-      .hero-socials { flex-direction: row; order: 1; }
     }
 
-    /* ══ RESTANTE DO SITE PRESERVADO ═══════════════════ */
-    #about { position: relative; width: 100%; background: #050505; z-index: 10; }
+    /* ══ RESTANTE DAS SEÇÕES (ORIGINAL) ════════════════ */
+    #about { position: relative; width: 100%; background: #050505; }
     .about-header { max-width: 1100px; margin: 0 auto; padding: 128px 64px 80px; }
+    .about-label  { color: rgba(255,255,255,0.5); margin-bottom: 24px; }
     .about-headline { color: white; font-size: clamp(36px, 6vw, 80px); margin-bottom: 32px; }
     .about-desc { color: rgba(255,255,255,0.6); font-size: 18px; max-width: 600px; }
-    .gallery-grid { max-width: 1200px; margin: 0 auto; padding: 0 32px 128px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .gallery-grid { max-width: 1200px; margin: 0 auto; padding: 0 32px 64px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
     .gallery-col.col-2 { padding-top: 128px; }
-    .gallery-img-wrap { width: 100%; overflow: hidden; background: #111; margin-bottom: 20px; }
+    .gallery-img-wrap { overflow: hidden; }
     .gallery-img-wrap img { width: 100%; height: auto; object-fit: cover; display: block; }
-    .about-stats { max-width: 1200px; margin: 0 auto; padding: 0 64px 128px; background: #050505; }
+    .about-stats { max-width: 1200px; margin: 0 auto; padding: 0 64px 96px; background: #050505; }
     .about-stats-inner { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 48px; }
-    .stat-item { display: flex; flex-direction: column; gap: 12px; }
-    .stat-value { font-size: clamp(36px, 4vw, 56px); color: white; font-weight: 600; }
+    .stat-value { font-size: clamp(36px, 4vw, 56px); color: white; margin-bottom: 8px; }
     .stat-label { color: rgba(255,255,255,0.4); }
-
-    #projects { position: relative; background: #050505; padding: 128px 64px; }
+    #projects { position: relative; width: 100%; background: #050505; padding: 128px 64px; }
     .projects-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
-    .project-card { position: relative; cursor: pointer; }
-    .project-card-img-wrap { aspect-ratio: 4/3; overflow: hidden; background: #111; margin-bottom: 20px; }
-    .project-card-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-    .project-card:hover .project-card-img-wrap img { transform: scale(1.05); }
-
-    #featured { position: relative; background: #f0f0f0; }
-    .stack-card { min-height: 100vh; width: 100%; display: flex; align-items: center; background: #f0f0f0; border-top: 1px solid rgba(0,0,0,0.05); }
-    .stack-card-inner { max-width: 1200px; margin: 0 auto; padding: 64px; display: grid; grid-template-columns: 7fr 5fr; gap: 48px; align-items: center; }
-    .stack-card-content h2 { font-size: clamp(32px, 5vw, 64px); color: var(--black); margin-bottom: 24px; }
-    .stack-card-content p { color: #666; font-size: 18px; margin-bottom: 32px; }
-    .stack-card-img { width: 100%; aspect-ratio: 1; background: #ddd; }
-    .stack-card-img img { width: 100%; height: 100%; object-fit: cover; }
-
-    #awards { background: var(--grey); padding: 160px 64px; text-align: center; }
-    .awards-quote { color: white; font-size: clamp(24px, 4vw, 48px); max-width: 900px; margin: 0 auto 64px; line-height: 1.1; }
-
+    .project-card-img-wrap { aspect-ratio: 4/3; overflow: hidden; }
+    .project-card-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: 0.7s; }
+    #featured { position: relative; width: 100%; background: #f0f0f0; }
+    .stack-card { min-height: 100vh; display: flex; align-items: center; }
+    #awards { background: #9b9b93; padding: 128px 64px; }
     #contact { background: #050505; padding: 128px 64px; }
-    .contact-main { max-width: 1200px; margin: 0 auto 80px; }
-    .contact-headline { font-size: clamp(40px, 8vw, 100px); color: white; margin-bottom: 48px; }
-    .contact-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; max-width: 1200px; margin: 0 auto; }
-    .info-card { padding: 32px; border: 1px solid rgba(255,255,255,0.1); transition: 0.3s; }
-    .info-card:hover { border-color: white; }
-    .info-card-title { font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: rgba(255,255,255,0.4); margin-bottom: 16px; }
-    .info-card-content { font-size: 16px; color: white; }
-
-    footer { background: var(--grey); padding: 80px 64px 40px; }
-    .footer-marquee { border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 32px 0; overflow: hidden; margin-bottom: 64px; }
-    .marquee-track { display: flex; white-space: nowrap; animation: marquee 30s linear infinite; }
-    .marquee-item { font-size: clamp(40px, 10vw, 120px); font-weight: 600; color: white; padding: 0 40px; }
-    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .contact-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+    footer { background: #9b9b93; }
+    .marquee-track span { font-size: 15vw; font-weight: 600; color: rgba(255,255,255,0.1); }
   </style>
 </head>
 <body>
@@ -264,7 +229,6 @@
 
 <section id="hero">
   <div class="hero-bg"></div>
-
   <nav id="hero-nav">
     <div class="museo-label nav-brand">FLAVIO FURTADO</div>
     <div class="nav-links">
@@ -275,28 +239,21 @@
   </nav>
 
   <div class="hero-concept" id="hero-concept">
-    <span class="hero-concept-line">Creative Art Director</span>
-    <h1 class="hero-concept-main">Valor e percepção<br>é o que eu crio<span class="hero-concept-dot">.</span></h1>
+    <span class="hero-concept-line museo-label">Creative Art Director</span>
+    <span class="hero-concept-main">Valor<span class="hero-concept-dot">.</span> É o que crio<span class="hero-concept-dot">.</span></span>
   </div>
 
   <div class="hero-stage">
-    <div class="hero-badge museo-label" id="hero-badge">
-      Based in Brazil — Available Worldwide
-    </div>
-
+    <div class="hero-badge museo-label" id="hero-badge">Based in Brazil — Available Worldwide</div>
     <div class="hero-name-left museo-headline" id="hero-name-left">FLAVIO</div>
-
     <div class="hero-portrait-wrap" id="hero-portrait">
       <img class="hero-portrait" src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/hero-portrait.png" alt="Flavio Furtado" />
     </div>
-
     <div class="hero-name-right museo-headline" id="hero-name-right">FURTADO</div>
   </div>
 
   <div class="hero-sides" id="hero-sides">
-    <p class="museo-body hero-tagline">
-      Crafting visual stories through games,<br/>brands &amp; digital experiences.
-    </p>
+    <p class="museo-body hero-tagline">Crafting visual stories through games,<br/>brands &amp; digital experiences.</p>
     <div class="hero-socials">
       <a href="#" class="museo-label">Behance</a>
       <a href="#" class="museo-label">LinkedIn</a>
@@ -314,38 +271,28 @@
   <div class="about-header">
     <p class="museo-label about-label reveal-text">About the Director</p>
     <h2 class="museo-headline about-headline reveal-text">Crafting Visual Stories<br/>That Move People</h2>
-    <p class="museo-body about-desc reveal-text">I'm Flavio Furtado, a Creative Art Director with over a decade of experience transforming ideas into immersive visual experiences.</p>
+    <p class="museo-body about-desc reveal-text">I'm Flavio Furtado, a Creative Art Director with over a decade of experience.</p>
   </div>
-  </section>
+  <div class="gallery-grid">
+      <div class="gallery-col col-1"><div class="gallery-img-wrap"><img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/about-1.jpg" /></div></div>
+      <div class="gallery-col col-2"><div class="gallery-img-wrap"><img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/about-3.jpg" /></div></div>
+      <div class="gallery-col col-3"><div class="gallery-img-wrap"><img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/about-5.jpg" /></div></div>
+  </div>
+</section>
 
 <script>
   gsap.registerPlugin(ScrollTrigger);
 
-  // Cursor Logic
-  const cursor = document.getElementById('cursor');
-  document.addEventListener('mousemove', e => {
-    gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.1 });
-  });
-
-  // Hero Animations (GSAP)
-  const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
-  
-  tl.from('.hero-portrait', { y: 100, opacity: 0, duration: 1.5 })
-    .from('#hero-name-left', { x: -100, opacity: 0, duration: 1.2 }, "-=1")
-    .from('#hero-name-right', { x: 100, opacity: 0, duration: 1.2 }, "-=1.2")
-    .from('#hero-concept', { y: 50, opacity: 0, duration: 1 }, "-=0.8")
-    .from('#hero-nav, #hero-sides, #hero-bottom', { opacity: 0, stagger: 0.1 });
+  // Animação de Entrada Hero
+  const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+  tl.from('.hero-portrait', { opacity: 0, y: 50, duration: 1.2 })
+    .from('#hero-name-left', { opacity: 0, x: 50, duration: 1 }, "-=0.8")
+    .from('#hero-name-right', { opacity: 0, x: -50, duration: 1 }, "-=1")
+    .from('#hero-concept, #hero-nav, #hero-sides, #hero-bottom', { opacity: 0, y: 20, stagger: 0.1 }, "-=0.5");
 
   // Parallax Hero
-  gsap.to('.hero-portrait', {
-    yPercent: 15,
-    scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: true }
-  });
-  
-  gsap.to('#hero-name-left', { xPercent: -15, scrollTrigger: { trigger: "#hero", start: "top top", scrub: true } });
-  gsap.to('#hero-name-right', { xPercent: 15, scrollTrigger: { trigger: "#hero", start: "top top", scrub: true } });
-
-  // O restante dos seus scripts de animação (About, Projects, Stack) seguem aqui
+  gsap.to('#hero-name-left', { xPercent: -20, scrollTrigger: { trigger: "#hero", scrub: true } });
+  gsap.to('#hero-name-right', { xPercent: 20, scrollTrigger: { trigger: "#hero", scrub: true } });
 </script>
 
 </body>
