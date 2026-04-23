@@ -286,45 +286,66 @@
   </main>
 
   <script>
-    const lenis = new Lenis({ duration: 1.4 });
-    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
-    requestAnimationFrame(raf);
+    // 1. CONFIGURAÇÃO INICIAL DO THREE.JS
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-    const cursor = document.getElementById('cursor');
-    const follower = document.getElementById('cursor-follower');
-    window.addEventListener('mousemove', (e) => {
-      gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0 });
-      gsap.to(follower, { x: e.clientX - 20, y: e.clientY - 20, duration: 0.15 });
-    });
+// 2. CRIAÇÃO DO OBJETO (TORUS KNOT)
+const geometry = new THREE.TorusKnotGeometry(4, 1.2, 150, 20);
+const material = new THREE.MeshNormalMaterial({ 
+  wireframe: true, 
+  transparent: true, 
+  opacity: 0.15 
+});
+const torus = new THREE.Mesh(geometry, material);
+scene.add(torus);
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.getElementById('canvas-container').appendChild(renderer.domElement);
+// POSIÇÃO INICIAL: Bem próximo (Zoom In)
+camera.position.z = 8; 
 
-    const torus = new THREE.Mesh(new THREE.TorusKnotGeometry(4, 1.2, 150, 20), new THREE.MeshNormalMaterial({ wireframe: true, transparent: true, opacity: 0.1 }));
-    scene.add(torus);
-    torus.scale.set(10, 10, 10);
-    camera.position.z = 20;
+// 3. INTEGRAÇÃO COM GSAP SCROLLTRIGGER
+gsap.registerPlugin(ScrollTrigger);
 
-    gsap.registerPlugin(ScrollTrigger);
+// Sincroniza o afastamento (Z) e a rotação com o scroll total da página
+gsap.to(camera.position, {
+  z: 65, // Afasta até este valor
+  scrollTrigger: {
+    trigger: "body",
+    start: "top top",
+    end: "bottom bottom",
+    scrub: 1.5 // Valor maior = mais suavidade/atraso elegante
+  }
+});
 
-    gsap.utils.toArray('.img-box').forEach(box => {
-      gsap.to(box, { clipPath: 'inset(0 0% 0 0)', scrollTrigger: { trigger: box, start: 'top 85%', end: 'top 40%', scrub: 1 } });
-    });
+// Gira o elemento sincronizado ao movimento do scroll
+gsap.to(torus.rotation, {
+  y: Math.PI * 4, // 2 voltas completas no eixo Y
+  x: Math.PI * 2, // 1 volta no eixo X
+  scrollTrigger: {
+    trigger: "body",
+    start: "top top",
+    end: "bottom bottom",
+    scrub: 2
+  }
+});
 
-    gsap.utils.toArray('.mask-v, .mask-h').forEach(el => {
-      gsap.to(el, { clipPath: el.classList.contains('mask-v') ? 'inset(0% 0 0 0)' : 'inset(0 0% 0 0)', scrollTrigger: { trigger: el, start: 'top 95%', end: 'top 75%', scrub: 0.5 } });
-    });
+// 4. LOOP DE ANIMAÇÃO (Mantém uma rotação mínima constante além do scroll)
+function animate() {
+  torus.rotation.z += 0.001; 
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+}
+animate();
 
-    function animate() { torus.rotation.z += 0.001; renderer.render(scene, camera); requestAnimationFrame(animate); }
-    animate();
-
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+// 5. RESPONSIVIDADE
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
     });
   </script>
 </body>
