@@ -172,7 +172,7 @@
       line-height: 1.6;
     }
     .hero-socials { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-    .hero-socials a { color: rgba(255,255,255,0.4); text-decoration: none; pointer-events: all; transition: 0.3s; }
+    .hero-socials a { color: rgba(255,255,255,0.4); text-decoration: none; transition: 0.3s; pointer-events: all; }
     .hero-socials a:hover { color: white; }
 
     .hero-bottom {
@@ -183,50 +183,69 @@
     }
     .hero-bottom p { color: rgba(255,255,255,0.3); }
 
-    @media (max-width: 768px) {
-      .nav-links { display: none; }
-      .hero-concept { top: 15%; }
-      .hero-name-left, .hero-name-right { 
-        font-size: clamp(50px, 20vw, 100px);
-        bottom: 10px;
-      }
-      .hero-badge { bottom: 60%; }
-      .hero-sides { bottom: 120px; flex-direction: column; align-items: center; text-align: center; gap: 20px; }
-      .hero-socials { flex-direction: row; gap: 15px; }
-      .hero-tagline { max-width: 100%; order: 2; }
-    }
-
-    /* ══ RESTANTE DAS SEÇÕES (ORIGINAL) ════════════════ */
+    /* ══ RESTO DAS SEÇÕES ORIGINAIS ════════════════════ */
     #about { position: relative; width: 100%; background: #050505; }
     .about-header { max-width: 1100px; margin: 0 auto; padding: 128px 64px 80px; }
     .about-label  { color: rgba(255,255,255,0.5); margin-bottom: 24px; }
     .about-headline { color: white; font-size: clamp(36px, 6vw, 80px); margin-bottom: 32px; }
     .about-desc { color: rgba(255,255,255,0.6); font-size: 18px; max-width: 600px; }
+
     .gallery-grid { max-width: 1200px; margin: 0 auto; padding: 0 32px 64px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
     .gallery-col.col-2 { padding-top: 128px; }
     .gallery-img-wrap { overflow: hidden; }
     .gallery-img-wrap img { width: 100%; height: auto; object-fit: cover; display: block; }
+    .gallery-img-label { color: rgba(255,255,255,0.25); margin-top: 12px; }
+
     .about-stats { max-width: 1200px; margin: 0 auto; padding: 0 64px 96px; background: #050505; }
     .about-stats-inner { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 48px; }
     .stat-value { font-size: clamp(36px, 4vw, 56px); color: white; margin-bottom: 8px; }
     .stat-label { color: rgba(255,255,255,0.4); }
+
+    .about-bottom { max-width: 1200px; margin: 0 auto; padding: 0 64px 128px; background: #050505; }
+    .about-bottom-grid { display: grid; grid-template-columns: repeat(12, 1fr); }
+    .about-bottom-text { grid-column: 8 / span 5; color: rgba(255,255,255,0.5); font-size: 16px; }
+
     #projects { position: relative; width: 100%; background: #050505; padding: 128px 64px; }
     .projects-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
     .project-card-img-wrap { aspect-ratio: 4/3; overflow: hidden; }
     .project-card-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: 0.7s; }
+    .project-card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); }
+    .project-card-text { position: absolute; bottom: 0; padding: 24px; }
+
     #featured { position: relative; width: 100%; background: #f0f0f0; }
     .stack-card { min-height: 100vh; display: flex; align-items: center; }
+    .stack-card-inner { max-width: 1200px; margin: 0 auto; padding: 64px; display: grid; grid-template-columns: 7fr 5fr; gap: 48px; }
+    .stack-card.reverse .stack-card-inner { direction: rtl; }
+    .stack-card.reverse .stack-card-inner > * { direction: ltr; }
+
     #awards { background: #9b9b93; padding: 128px 64px; }
+    .awards-inner { max-width: 900px; margin: 0 auto; text-align: center; }
+    .awards-quote { color: white; font-size: clamp(22px, 3vw, 40px); line-height: 1.5; }
+
     #contact { background: #050505; padding: 128px 64px; }
     .contact-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+    .info-card { padding: 32px; border: 1px solid rgba(255,255,255,0.1); }
+
     footer { background: #9b9b93; }
     .marquee-track span { font-size: 15vw; font-weight: 600; color: rgba(255,255,255,0.1); }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hero-concept { top: 15%; }
+      .hero-name-left, .hero-name-right { font-size: clamp(50px, 20vw, 100px); bottom: 10px; }
+      .hero-badge { bottom: 60%; }
+      .hero-sides { bottom: 120px; flex-direction: column; align-items: center; text-align: center; gap: 20px; }
+      .hero-socials { flex-direction: row; gap: 15px; }
+      .hero-tagline { max-width: 100%; order: 2; }
+      .about-stats-inner, .projects-grid, .contact-cards, .stack-card-inner { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
 
 <div id="cursor"></div>
 
+<div id="hero-section">
 <section id="hero">
   <div class="hero-bg"></div>
   <nav id="hero-nav">
@@ -266,6 +285,7 @@
     <p class="museo-label">flaviofurtado@gmail.com</p>
   </div>
 </section>
+</div>
 
 <section id="about">
   <div class="about-header">
@@ -274,26 +294,94 @@
     <p class="museo-body about-desc reveal-text">I'm Flavio Furtado, a Creative Art Director with over a decade of experience.</p>
   </div>
   <div class="gallery-grid">
-      <div class="gallery-col col-1"><div class="gallery-img-wrap"><img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/about-1.jpg" /></div></div>
-      <div class="gallery-col col-2"><div class="gallery-img-wrap"><img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/about-3.jpg" /></div></div>
-      <div class="gallery-col col-3"><div class="gallery-img-wrap"><img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/about-5.jpg" /></div></div>
+      <div class="gallery-col col-1"><div class="gallery-img-wrap"><img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/about-1.jpg" /><p class="gallery-img-label museo-label">Game Design</p></div></div>
+      <div class="gallery-col col-2"><div class="gallery-img-wrap"><img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/about-3.jpg" /><p class="gallery-img-label museo-label">Typography</p></div></div>
+      <div class="gallery-col col-3"><div class="gallery-img-wrap"><img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/about-5.jpg" /><p class="gallery-img-label museo-label">Process</p></div></div>
+  </div>
+  <div class="about-stats">
+    <div class="about-stats-inner">
+      <div class="stat-item"><p class="museo-headline stat-value">10+</p><p class="museo-label stat-label">Years of Experience</p></div>
+      <div class="stat-item"><p class="museo-headline stat-value">50+</p><p class="museo-label stat-label">Projects Delivered</p></div>
+      <div class="stat-item"><p class="museo-headline stat-value">12</p><p class="museo-label stat-label">Industry Awards</p></div>
+      <div class="stat-item"><p class="museo-headline stat-value">3</p><p class="museo-label stat-label">Creative Disciplines</p></div>
+    </div>
   </div>
 </section>
+
+<section id="projects">
+  <div class="projects-grid">
+    <div class="project-card exhibit-card">
+      <div class="project-card-img-wrap"><img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/grid-space-waste.jpg" /><div class="project-card-overlay"></div></div>
+      <div class="project-card-text"><h3 class="museo-headline">Space Waste</h3></div>
+    </div>
+    <div class="project-card exhibit-card">
+      <div class="project-card-img-wrap"><img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/grid-beat-it-up.jpg" /><div class="project-card-overlay"></div></div>
+      <div class="project-card-text"><h3 class="museo-headline">Beat It Up</h3></div>
+    </div>
+  </div>
+</section>
+
+<section id="featured">
+  <div class="stacking-cards">
+    <div class="stack-card" id="stack-0">
+      <div class="stack-card-inner">
+        <div class="stack-card-img"><img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/coll-space-waste.jpg" /></div>
+        <div class="stack-card-text"><h3 class="museo-headline stack-card-title coll-text-el">Space Waste</h3><p class="museo-body stack-card-desc coll-text-el">Game Jam Plus Award Winner.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="testimonials-section">
+<section id="awards">
+  <div class="awards-inner">
+    <blockquote class="museo-headline awards-quote reveal-item">"Best of Meio e Mensagem Regional Advertising."</blockquote>
+  </div>
+</section>
+</div>
+
+<section id="contact">
+  <div class="contact-cards">
+    <div class="info-card"><h3 class="museo-headline info-card-title">Email</h3><p class="museo-body info-card-content">flaviofurtado@gmail.com</p></div>
+    <div class="info-card"><h3 class="museo-headline info-card-title">Location</h3><p class="museo-body info-card-content">Belem, Pará</p></div>
+  </div>
+</section>
+
+<div id="footer-section">
+<footer>
+  <div class="marquee-wrap"><div class="marquee-track"><span>FLAVIO FURTADO — ART DIRECTOR</span><span>FLAVIO FURTADO — ART DIRECTOR</span></div></div>
+</footer>
+</div>
 
 <script>
   gsap.registerPlugin(ScrollTrigger);
 
-  // Animação de Entrada Hero
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => {
+    gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.1 });
+  });
+
+  // Entrada Hero
   const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-  tl.from('.hero-portrait', { opacity: 0, y: 50, duration: 1.2 })
+  tl.from('#hero-portrait', { opacity: 0, y: 50, duration: 1.2 })
     .from('#hero-name-left', { opacity: 0, x: 50, duration: 1 }, "-=0.8")
     .from('#hero-name-right', { opacity: 0, x: -50, duration: 1 }, "-=1")
     .from('#hero-concept, #hero-nav, #hero-sides, #hero-bottom', { opacity: 0, y: 20, stagger: 0.1 }, "-=0.5");
 
-  // Parallax Hero
-  gsap.to('#hero-name-left', { xPercent: -20, scrollTrigger: { trigger: "#hero", scrub: true } });
-  gsap.to('#hero-name-right', { xPercent: 20, scrollTrigger: { trigger: "#hero", scrub: true } });
+  // Transições de Fundo
+  [
+    ['#hero-section', '#9b9b93'],
+    ['#about', '#050505'],
+    ['#featured', '#f0f0f0'],
+    ['#contact', '#050505']
+  ].forEach(([sel, color]) => {
+    ScrollTrigger.create({
+      trigger: sel, start: 'top 60%',
+      onEnter: () => gsap.to('body', { backgroundColor: color }),
+      onEnterBack: () => gsap.to('body', { backgroundColor: color })
+    });
+  });
 </script>
-
 </body>
 </html>
