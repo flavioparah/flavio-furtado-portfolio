@@ -309,21 +309,21 @@ camera.position.z = 8;
 // 3. INTEGRAÇÃO COM GSAP SCROLLTRIGGER
 gsap.registerPlugin(ScrollTrigger);
 
-// Sincroniza o afastamento (Z) e a rotação com o scroll total da página
+// 🚀 ZOOM OUT: Sincroniza o afastamento (Z) com o scroll total da página
 gsap.to(camera.position, {
-  z: 65, // Afasta até este valor
+  z: 65, 
   scrollTrigger: {
     trigger: "body",
     start: "top top",
     end: "bottom bottom",
-    scrub: 1.5 // Valor maior = mais suavidade/atraso elegante
+    scrub: 1.5
   }
 });
 
-// Gira o elemento sincronizado ao movimento do scroll
+// 🚀 ROTAÇÃO: Gira o elemento sincronizado ao movimento do scroll
 gsap.to(torus.rotation, {
-  y: Math.PI * 4, // 2 voltas completas no eixo Y
-  x: Math.PI * 2, // 1 volta no eixo X
+  y: Math.PI * 4, 
+  x: Math.PI * 2, 
   scrollTrigger: {
     trigger: "body",
     start: "top top",
@@ -332,7 +332,44 @@ gsap.to(torus.rotation, {
   }
 });
 
-// 4. LOOP DE ANIMAÇÃO (Mantém uma rotação mínima constante além do scroll)
+// ✨ RESTAURAÇÃO DAS IMAGENS E MÁSCARAS (Para as imagens voltarem a aparecer)
+gsap.utils.toArray('.img-box').forEach(box => {
+  gsap.to(box, { 
+    clipPath: 'inset(0 0% 0 0)', 
+    scrollTrigger: { 
+      trigger: box, 
+      start: 'top 85%', 
+      end: 'top 40%', 
+      scrub: 1 
+    } 
+  });
+});
+
+gsap.utils.toArray('.mask-v').forEach(el => {
+  gsap.to(el, { 
+    clipPath: 'inset(0% 0 0 0)', 
+    scrollTrigger: { 
+      trigger: el, 
+      start: 'top 95%', 
+      end: 'top 75%', 
+      scrub: 0.5 
+    } 
+  });
+});
+
+gsap.utils.toArray('.mask-h').forEach(el => {
+  gsap.to(el, { 
+    clipPath: 'inset(0 0% 0 0)', 
+    scrollTrigger: { 
+      trigger: el, 
+      start: 'top 95%', 
+      end: 'top 75%', 
+      scrub: 0.5 
+    } 
+  });
+});
+
+// 4. LOOP DE ANIMAÇÃO (Rotação mínima constante)
 function animate() {
   torus.rotation.z += 0.001; 
   renderer.render(scene, camera);
@@ -346,7 +383,6 @@ window.addEventListener('resize', () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
-    
     
   </script>
 </body>
