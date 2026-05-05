@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games — Flavio Furtado</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;900&family=Playfair+Display:ital,wght@1,300&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <style>
+        :root { --bg: #030303; --fg: #ffffff; }
+        body { background-color: var(--bg); color: var(--fg); font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; cursor: none; }
+
+        /* Canvas de Fundo (Elementos 3D) */
+        #canvas-webgl {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Cursor Personalizado */
+        #cursor { position: fixed; width: 8px; height: 8px; background: #fff; border-radius: 50%; pointer-events: none; z-index: 9999; mix-blend-mode: difference; }
+        #cursor-follower { 
+            position: fixed; width: 40px; height: 40px; border: 1px solid white; border-radius: 50%; pointer-events: none; z-index: 9998; mix-blend-mode: difference;
+            transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+
+        /* Tipografia */
+        .giant-title { font-size: clamp(3rem, 12vw, 10rem); font-weight: 900; line-height: 0.8; letter-spacing: -0.06em; text-transform: uppercase; }
+        .serif-italic { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 300; text-transform: lowercase; }
+
+        /* Botão Voltar */
+        .back-btn {
+            position: fixed; top: 2rem; left: 2rem; z-index: 100;
+            font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.4em;
+            mix-blend-mode: difference; border: 1px solid rgba(255,255,255,0.3); padding: 0.8rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover { background: white; color: black; }
+
+        /* Estrutura do Card de Jogo */
+        .game-card {
+            position: relative;
+            width: 100%;
+            height: 85vh;
+            overflow: hidden;
+            margin-bottom: 5vh;
+            background: rgba(10, 10, 10, 0.2);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            text-decoration: none; /* Garante que o link não tenha sublinhado */
+            color: inherit;
+        }
+
+        .game-image-wrapper {
+            position: absolute;
+            top: -10%;
+            left: 0;
+            width: 100%;
+            height: 120%; 
+            z-index: 1;
+        }
+
+        .game-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.3;
+            filter: grayscale(100%) contrast(1.2);
+            transition: opacity 1s cubic-bezier(0.19, 1, 0.22, 1), filter 1s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .game-card:hover .game-image {
+            opacity: 0.6;
+            filter: grayscale(0%) contrast(1);
+        }
+
+        .game-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .game-number {
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 0.5em;
+            opacity: 0.4;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .game-title {
+            font-size: clamp(2rem, 8vw, 6rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -0.04em;
+            line-height: 0.9;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .game-meta {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 768px) {
+            .game-card { height: 60vh; }
+            .game-meta { flex-direction: column; gap: 0.5rem; }
+        }
+
+        .mask-v { clip-path: inset(100% 0 0 0); display: block; }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas-webgl"></canvas>
+
+    <div id="cursor"></div>
+    <div id="cursor-follower"></div>
+
+    <!-- Link de retorno para a página principal -->
+    <a href="index.html" class="back-btn">Voltar</a>
+
+    <main class="px-[5vw] pt-[20vh] pb-[10vh]">
+        <header class="mb-32">
+            <span class="text-[10px] uppercase tracking-[0.6em] opacity-40 mb-4 block">Selected Works</span>
+            <div class="mask-v"><h1 class="giant-title">GAMES</h1></div>
+            <div class="mask-v"><h1 class="giant-title serif-italic">& experiências</h1></div>
+        </header>
+
+        <section class="game-container">
+            
+            <!-- ==========================================
+                 BLOCO DE JOGO (COPIE DAQUI ATÉ O FIM DO BLOCO)
+                 ========================================== -->
+            <a href="https://link-do-seu-jogo-01.com" target="_blank" class="game-card">
+                <div class="game-image-wrapper">
+                    <!-- URL DA IMAGEM ABAIXO -->
+                    <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/imponderability.jpg" class="game-image" alt="Jogo Imponderability">
+                </div>
+                <div class="game-content">
+                    <span class="game-number">01</span> <!-- Número do Jogo -->
+                    <h2 class="game-title">Imponderability</h2> <!-- Título do Jogo -->
+                    <div class="game-meta">
+                        <span>Narrative Adventure</span> <!-- Categoria -->
+                        <span>Unity / C#</span> <!-- Tecnologia -->
+                        <span>2024</span> <!-- Ano -->
+                    </div>
+                </div>
+            </a>
+            <!-- FIM DO BLOCO DE JOGO 01 -->
+
+
+            <!-- ==========================================
+                 BLOCO DE JOGO 02
+                 ========================================== -->
+            <a href="https://link-do-seu-jogo-02.com" target="_blank" class="game-card">
+                <div class="game-image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070" class="game-image" alt="Jogo Neon Drift">
+                </div>
+                <div class="game-content">
+                    <span class="game-number">02</span>
+                    <h2 class="game-title">Neon Drift</h2>
+                    <div class="game-meta">
+                        <span>Tactical Racing</span>
+                        <span>Unreal Engine</span>
+                        <span>2023</span>
+                    </div>
+                </div>
+            </a>
+            <!-- FIM DO BLOCO DE JOGO 02 -->
+
+
+            <!-- ==========================================
+                 BLOCO DE JOGO 03
+                 ========================================== -->
+            <a href="https://link-do-seu-jogo-03.com" target="_blank" class="game-card">
+                <div class="game-image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=2070" class="game-image" alt="Jogo Deep Texture">
+                </div>
+                <div class="game-content">
+                    <span class="game-number">03</span>
+                    <h2 class="game-title">Void Echoes</h2>
+                    <div class="game-meta">
+                        <span>Psychological Horror</span>
+                        <span>Custom Engine</span>
+                        <span>2022</span>
+                    </div>
+                </div>
+            </a>
+            <!-- FIM DO BLOCO DE JOGO 03 -->
+
+            <!-- PARA ADICIONAR UM NOVO JOGO:
+                 Basta colar o bloco acima aqui, mudar o href, a img src e os textos. -->
+
+        </section>
+
+        <footer class="mt-32 py-12 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="text-[10px] uppercase tracking-[0.4em] opacity-30 text-center md:text-left">
+                Design é a solução. Games são o questionamento.
+            </div>
+            <div class="flex gap-12">
+                <!-- LINKS SOCIAIS/LOJAS ABAIXO -->
+                <a href="#" class="text-[10px] font-black uppercase tracking-widest hover:opacity-50 transition-opacity">Itch.io</a>
+                <a href="#" class="text-[10px] font-black uppercase tracking-widest hover:opacity-50 transition-opacity">Steam</a>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        // --- CONFIGURAÇÃO DO THREE.JS (FUNDO 3D) ---
+        let scene, camera, renderer, particles, cubes = [];
+        let scrollSpeed = 0;
+        let mouseX = 0, mouseY = 0;
+
+        function initThree() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas-webgl'), antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // Partículas (Poeira Digital)
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 2000;
+            const posArray = new Float32Array(particlesCount * 3);
+            for(let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 15;
+            }
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const particlesMaterial = new THREE.PointsMaterial({ size: 0.005, color: 0xffffff, transparent: true, opacity: 0.5 });
+            particles = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particles);
+
+            // Cubos Wireframe (Elementos de Game Design)
+            const cubeGeom = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+            const cubeMat = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.05 });
+            for(let i = 0; i < 15; i++) {
+                const cube = new THREE.Mesh(cubeGeom, cubeMat);
+                cube.position.set((Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10);
+                cube.rotation.set(Math.random(), Math.random(), 0);
+                scene.add(cube);
+                cubes.push(cube);
+            }
+            animateThree();
+        }
+
+        function animateThree() {
+            requestAnimationFrame(animateThree);
+            particles.rotation.y += 0.001 + (scrollSpeed * 0.05);
+            cubes.forEach(cube => {
+                cube.rotation.x += 0.005;
+                cube.rotation.y += 0.005;
+                cube.position.z += 0.005 + (scrollSpeed * 0.1);
+                if(cube.position.z > 5) cube.position.z = -5;
+            });
+            camera.position.x += (mouseX * 0.2 - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY * 0.2 - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+            mouseY = (e.clientY / window.innerHeight) * 2 - 1;
+        });
+
+        // --- LENIS & GSAP (SCROLL E PARALAXE) ---
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+        });
+        
+        lenis.on('scroll', (e) => {
+            scrollSpeed = Math.abs(e.velocity) * 0.01;
+        });
+
+        function raf(time) { 
+            lenis.raf(time); 
+            requestAnimationFrame(raf); 
+        }
+        requestAnimationFrame(raf);
+
+        // Cursor Follower
+        const cursor = document.getElementById('cursor');
+        const follower = document.getElementById('cursor-follower');
+        window.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0 });
+            gsap.to(follower, { x: e.clientX - 20, y: e.clientY - 20, duration: 0.15 });
+        });
+
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Entrada do cabeçalho
+        gsap.to('.mask-v', {
+            clipPath: 'inset(0% 0 0 0)',
+            duration: 1.2,
+            ease: 'power4.out',
+            stagger: 0.1
+        });
+
+        // Loop para aplicar paralaxe em cada bloco de jogo detectado na página
+        gsap.utils.toArray('.game-card').forEach((card) => {
+            const wrapper = card.querySelector('.game-image-wrapper');
+            const content = card.querySelector('.game-content');
+
+            // Paralaxe da Imagem de Fundo
+            gsap.fromTo(wrapper, 
+                { y: "-10%" }, 
+                {
+                    y: "10%",
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top bottom",
+                        end: "bottom top",
+                        scrub: true
+                    }
+                }
+            );
+
+            // Paralaxe do Texto/Legenda (Flutuação)
+            gsap.fromTo(content,
+                { y: 50, opacity: 0 },
+                {
+                    y: -50,
+                    opacity: 1,
+                    ease: "power2.out",
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 90%",
+                        end: "bottom 10%",
+                        scrub: 1
+                    }
+                }
+            );
+        });
+
+        window.onload = initThree;
+    </script>
+</body>
+</html>
