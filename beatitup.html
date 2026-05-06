@@ -11,6 +11,9 @@
         :root {
             --neon-pink: #ff00ff;
             --neon-blue: #00ffff;
+            --neon-yellow: #ffff00;
+            --neon-green: #00ff00;
+            --neon-red: #ff0000;
             --bg-dark: #0d0221;
         }
 
@@ -24,7 +27,6 @@
 
         canvas { display: block; position: absolute; top: 0; left: 0; z-index: 1; }
 
-        /* Efeito de Scanlines CRT */
         .scanlines {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -72,7 +74,6 @@
             transform: translateX(-50%);
             width: 1020px;
             height: 180px;
-            /* Gradiente que simula a curvatura do plástico e brilho */
             background: linear-gradient(180deg, #2a154d 0%, #1a0b2e 15%, #0f051a 100%);
             border-top: 4px solid #3d206b;
             border-left: 2px solid #3d206b;
@@ -84,10 +85,9 @@
             align-items: center;
             padding: 1rem;
             box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8), inset 0 2px 10px rgba(255, 255, 255, 0.05);
-            border-radius: 20px 20px 0 0; /* Bordas arredondadas de moldagem de plástico */
+            border-radius: 20px 20px 0 0;
         }
 
-        /* Camada de grão para simular plástico poroso */
         .control-deck::before {
             content: "";
             position: absolute;
@@ -126,12 +126,13 @@
             font-size: 1.4rem;
             transition: all 0.1s;
             cursor: pointer;
-            /* Aspeto de botão plástico brilhante */
             box-shadow: 0 6px 0 rgba(0, 0, 0, 0.6), inset 0 -4px 6px rgba(0,0,0,0.3), inset 0 4px 6px rgba(255,255,255,0.2);
         }
 
-        .btn-cyan { background: linear-gradient(145deg, #00aaaa, #007777); color: #fff; border-color: var(--neon-blue); }
-        .btn-pink { background: linear-gradient(145deg, #aa00aa, #770077); color: #fff; border-color: var(--neon-pink); }
+        /* Cores solicitadas para os botões */
+        .btn-green { background: linear-gradient(145deg, #00aa00, #007700); color: #fff; border-color: var(--neon-green); }
+        .btn-yellow { background: linear-gradient(145deg, #aaaa00, #777700); color: #fff; border-color: var(--neon-yellow); }
+        .btn-red { background: linear-gradient(145deg, #aa0000, #770000); color: #fff; border-color: var(--neon-red); }
 
         .arcade-btn:active {
             transform: translateY(4px);
@@ -172,7 +173,7 @@
         <header class="flex justify-between items-start">
             <div>
                 <h1 class="heading-font text-5xl font-black italic text-pink-500" style="text-shadow: 4px 4px 0px var(--neon-blue)">BEAT IT UP</h1>
-                <p class="label-neon mt-1">DOWNTOWN RETRO TERMINAL</p>
+                <p class="label-neon mt-1" style="color: #00ffff;">Beat em up + Rythm Game</p>
             </div>
             <div class="text-right">
                 <div class="label-neon text-yellow-400 animate-pulse text-lg">FREE PLAY</div>
@@ -183,9 +184,9 @@
         <div class="control-deck">
             <div class="joystick-area">
                 <div class="buttons-grid">
-                    <div class="arcade-btn btn-cyan" id="key-left">←</div>
-                    <div class="arcade-btn btn-pink" id="key-up">↑</div>
-                    <div class="arcade-btn btn-cyan" id="key-right">→</div>
+                    <div class="arcade-btn btn-green" id="key-left">←</div>
+                    <div class="arcade-btn btn-yellow" id="key-up">↑</div>
+                    <div class="arcade-btn btn-red" id="key-right">→</div>
                 </div>
                 <span class="label-neon">BOTÕES DE ATAQUE</span>
             </div>
@@ -226,7 +227,6 @@
             camera.position.set(0, 10, 115);
             camera.lookAt(0, 10, 0);
 
-            // Iluminação para realçar o material plástico (especularidade)
             const ambientLight = new THREE.AmbientLight(0x200b3b, 1.2);
             scene.add(ambientLight);
 
@@ -234,7 +234,6 @@
             sunLight.position.set(0, 80, -60);
             scene.add(sunLight);
 
-            // Luzes de destaque lateral (Rim lights)
             const pinkLight = new THREE.PointLight(0xff00ff, 3, 120);
             pinkLight.position.set(-70, 30, 50);
             scene.add(pinkLight);
@@ -249,21 +248,18 @@
 
             const arcadeGroup = new THREE.Group();
             
-            // Material plástico: Shininess alto e cor escura
             const plasticMat = new THREE.MeshPhongMaterial({ 
                 color: 0x120821, 
                 shininess: 80, 
                 specular: 0x332244 
             });
 
-            // Estrutura traseira
             const backGeo = new THREE.BoxGeometry(140, 150, 40);
             const back = new THREE.Mesh(backGeo, plasticMat);
             back.position.y = -10;
             back.position.z = -15;
             arcadeGroup.add(back);
 
-            // Marquee (Topo)
             const marqueeGeo = new THREE.BoxGeometry(145, 30, 60);
             const marquee = new THREE.Mesh(marqueeGeo, plasticMat);
             marquee.position.y = 65;
@@ -288,9 +284,16 @@
                     const btn = document.getElementById(btnId);
                     btn.style.transform = "translateY(4px)";
                     btn.style.filter = "brightness(1.5) contrast(1.2)";
+                    
+                    // Brilho específico por cor ao clicar
+                    if(btnId === "key-left") btn.style.boxShadow = "0 2px 0 #005500, 0 0 20px var(--neon-green)";
+                    if(btnId === "key-up") btn.style.boxShadow = "0 2px 0 #555500, 0 0 20px var(--neon-yellow)";
+                    if(btnId === "key-right") btn.style.boxShadow = "0 2px 0 #550000, 0 0 20px var(--neon-red)";
+
                     setTimeout(() => {
                         btn.style.transform = "translateY(0px)";
                         btn.style.filter = "brightness(1)";
+                        btn.style.boxShadow = "";
                     }, 100);
                 }
             });
@@ -306,7 +309,7 @@
 
         function animate() {
             requestAnimationFrame(animate);
-            if (scene.children[4]) { // arcadeGroup
+            if (scene.children[4]) {
                 scene.children[4].position.y = Math.sin(Date.now() * 0.001) * 0.4;
             }
             renderer.render(scene, camera);
