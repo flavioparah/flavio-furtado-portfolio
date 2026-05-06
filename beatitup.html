@@ -5,16 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BEAT IT UP | Arcade Retro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --neon-pink: #ff00ff;
             --neon-blue: #00ffff;
-            --neon-yellow: #ffff00;
-            --neon-green: #00ff00;
-            --neon-red: #ff0000;
-            --bg-dark: #0d0221;
+            --bg-dark: #050110;
         }
 
         body {
@@ -23,18 +19,42 @@
             color: #fff;
             font-family: 'Rajdhani', sans-serif;
             overflow: hidden;
+            height: 100vh;
         }
 
-        canvas { display: block; position: absolute; top: 0; left: 0; z-index: 1; }
+        /* Fundo Animado Ultra Leve com CSS */
+        .hyperspace-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1a0b2e 0%, #050110 100%);
+            z-index: 0;
+        }
+
+        .grid-floor {
+            position: absolute;
+            bottom: 0; width: 100%; height: 50%;
+            background-image: 
+                linear-gradient(rgba(255, 0, 255, 0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 255, 0.2) 1px, transparent 1px);
+            background-size: 100px 100px;
+            transform: perspective(500px) rotateX(60deg);
+            transform-origin: top;
+            animation: move-grid 2s linear infinite;
+        }
+
+        @keyframes move-grid {
+            from { background-position: 0 0; }
+            to { background-position: 0 100px; }
+        }
 
         .scanlines {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 4px, 3px 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
+            background-size: 100% 4px;
             pointer-events: none;
             z-index: 20;
+            opacity: 0.4;
         }
 
         .ui-overlay {
@@ -48,22 +68,20 @@
             padding: 1.5rem;
         }
 
-        .heading-font { font-family: 'Orbitron', sans-serif; }
-        
         .game-screen-wrapper {
             position: absolute;
-            top: 40%;
+            top: 45%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 960px;
-            height: 580px;
+            width: 90%;
+            max-width: 960px;
+            aspect-ratio: 16 / 9;
             background: #000;
-            border: 14px solid #2d0a4e;
-            box-shadow: 0 0 60px rgba(255, 0, 255, 0.3), inset 0 0 30px rgba(0, 255, 255, 0.2);
+            border: 6px solid #2d0a4e;
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.2);
             pointer-events: all;
             z-index: 5;
-            border-radius: 6px;
-            overflow: hidden;
+            border-radius: 4px;
         }
 
         .control-deck {
@@ -71,135 +89,89 @@
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 1020px;
-            height: 180px;
-            background: linear-gradient(180deg, #2a154d 0%, #1a0b2e 15%, #0f051a 100%);
-            border-top: 4px solid #3d206b;
-            border-left: 2px solid #3d206b;
-            border-right: 2px solid #3d206b;
+            width: 100%;
+            max-width: 1000px;
+            height: 140px;
+            background: #120821;
+            border-top: 3px solid #3d206b;
             z-index: 15;
             pointer-events: all;
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding: 1rem;
-            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8), inset 0 2px 10px rgba(255, 255, 255, 0.05);
-            border-radius: 20px 20px 0 0;
-        }
-
-        .control-deck::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-            opacity: 0.04;
-            pointer-events: none;
-            mix-blend-mode: overlay;
-            border-radius: 20px 20px 0 0;
-        }
-
-        .joystick-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .buttons-grid {
-            display: flex;
-            gap: 20px;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.9);
+            border-radius: 15px 15px 0 0;
         }
 
         .arcade-btn {
-            width: 65px;
-            height: 65px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
-            border: 4px solid rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: 'Orbitron', sans-serif;
             font-weight: bold;
-            font-size: 1.4rem;
-            transition: all 0.1s;
+            font-size: 1.1rem;
             cursor: pointer;
-            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.6), inset 0 -4px 6px rgba(0,0,0,0.3), inset 0 4px 6px rgba(255,255,255,0.2);
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.6);
+            transition: transform 0.05s;
         }
 
-        .btn-green { background: linear-gradient(145deg, #00aa00, #007700); color: #fff; border-color: var(--neon-green); }
-        .btn-yellow { background: linear-gradient(145deg, #aaaa00, #777700); color: #fff; border-color: var(--neon-yellow); }
-        .btn-red { background: linear-gradient(145deg, #aa0000, #770000); color: #fff; border-color: var(--neon-red); }
+        .btn-green { background: #008800; color: #fff; border: 3px solid #00ff00; }
+        .btn-yellow { background: #888800; color: #fff; border: 3px solid #ffff00; }
+        .btn-red { background: #880000; color: #fff; border: 3px solid #ff0000; }
 
-        .arcade-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(0,0,0,0.5);
+        .btn-active {
+            transform: scale(0.9) translateY(4px);
+            filter: brightness(1.5);
+            box-shadow: 0 0 15px currentColor;
         }
 
         .label-neon {
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem;
-            letter-spacing: 2px;
+            font-size: 0.65rem;
+            letter-spacing: 1px;
             color: var(--neon-blue);
-            text-shadow: 0 0 8px var(--neon-blue);
             text-transform: uppercase;
         }
 
-        .pc-instruction {
-            text-align: center;
-            border: 2px solid rgba(0, 255, 255, 0.1);
-            padding: 12px 24px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 8px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-            position: relative;
-            z-index: 2;
-        }
-
-        @media (max-width: 1100px) {
-            .game-screen-wrapper { transform: translate(-50%, -50%) scale(0.8); }
-            .control-deck { transform: translateX(-50%) scale(0.8); bottom: -20px; }
+        @media (max-width: 768px) {
+            .control-deck { height: 100px; }
+            .arcade-btn { width: 40px; height: 40px; font-size: 0.9rem; }
         }
     </style>
 </head>
 <body>
 
+    <div class="hyperspace-bg">
+        <div class="grid-floor"></div>
+    </div>
+    
     <div class="scanlines"></div>
 
     <div class="ui-overlay">
         <header class="flex justify-between items-start">
-            <div>
-                <h1 class="heading-font text-5xl font-black italic text-pink-500" style="text-shadow: 4px 4px 0px var(--neon-blue)">BEAT IT UP</h1>
-                <p class="label-neon mt-1" style="color: #00ffff;">Beat em up + Rythm Game</p>
+            <div class="pointer-events-none">
+                <h1 class="font-['Orbitron'] text-3xl font-black italic text-pink-500">BEAT IT UP</h1>
+                <p class="label-neon mt-1">Beat em up + Rhythm Game</p>
             </div>
             <div class="text-right">
-                <div class="label-neon text-yellow-400 animate-pulse text-lg">HYPERSPACE CONNECTED</div>
-                <p class="text-[10px] text-gray-500 uppercase mt-1">VELOCITY: MAX // 199X</p>
+                <p class="label-neon text-yellow-400">FPS STABLE MODE</p>
             </div>
         </header>
 
         <div class="control-deck">
-            <div class="joystick-area">
-                <div class="buttons-grid">
-                    <div class="arcade-btn btn-green" id="key-left">←</div>
-                    <div class="arcade-btn btn-yellow" id="key-up">↑</div>
-                    <div class="arcade-btn btn-red" id="key-right">→</div>
-                </div>
-                <span class="label-neon">BOTÕES DE ATAQUE</span>
+            <div class="flex gap-6 md:gap-10">
+                <div class="arcade-btn btn-green" id="key-left">←</div>
+                <div class="arcade-btn btn-yellow" id="key-up">↑</div>
+                <div class="arcade-btn btn-red" id="key-right">→</div>
             </div>
-
-            <div class="pc-instruction">
-                <p class="heading-font text-[12px] text-yellow-400 mb-2">MODO COMPUTADOR</p>
-                <p class="text-[13px] text-gray-200 leading-tight">
-                    USA AS <span class="text-white font-bold">SETAS DO TECLADO</span><br>
-                    GOLPEIA NO <span class="text-pink-500 font-bold">RITMO DA MÚSICA</span>
-                </p>
+            <div class="hidden md:block text-center opacity-30">
+                <p class="text-[11px] uppercase tracking-widest">Ritmo & Porrada</p>
             </div>
-
-            <div class="flex flex-col items-center gap-2 relative z-10">
-                <div class="w-14 h-14 rounded-full border-2 border-white/20 flex items-center justify-center text-[10px] text-white/40 font-bold bg-black/40 shadow-inner">START</div>
-                <span class="label-neon">PLAYER 1</span>
+            <div class="flex flex-col items-center">
+                <div class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-[8px] text-white/20">START</div>
             </div>
         </div>
     </div>
@@ -209,148 +181,41 @@
             src="https://itch.io/embed-upload/14977764?color=333333" 
             frameborder="0" 
             style="width: 100%; height: 100%;"
-            allowfullscreen=""
             allow="autoplay; fullscreen; keyboard"
-        >
-            <a href="https://parampara.itch.io/beatitup">Play Beat it up! on itch.io</a>
-        </iframe>
+        ></iframe>
     </div>
 
     <script>
-        let scene, camera, renderer, grid, stars;
+        // Mapeamento de teclas para feedback visual
+        const keyMap = {
+            "ArrowLeft": "key-left",
+            "ArrowUp": "key-up",
+            "ArrowRight": "key-right"
+        };
 
-        function init() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 15, 120);
-            camera.lookAt(0, 10, 0);
-
-            const ambientLight = new THREE.AmbientLight(0x200b3b, 1.2);
-            scene.add(ambientLight);
-
-            const sunLight = new THREE.PointLight(0xffaa00, 2.5, 200);
-            sunLight.position.set(0, 80, -60);
-            scene.add(sunLight);
-
-            const pinkLight = new THREE.PointLight(0xff00ff, 3, 150);
-            pinkLight.position.set(-80, 40, 60);
-            scene.add(pinkLight);
-
-            const blueLight = new THREE.PointLight(0x00ffff, 3, 150);
-            blueLight.position.set(80, 40, 60);
-            scene.add(blueLight);
-
-            // Grelha animada (Grid) para sensação de movimento
-            const gridGeo = new THREE.PlaneGeometry(1000, 1000, 50, 50);
-            const gridMat = new THREE.MeshBasicMaterial({ 
-                color: 0xff00ff, 
-                wireframe: true, 
-                transparent: true, 
-                opacity: 0.25 
-            });
-            grid = new THREE.Mesh(gridGeo, gridMat);
-            grid.rotation.x = -Math.PI / 2;
-            grid.position.y = -50;
-            scene.add(grid);
-
-            // Estrelas/Partículas vindo em direção à camera
-            const starGeo = new THREE.BufferGeometry();
-            const starCount = 1000;
-            const posArray = new Float32Array(starCount * 3);
-            for(let i=0; i<starCount * 3; i++) {
-                posArray[i] = (Math.random() - 0.5) * 800;
-            }
-            starGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            const starMat = new THREE.PointsMaterial({ size: 0.7, color: 0x00ffff });
-            stars = new THREE.Points(starGeo, starMat);
-            scene.add(stars);
-
-            // Arcade Cabinet
-            const arcadeGroup = new THREE.Group();
-            const plasticMat = new THREE.MeshPhongMaterial({ 
-                color: 0x120821, 
-                shininess: 80, 
-                specular: 0x332244 
-            });
-
-            const backGeo = new THREE.BoxGeometry(140, 150, 40);
-            const back = new THREE.Mesh(backGeo, plasticMat);
-            back.position.y = -10;
-            back.position.z = -15;
-            arcadeGroup.add(back);
-
-            const marqueeGeo = new THREE.BoxGeometry(145, 30, 60);
-            const marquee = new THREE.Mesh(marqueeGeo, plasticMat);
-            marquee.position.y = 65;
-            marquee.position.z = 5;
-            arcadeGroup.add(marquee);
-
-            scene.add(arcadeGroup);
-
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setClearColor(0x0d0221);
-            document.body.appendChild(renderer.domElement);
-
-            window.addEventListener('keydown', (e) => {
-                let btnId = "";
-                if (e.key === "ArrowLeft") btnId = "key-left";
-                if (e.key === "ArrowUp") btnId = "key-up";
-                if (e.key === "ArrowRight") btnId = "key-right";
-                
-                if (btnId) {
-                    const btn = document.getElementById(btnId);
-                    btn.style.transform = "translateY(4px)";
-                    btn.style.filter = "brightness(1.5) contrast(1.2)";
-                    if(btnId === "key-left") btn.style.boxShadow = "0 2px 0 #005500, 0 0 20px var(--neon-green)";
-                    if(btnId === "key-up") btn.style.boxShadow = "0 2px 0 #555500, 0 0 20px var(--neon-yellow)";
-                    if(btnId === "key-right") btn.style.boxShadow = "0 2px 0 #550000, 0 0 20px var(--neon-red)";
+        window.addEventListener('keydown', (e) => {
+            const id = keyMap[e.key];
+            if (id) {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.classList.add('btn-active');
                     setTimeout(() => {
-                        btn.style.transform = "translateY(0px)";
-                        btn.style.filter = "brightness(1)";
-                        btn.style.boxShadow = "";
+                        btn.classList.remove('btn-active');
                     }, 100);
                 }
+            }
+        });
+
+        // Clique nos botões virtuais (mobile)
+        document.querySelectorAll('.arcade-btn').forEach(btn => {
+            btn.addEventListener('mousedown', () => btn.classList.add('btn-active'));
+            btn.addEventListener('mouseup', () => btn.classList.remove('btn-active'));
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                btn.classList.add('btn-active');
             });
-
-            window.addEventListener('resize', onWindowResize);
-        }
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            const time = Date.now() * 0.001;
-
-            // Movimento da grelha em direção à câmara
-            grid.position.z = (time * 100) % 50;
-
-            // Movimento das estrelas (túnel hyperspace)
-            const positions = stars.geometry.attributes.position.array;
-            for(let i=0; i<positions.length; i+=3) {
-                positions[i+2] += 4; // Velocidade em direção à camera
-                if(positions[i+2] > 200) {
-                    positions[i+2] = -600;
-                }
-            }
-            stars.geometry.attributes.position.needsUpdate = true;
-
-            // Vibração do Gabinete Arcade
-            if (scene.children[5]) { 
-                scene.children[5].position.y = Math.sin(time * 8) * 0.5;
-                scene.children[5].position.x = Math.cos(time * 5) * 0.2;
-            }
-
-            renderer.render(scene, camera);
-        }
-
-        window.onload = init;
-        animate();
+            btn.addEventListener('touchend', () => btn.classList.remove('btn-active'));
+        });
     </script>
 </body>
 </html>
