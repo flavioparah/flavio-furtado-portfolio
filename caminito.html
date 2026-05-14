@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Caminito — Flavio Furtado</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;900&family=Playfair+Display:ital,wght@1,300&display=swap" rel="stylesheet" />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    :root { --bg: #030303; --fg: #ffffff; }
+    body { background-color: var(--bg); color: var(--fg); font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; cursor: none; }
+
+    #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+    #cursor { position: fixed; width: 8px; height: 8px; background: #fff; border-radius: 50%; pointer-events: none; z-index: 9999; mix-blend-mode: difference; }
+    #cursor-follower { 
+      position: fixed; width: 40px; height: 40px; border: 1px solid white; border-radius: 50%; pointer-events: none; z-index: 9998; mix-blend-mode: difference;
+      transition: transform 0.1s ease-out; 
+    }
+
+    .giant-title { font-size: clamp(3rem, 10vw, 12rem); font-weight: 900; line-height: 0.8; letter-spacing: -0.06em; text-transform: uppercase; }
+    .serif-italic { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 300; text-transform: lowercase; }
+
+    main { position: relative; z-index: 10; mix-blend-mode: exclusion; }
+    
+    .art-card { position: relative; width: 100%; margin-bottom: 10vh; }
+    .art-wrapper {
+      position: relative; width: 100%; overflow: hidden;
+      clip-path: inset(0 100% 0 0); background: #111;
+    }
+    .art-wrapper img, .art-wrapper video {
+      width: 100%; height: auto; display: block;
+      transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    .art-card:hover img { transform: scale(1.05); }
+
+    .art-info {
+      padding: 1.5rem 0; display: flex; justify-content: space-between; align-items: baseline;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .back-btn {
+      position: fixed; bottom: 40px; left: 40px; z-index: 100; font-size: 10px; font-weight: 900;
+      letter-spacing: 0.4em; text-transform: uppercase; padding: 15px 30px;
+      border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px);
+      transition: all 0.3s ease; background: rgba(0,0,0,0.5);
+    }
+    .back-btn:hover { background: white; color: black; }
+
+    .grid-wide { grid-column: span 12; }
+    .grid-half { grid-column: span 6; }
+    .grid-narrow { grid-column: span 4; }
+  </style>
+</head>
+<body>
+  <div id="cursor"></div>
+  <div id="cursor-follower"></div>
+  <div id="canvas-container"></div>
+
+  <nav class="fixed top-0 left-0 w-full p-8 z-[100] flex justify-between items-start mix-blend-difference">
+    <div class="font-black text-xl tracking-tighter">FF / CAMINITO</div>
+    <div class="text-[10px] font-black uppercase tracking-[0.5em] opacity-40">Parrilla & Soul</div>
+  </nav>
+
+  <a href="ads.html" class="back-btn">Projetos</a>
+
+  <main class="px-[5vw] pt-[25vh] pb-[20vh]">
+    <header class="mb-[15vh]">
+      <span class="text-xs uppercase tracking-[0.6em] opacity-40 block mb-4">Case Study — 2019 / 2022</span>
+      <h1 class="giant-title">CAMINITO</h1>
+      <h1 class="giant-title serif-italic">somos todos latinos</h1>
+    </header>
+
+    <div class="grid grid-cols-12 gap-x-12">
+      
+      <!-- Peça: outdoor-conceito-caminito.jpg -->
+      <div class="art-card grid-wide">
+        <div class="art-wrapper">
+          <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/caminito/outdoor-conceito-caminito.jpg" alt="Outdoor Conceito">
+        </div>
+        <div class="art-info">
+          <h3 class="text-2xl font-black uppercase tracking-tighter">Outdoor Conceito</h3>
+          <span class="text-[10px] opacity-40 uppercase tracking-widest">Key Visual / OOH</span>
+        </div>
+      </div>
+
+      <!-- Peça: CMT_peça_conceito_A3.jpg -->
+      <div class="art-card grid-half mt-[5vh]">
+        <div class="art-wrapper">
+          <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/caminito/CMT_peça_conceito_A3.jpg" alt="Peça Conceito A3">
+        </div>
+        <div class="art-info">
+          <h3 class="text-xl font-black uppercase tracking-tighter">Peça Conceito A3</h3>
+          <span class="text-[10px] opacity-40 uppercase tracking-widest">Editorial / Print</span>
+        </div>
+      </div>
+
+      <!-- Peça: Carnes_caminito.jpg -->
+      <div class="art-card grid-half mt-[15vh]">
+        <div class="art-wrapper">
+          <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/caminito/Carnes_caminito.jpg" alt="Carnes Caminito">
+        </div>
+        <div class="art-info">
+          <h3 class="text-xl font-black uppercase tracking-tighter">Carnes & Delicatessen</h3>
+          <span class="text-[10px] opacity-40 uppercase tracking-widest">Product Focus</span>
+        </div>
+      </div>
+
+      <div class="art-card grid-wide my-[10vh]">
+        <div class="art-wrapper">
+          <video autoplay muted loop playsinline class="w-full">
+            <source src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/caminito/video_conceito_caminito_somos_todos_latinos-2.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="art-info">
+          <h3 class="text-3xl font-black uppercase tracking-tighter">Manifesto: Somos Todos Latinos</h3>
+          <span class="text-[10px] opacity-40 uppercase tracking-widest">Brand Film</span>
+        </div>
+      </div>
+
+      <!-- Peça: Coma_na_argentina_sem_sair_do_brasil.jpg -->
+      <div class="art-card grid-half">
+        <div class="art-wrapper">
+          <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/caminito/Coma_na_argentina_sem_sair_do_brasil.jpg" alt="Experiência Argentina">
+        </div>
+        <div class="art-info">
+          <h3 class="text-xl font-black uppercase tracking-tighter">Sem Sair do Brasil</h3>
+          <span class="text-[10px] opacity-40 uppercase tracking-widest">Social Concept</span>
+        </div>
+      </div>
+
+      <!-- Peça: La_parriplla_hermano!.jpg -->
+      <div class="art-card grid-half mt-[10vh]">
+        <div class="art-wrapper">
+          <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/caminito/La_parriplla_hermano!.jpg" alt="La Parrilla Hermano">
+        </div>
+        <div class="art-info">
+          <h3 class="text-xl font-black uppercase tracking-tighter">La Parrilla, Hermano!</h3>
+          <span class="text-[10px] opacity-40 uppercase tracking-widest">Engagement</span>
+        </div>
+      </div>
+
+      <div class="art-card grid-narrow">
+        <div class="art-wrapper">
+          <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/caminito/La_boca_Caminito.jpg" alt="La Boca">
+        </div>
+        <div class="art-info">
+          <h4 class="font-black uppercase tracking-tighter">La Boca Vibes</h4>
+        </div>
+      </div>
+
+      <div class="art-card grid-narrow mt-[10vh]">
+        <div class="art-wrapper">
+          <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/caminito/gastronomia_argentina.jpg" alt="Gastronomia">
+        </div>
+        <div class="art-info">
+          <h4 class="font-black uppercase tracking-tighter">Gastronomia</h4>
+        </div>
+      </div>
+
+      <div class="art-card grid-narrow mt-[20vh]">
+        <div class="art-wrapper">
+          <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/caminito/Los-cortes.jpg" alt="Los Cortes">
+        </div>
+        <div class="art-info">
+          <h4 class="font-black uppercase tracking-tighter">Los Cortes</h4>
+        </div>
+      </div>
+
+      <div class="art-card grid-half">
+        <div class="art-wrapper">
+          <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/caminito/Executivos_do_almoço.jpg" alt="Executivos do Almoço">
+        </div>
+        <div class="art-info">
+          <h3 class="text-xl font-black uppercase tracking-tighter">Executivos do Almoço</h3>
+          <span class="text-[10px] opacity-40 uppercase tracking-widest">B2B Strategy</span>
+        </div>
+      </div>
+
+      <div class="art-card grid-half mt-[5vh]">
+        <div class="art-wrapper">
+          <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/caminito/Happy_congra_das_ninas.jpg" alt="Happy das Ninas">
+        </div>
+        <div class="art-info">
+          <h3 class="text-xl font-black uppercase tracking-tighter">Happy das Ninas</h3>
+          <span class="text-[10px] opacity-40 uppercase tracking-widest">Lifestyle</span>
+        </div>
+      </div>
+
+    </div>
+
+    <section class="mt-[20vh] text-center border-t border-white/10 pt-20">
+      <p class="text-xs uppercase tracking-[0.8em] opacity-30 mb-8">Fim do Case</p>
+      <a href="ads.html" class="text-[6vw] font-black hover:italic transition-all">PRÓXIMO PROJETO</a>
+    </section>
+
+  </main>
+
+  <script>
+    const lenis = new Lenis();
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
+
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursor-follower');
+    window.addEventListener('mousemove', (e) => {
+      gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0 });
+      gsap.to(follower, { x: e.clientX - 20, y: e.clientY - 20, duration: 0.15 });
+    });
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+    const geometry = new THREE.TorusKnotGeometry(12, 4, 200, 32);
+    const material = new THREE.MeshNormalMaterial({ wireframe: true, transparent: true, opacity: 0.1 });
+    const torus = new THREE.Mesh(geometry, material);
+    scene.add(torus);
+    camera.position.z = 25; 
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    gsap.to(torus.rotation, {
+      z: Math.PI * 2,
+      x: Math.PI * 1.5,
+      scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 1.5 }
+    });
+
+    gsap.utils.toArray('.art-wrapper').forEach(wrapper => {
+      gsap.to(wrapper, {
+        clipPath: 'inset(0 0% 0 0)',
+        scrollTrigger: {
+          trigger: wrapper,
+          start: 'top 90%',
+          end: 'top 40%',
+          scrub: 1.2
+        }
+      });
+    });
+
+    function animate() { 
+      torus.rotation.y += 0.002; 
+      renderer.render(scene, camera); 
+      requestAnimationFrame(animate); 
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
