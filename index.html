@@ -39,10 +39,6 @@
     .img-box { position: relative; width: 100%; height: 70vh; overflow: hidden; background: #111; margin: 3rem 0; clip-path: inset(0 100% 0 0); border-radius: 2px; }
     .img-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transform: scale(1.1); transition: transform 0.8s ease; }
 
-    .side-nav { position: fixed; right: 2rem; top: 50%; transform: translateY(-50%); z-index: 100; display: flex; flex-direction: column; gap: 0.8rem; mix-blend-mode: difference; }
-    .side-dot { width: 6px; height: 6px; border: 1px solid white; border-radius: 50%; transition: all 0.3s ease; cursor: pointer; }
-    .side-dot:hover { background: rgba(255,255,255,0.5); }
-
     .section-link {
       display: inline-flex; align-items: center; gap: 1rem; margin-top: 1rem; padding: 1rem 2.5rem;
       border: 1px solid rgba(255,255,255,0.3); font-size: 11px; font-weight: 900; letter-spacing: 0.3em;
@@ -51,12 +47,6 @@
     .section-link:hover { background: white; color: black; padding-left: 3.5rem; }
 
     #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: #fff; width: 0%; z-index: 1000; }
-
-    .insight-card {
-      border: 1px solid rgba(255,255,255,0.1); padding: 2rem; transition: all 0.4s ease;
-      cursor: pointer; display: block; text-decoration: none; color: inherit;
-    }
-    .insight-card:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.6); transform: translateY(-5px); }
   </style>
 </head>
 <body>
@@ -71,7 +61,6 @@
     <nav class="flex flex-col gap-2 text-right text-[10px] font-black uppercase tracking-widest opacity-60">
       <a href="#hero" class="hover:opacity-100">Valor</a>
       <a href="#games" class="hover:opacity-100">Projetos</a>
-      <a href="#insights" class="hover:opacity-100">Insights</a>
       <a href="#about" class="hover:opacity-100">Perfil</a>
     </nav>
   </header>
@@ -93,16 +82,6 @@
         <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/awards.png" alt="Awards">
       </div>
       <div class="mask-v"><h2 class="text-6xl md:text-[8vw] font-black">AWARDS</h2></div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mt-10">
-        <div class="border-t border-white/20 pt-6">
-          <h4 class="font-black uppercase text-xl">HackerNoon 2024</h4>
-          <p class="text-sm opacity-40 uppercase tracking-widest mt-2">2º Lugar Startup do Ano (Games)</p>
-        </div>
-        <div class="border-t border-white/20 pt-6">
-          <h4 class="font-black uppercase text-xl">Game Jam Plus</h4>
-          <p class="text-sm opacity-40 uppercase tracking-widest mt-2">Melhor Design de Narrativa</p>
-        </div>
-      </div>
     </section>
 
     <section id="games">
@@ -111,8 +90,6 @@
         <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/staying-the-game.gif" alt="Games">
       </div>
       <div class="mask-h"><h2 class="giant-title">GAMES</h2></div>
-      <p class="max-w-xl text-xl font-light opacity-60 mt-6">Narrativa cinemática e gameplay visceral.</p>
-      <a href="#" class="section-link">Explore Parampara</a>
     </section>
 
     <section id="about">
@@ -120,20 +97,17 @@
       <div class="grid grid-cols-12 gap-10">
         <div class="col-span-12 lg:col-span-7">
           <div class="mask-v"><h2 class="text-6xl font-black mb-8">DIREÇÃO CRIATIVA<br>& INOVAÇÃO</h2></div>
-          <p class="text-lg opacity-60 font-light">Empreendedor focado em IA, Automação e Web3.</p>
-          <a href="#" class="section-link">LinkedIn Perfil</a>
+          <p class="text-lg opacity-60 font-light">Empreendedor focado em IA e Web3.</p>
         </div>
       </div>
     </section>
   </main>
 
   <script>
-    // 1. Smooth Scroll (Lenis)
     const lenis = new Lenis({ duration: 1.4 });
     function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
     requestAnimationFrame(raf);
 
-    // 2. Cursor Customizado
     const cursor = document.getElementById('cursor');
     const follower = document.getElementById('cursor-follower');
     window.addEventListener('mousemove', (e) => {
@@ -141,7 +115,7 @@
       gsap.to(follower, { x: e.clientX - 20, y: e.clientY - 20, duration: 0.15 });
     });
 
-    // 3. Three.js - Elemento 3D Interativo
+    // 3. Three.js - Configuração Imersiva
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -149,29 +123,39 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-    // Geometria Complexa (TorusKnot)
-    const geometry = new THREE.TorusKnotGeometry(12, 3.5, 200, 32);
-    const material = new THREE.MeshNormalMaterial({ wireframe: true, transparent: true, opacity: 0.15 });
+    // Objeto 3D maior para garantir que ele nunca saia da tela
+    const geometry = new THREE.TorusKnotGeometry(15, 4, 180, 24);
+    const material = new THREE.MeshNormalMaterial({ wireframe: true, transparent: true, opacity: 0.18 });
     const torus = new THREE.Mesh(geometry, material);
     scene.add(torus);
 
-    camera.position.z = 60; // Posição inicial
+    // Começa MAIS PRÓXIMO para envolver o site desde o início
+    camera.position.z = 25; 
 
-    // 4. GSAP ScrollTrigger - Controle do 3D
     gsap.registerPlugin(ScrollTrigger);
 
-    // Animação da Câmera atravessando o objeto
+    // Timeline do Passeio 3D
     const tl3d = gsap.timeline({
       scrollTrigger: {
         trigger: "body",
         start: "top top",
         end: "bottom bottom",
-        scrub: 1
+        scrub: 1.5 // Suavidade maior no arraste
       }
     });
 
-    tl3d.to(camera.position, { z: -40, ease: "none" })
-        .to(torus.rotation, { z: Math.PI * 1.5, x: Math.PI, ease: "none" }, 0);
+    // Câmera avança mas para antes de perder o objeto de vista
+    // Rotação em múltiplos eixos para manter o objeto "vivo" na tela
+    tl3d.to(camera.position, { 
+      z: -10, 
+      ease: "power1.inOut" 
+    })
+    .to(torus.rotation, { 
+      z: Math.PI * 2, 
+      x: Math.PI * 1.5,
+      y: Math.PI,
+      ease: "none" 
+    }, 0);
 
     // Animações de Interface
     gsap.utils.toArray('.img-box').forEach(box => {
@@ -185,20 +169,14 @@
       });
     });
 
-    gsap.to("#progress-bar", {
-      width: "100%", ease: "none",
-      scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 0.3 }
-    });
-
-    // 5. Render Loop
     function animate() {
-      torus.rotation.y += 0.003; // Rotação constante sutil
+      // Rotação de base sutil
+      torus.rotation.y += 0.002; 
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     }
     animate();
 
-    // Redimensionamento
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
