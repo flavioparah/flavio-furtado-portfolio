@@ -29,8 +29,8 @@
     .giant-title { font-size: clamp(3rem, 12vw, 18rem); font-weight: 900; line-height: 0.8; letter-spacing: -0.06em; text-transform: uppercase; }
     .serif-italic { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 300; text-transform: lowercase; }
 
-    .mask-v { clip-path: inset(100% 0 0 0); display: block; transition: clip-path 0.6s cubic-bezier(0.19, 1, 0.22, 1); }
-    .mask-h { clip-path: inset(0 100% 0 0); display: block; transition: clip-path 0.6s cubic-bezier(0.19, 1, 0.22, 1); }
+    .mask-v { clip-path: inset(100% 0 0 0); display: block; }
+    .mask-h { clip-path: inset(0 100% 0 0); display: block; }
 
     section { position: relative; width: 100%; min-height: 100vh; z-index: 10; display: flex; flex-direction: column; justify-content: center; padding: 15vh 8vw; mix-blend-mode: exclusion; border-bottom: 1px solid rgba(255,255,255,0.05); }
     
@@ -44,38 +44,19 @@
     .side-dot:hover { background: rgba(255,255,255,0.5); }
 
     .section-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 1rem;
-      margin-top: 1rem;
-      padding: 1rem 2.5rem;
-      border: 1px solid rgba(255,255,255,0.3);
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      transition: all 0.4s ease;
-      background: rgba(255,255,255,0.05);
-      backdrop-filter: blur(5px);
+      display: inline-flex; align-items: center; gap: 1rem; margin-top: 1rem; padding: 1rem 2.5rem;
+      border: 1px solid rgba(255,255,255,0.3); font-size: 11px; font-weight: 900; letter-spacing: 0.3em;
+      text-transform: uppercase; transition: all 0.4s ease; background: rgba(255,255,255,0.05); backdrop-filter: blur(5px);
     }
     .section-link:hover { background: white; color: black; padding-left: 3.5rem; }
 
     #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: #fff; width: 0%; z-index: 1000; }
 
     .insight-card {
-      border: 1px solid rgba(255,255,255,0.1);
-      padding: 2rem;
-      transition: all 0.4s ease;
-      cursor: pointer;
-      display: block;
-      text-decoration: none;
-      color: inherit;
+      border: 1px solid rgba(255,255,255,0.1); padding: 2rem; transition: all 0.4s ease;
+      cursor: pointer; display: block; text-decoration: none; color: inherit;
     }
-    .insight-card:hover {
-      background: rgba(255,255,255,0.05);
-      border-color: rgba(255,255,255,0.6);
-      transform: translateY(-5px);
-    }
+    .insight-card:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.6); transform: translateY(-5px); }
   </style>
 </head>
 <body>
@@ -84,20 +65,6 @@
   <div id="cursor"></div>
   <div id="cursor-follower"></div>
   <div id="canvas-container"></div>
-
-  <!-- MENU LATERAL (SIDE NAV) -->
-  <div class="side-nav hidden lg:flex">
-    <a href="#hero" class="side-dot"></a>
-    <a href="#awards" class="side-dot"></a>
-    <a href="#games" class="side-dot"></a>
-    <a href="#ad" class="side-dot"></a>
-    <a href="#startups" class="side-dot"></a>
-    <a href="#illustrations" class="side-dot"></a>
-    <a href="#philosophy" class="side-dot"></a>
-    <a href="#insights" class="side-dot"></a>
-    <a href="#about" class="side-dot"></a>
-    <a href="#contact" class="side-dot"></a>
-  </div>
 
   <header class="fixed top-0 left-0 w-full p-8 z-[100] flex justify-between items-start mix-blend-difference">
     <div class="font-black text-xl tracking-tighter">FLÁVIO FURTADO</div>
@@ -110,24 +77,19 @@
   </header>
 
   <main>
-    <!-- 01. CONCEITO -->
     <section id="hero">
       <span class="tag">EU CRIO</span>
       <div class="mask-v"><h1 class="giant-title">VALOR</h1></div>
       <div class="mask-h"><h1 class="giant-title serif-italic">& percepção</h1></div>
       <div class="mt-12 max-w-lg">
-        <p class="text-[11px] opacity-60 uppercase tracking-[0.4em] leading-relaxed">
-        Onde a estética encontra a substância.
-        </p>
+        <p class="text-[11px] opacity-60 uppercase tracking-[0.4em] leading-relaxed">Onde a estética encontra a substância.</p>
         <a href="#about" class="section-link">Descobrir Visão</a>
       </div>
     </section>
 
-    <!-- 02. PRÊMIOS -->
     <section id="awards">
       <span class="tag">Reconhecimentos:</span>
       <div class="img-box">
-        <!-- 📸 COLOQUE O LINK DO GITHUB PARA 'PRÊMIOS' ABAIXO: -->
         <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/awards.png" alt="Awards">
       </div>
       <div class="mask-v"><h2 class="text-6xl md:text-[8vw] font-black">AWARDS</h2></div>
@@ -138,158 +100,40 @@
         </div>
         <div class="border-t border-white/20 pt-6">
           <h4 class="font-black uppercase text-xl">Game Jam Plus</h4>
-          <p class="text-sm opacity-40 uppercase tracking-widest mt-2">Melhor Design de Narrativa — Ghostein</p>
+          <p class="text-sm opacity-40 uppercase tracking-widest mt-2">Melhor Design de Narrativa</p>
         </div>
       </div>
-      <a href="awards.html" target="_blank" class="section-link">Ver Premiação</a>
     </section>
 
-    <!-- 03. GAMES -->
     <section id="games">
       <span class="tag">Mundos Interactivos:</span>
       <div class="img-box">
-        <!-- 📸 COLOQUE O LINK DO GITHUB PARA 'GAMES' ABAIXO: -->
         <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/staying-the-game.gif" alt="Games">
       </div>
       <div class="mask-h"><h2 class="giant-title">GAMES</h2></div>
-      <p class="max-w-xl text-xl font-light opacity-60 mt-6">Narrativa cinemática e gameplay visceral. Fundador da Parampara Game Studio.</p>
-      <a href="games.html" target="_blank" class="section-link">Explore Parampara</a>
+      <p class="max-w-xl text-xl font-light opacity-60 mt-6">Narrativa cinemática e gameplay visceral.</p>
+      <a href="#" class="section-link">Explore Parampara</a>
     </section>
 
-    <!-- 04. PROPAGANDA -->
-    <section id="ad">
-      <span class="tag">Estratégia Criativa:</span>
-      <div class="mask-v"><h2 class="giant-title text-right">ADS</h2></div>
-      <div class="img-box h-[50vh]">
-        <!-- 📸 COLOQUE O LINK DO GITHUB PARA 'PROPAGANDA' ABAIXO: -->
-        <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/galileu.gif" alt="Advertising">
-      </div>
-      <div class="text-right">
-        <p class="text-3xl font-light italic serif-italic">Liderança criativa em grandes agências.</p>
-        <a href="#" class="section-link">Portfólio Criativo</a>
-      </div>
-    </section>
-
-    <!-- 05. STARTUPS -->
-    <section id="startups">
-      <span class="tag">Novos Negócios:</span>
-      <div class="img-box h-[40vh]">
-        <!-- 📸 COLOQUE O LINK DO GITHUB PARA 'STARTUPS' ABAIXO: -->
-        <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/turn waste into wealth.jpeg" alt="Startups">
-      </div>
-      <div class="mask-h"><h2 class="giant-title">web3</h2></div>
-      <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-12">
-        <div class="space-y-4">
-          <h3 class="text-4xl font-black">PYROLYZER</h3>
-          <p class="opacity-50 uppercase tracking-[0.3em] text-xs">Transformando resíduos em riqueza.</p>
-          <a href="https://pyzcoin.org" target="_blank" class="section-link">Aceder Pyrolyzer</a>
-        </div>
-        <div class="space-y-4">
-          <h3 class="text-4xl font-black">RPC PRIORITY</h3>
-          <p class="opacity-50 uppercase tracking-[0.3em] text-xs">CRYPTO PRIORITY INFRA FOR THE AGENT ERA.</p>
-          <a href="https://rpcpriority.com/" target="_blank" class="section-link">Aceder RPC Priority</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- 06. ART CRAFT -->
-    <section id="illustrations">
-      <span class="tag">Craft Visual:</span>
-      <div class="grid md:grid-cols-2 gap-12 items-center">
-        <div class="img-box !h-[70vh] !m-0">
-          <!-- 📸 COLOQUE O LINK DO GITHUB PARA 'ART CRAFT' ABAIXO: -->
-          <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/imponderability.jpg" alt="Art Craft">
-        </div>
-        <div>
-          <div class="mask-v"><h2 class="text-7xl md:text-9xl font-black">ART</h2></div>
-          <div class="mask-v"><h2 class="text-7xl md:text-9xl font-black serif-italic">craft</h2></div>
-          <p class="mt-6 text-lg opacity-50 uppercase tracking-widest font-light">Explorando as fronteiras entre o digital e o orgânico através de traços autorais.</p>
-          <a href="ilustracao.html" class="section-link">Ver Galeria</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- 09. FILOSOFIA -->
-    <section id="philosophy">
-      <span class="tag">Ethos Humano</span>
-      <div class="text-center py-20">
-        <div class="mask-v"><h2 class="giant-title">FILOSOFIA</h2></div>
-        <p class="max-w-3xl mx-auto text-xl font-light opacity-60 leading-relaxed mt-10">
-          "Transformar desafios em oportunidades através da inovação que gera valor positivo."
-        </p>
-        <div class="img-box h-[40vh] mt-10">
-          <!-- 📸 COLOQUE O LINK DO GITHUB PARA 'FILOSOFIA' ABAIXO: -->
-          <img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=2070" alt="Philosophy">
-        </div>
-        <a href="https://flaviofurtado.com.br" target="_blank" class="section-link">Aceder Manifesto</a>
-      </div>
-    </section>
-
-    <!-- 10. INSIGHTS -->
-    <section id="insights">
-      <span class="tag">Pensamento Crítico</span>
-      <div class="mask-h"><h2 class="giant-title serif-italic">insights</h2></div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-        <a href="#" class="insight-card">
-          <span class="text-[9px] opacity-40">INSIGHT — 01</span>
-          <h4 class="text-xl font-black mt-4 mb-2 uppercase">Percepção é Realidade</h4>
-          <p class="text-xs opacity-50 leading-relaxed uppercase tracking-widest">Como a estética define o valor de mercado.</p>
-        </a>
-        <a href="#" class="insight-card">
-          <span class="text-[9px] opacity-40">INSIGHT — 02</span>
-          <h4 class="text-xl font-black mt-4 mb-2 uppercase">IA & Curadoria</h4>
-          <p class="text-xs opacity-50 leading-relaxed uppercase tracking-widest">A inteligência artificial não substitui o gosto.</p>
-        </a>
-        <a href="#" class="insight-card">
-          <span class="text-[9px] opacity-40">INSIGHT — 03</span>
-          <h4 class="text-xl font-black mt-4 mb-2 uppercase">Valor Sistémico</h4>
-          <p class="text-xs opacity-50 leading-relaxed uppercase tracking-widest">Resolver problemas globais exige empatia.</p>
-        </a>
-      </div>
-      <div class="img-box h-[30vh] mt-12">
-        <!-- 📸 COLOQUE O LINK DO GITHUB PARA 'INSIGHTS FOOTER' ABAIXO: -->
-        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070" alt="Insights Footer">
-      </div>
-    </section>
-
-    <!-- 11. SOBRE -->
     <section id="about">
-      <span class="tag">11 Perfil</span>
+      <span class="tag">Perfil</span>
       <div class="grid grid-cols-12 gap-10">
         <div class="col-span-12 lg:col-span-7">
           <div class="mask-v"><h2 class="text-6xl font-black mb-8">DIREÇÃO CRIATIVA<br>& INOVAÇÃO</h2></div>
-          <div class="space-y-6 text-lg opacity-60 leading-relaxed font-light">
-            <p>Empreendedor criativo com sólida formação pela Miami Ad School SP.</p>
-          </div>
-          <a href="https://www.linkedin.com/in/flavioparah/" target="_blank" class="section-link">LinkedIn Perfil</a>
-        </div>
-        <div class="col-span-12 lg:col-span-5">
-           <div class="img-box !h-[60vh] !m-0 grayscale">
-             <!-- 📸 COLOQUE O LINK DO GITHUB PARA 'FOTO PERFIL' ABAIXO: -->
-             <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/hero-portrait.png" alt="Flavio Furtado Profile">
-           </div>
+          <p class="text-lg opacity-60 font-light">Empreendedor focado em IA, Automação e Web3.</p>
+          <a href="#" class="section-link">LinkedIn Perfil</a>
         </div>
       </div>
     </section>
-
-    <!-- 12. CONTATO (RODAPÉ) -->
-    <footer id="contact" class="min-h-screen flex flex-col justify-center items-center p-8 relative z-10 mix-blend-exclusion">
-      <span class="tag">Disponível para Parcerias</span>
-      <div class="mask-v text-center">
-        <a href="mailto:contato@flaviofurtado.com" class="text-[12vw] font-black hover:opacity-20 transition-all leading-none">LET'S TALK</a>
-      </div>
-      <div class="absolute bottom-10 w-full px-20 flex justify-between text-[10px] uppercase tracking-widest opacity-30">
-        <div>BRAZIL · AMAZÔNIA · BELÉM</div>
-        <div>FF Studio © 2026</div>
-      </div>
-    </footer>
   </main>
 
   <script>
+    // 1. Smooth Scroll (Lenis)
     const lenis = new Lenis({ duration: 1.4 });
     function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
     requestAnimationFrame(raf);
 
+    // 2. Cursor Customizado
     const cursor = document.getElementById('cursor');
     const follower = document.getElementById('cursor-follower');
     window.addEventListener('mousemove', (e) => {
@@ -297,30 +141,64 @@
       gsap.to(follower, { x: e.clientX - 20, y: e.clientY - 20, duration: 0.15 });
     });
 
+    // 3. Three.js - Elemento 3D Interativo
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-    const torus = new THREE.Mesh(new THREE.TorusKnotGeometry(4, 1.2, 150, 20), new THREE.MeshNormalMaterial({ wireframe: true, transparent: true, opacity: 0.1 }));
+    // Geometria Complexa (TorusKnot)
+    const geometry = new THREE.TorusKnotGeometry(12, 3.5, 200, 32);
+    const material = new THREE.MeshNormalMaterial({ wireframe: true, transparent: true, opacity: 0.15 });
+    const torus = new THREE.Mesh(geometry, material);
     scene.add(torus);
-    torus.scale.set(10, 10, 10);
-    camera.position.z = 20;
 
+    camera.position.z = 60; // Posição inicial
+
+    // 4. GSAP ScrollTrigger - Controle do 3D
     gsap.registerPlugin(ScrollTrigger);
 
+    // Animação da Câmera atravessando o objeto
+    const tl3d = gsap.timeline({
+      scrollTrigger: {
+        trigger: "body",
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 1
+      }
+    });
+
+    tl3d.to(camera.position, { z: -40, ease: "none" })
+        .to(torus.rotation, { z: Math.PI * 1.5, x: Math.PI, ease: "none" }, 0);
+
+    // Animações de Interface
     gsap.utils.toArray('.img-box').forEach(box => {
       gsap.to(box, { clipPath: 'inset(0 0% 0 0)', scrollTrigger: { trigger: box, start: 'top 85%', end: 'top 40%', scrub: 1 } });
     });
 
     gsap.utils.toArray('.mask-v, .mask-h').forEach(el => {
-      gsap.to(el, { clipPath: el.classList.contains('mask-v') ? 'inset(0% 0 0 0)' : 'inset(0 0% 0 0)', scrollTrigger: { trigger: el, start: 'top 95%', end: 'top 75%', scrub: 0.5 } });
+      gsap.to(el, { 
+        clipPath: el.classList.contains('mask-v') ? 'inset(0% 0 0 0)' : 'inset(0 0% 0 0)', 
+        scrollTrigger: { trigger: el, start: 'top 95%', end: 'top 75%', scrub: 0.5 } 
+      });
     });
 
-    function animate() { torus.rotation.z += 0.001; renderer.render(scene, camera); requestAnimationFrame(animate); }
+    gsap.to("#progress-bar", {
+      width: "100%", ease: "none",
+      scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 0.3 }
+    });
+
+    // 5. Render Loop
+    function animate() {
+      torus.rotation.y += 0.003; // Rotação constante sutil
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    }
     animate();
 
+    // Redimensionamento
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
