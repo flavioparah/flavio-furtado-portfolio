@@ -18,7 +18,7 @@
         :root { --bg: #030303; --fg: #ffffff; }
         body { background-color: var(--bg); color: var(--fg); font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; cursor: none; }
 
-        /* Canvas de Fundo (Elementos 3D) */
+        /* Canvas de Fundo */
         #canvas-webgl {
             position: fixed;
             top: 0;
@@ -56,13 +56,13 @@
             height: 85vh;
             overflow: hidden;
             margin-bottom: 5vh;
-            background: rgba(10, 10, 10, 0.2);
+            background: rgba(10, 10, 10, 0.1);
             backdrop-filter: blur(5px);
             display: flex;
             align-items: center;
             justify-content: center;
             border-top: 1px solid rgba(255,255,255,0.05);
-            text-decoration: none; /* Garante que o link não tenha sublinhado */
+            text-decoration: none;
             color: inherit;
         }
 
@@ -75,18 +75,26 @@
             z-index: 1;
         }
 
+        /* NOVO EFEITO DE ROLLOVER (Substituindo o P&B) */
         .game-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.3;
-            filter: grayscale(100%) contrast(1.2);
-            transition: opacity 1s cubic-bezier(0.19, 1, 0.22, 1), filter 1s cubic-bezier(0.19, 1, 0.22, 1);
+            opacity: 0.35;
+            /* Começa com pouca cor, escuro e leve desfoque */
+            filter: saturate(0.2) brightness(0.7) blur(3px);
+            transform: scale(1.1);
+            transition: 
+                opacity 1s cubic-bezier(0.19, 1, 0.22, 1), 
+                filter 1s cubic-bezier(0.19, 1, 0.22, 1),
+                transform 1.2s cubic-bezier(0.19, 1, 0.22, 1);
         }
 
         .game-card:hover .game-image {
-            opacity: 0.6;
-            filter: grayscale(0%) contrast(1);
+            opacity: 0.7;
+            /* Ganha cor total, nitidez e brilho */
+            filter: saturate(1) brightness(1) blur(0px);
+            transform: scale(1);
         }
 
         .game-content {
@@ -111,7 +119,7 @@
             text-transform: uppercase;
             letter-spacing: -0.04em;
             line-height: 0.9;
-            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
 
         .game-meta {
@@ -140,7 +148,6 @@
     <div id="cursor"></div>
     <div id="cursor-follower"></div>
 
-    <!-- Link de retorno para a página principal -->
     <a href="index.html" class="back-btn">Voltar</a>
 
     <main class="px-[5vw] pt-[20vh] pb-[10vh]">
@@ -152,33 +159,26 @@
 
         <section class="game-container">
             
-            <!-- =========================================================
-                 BLOCO DE JOGO BEAT IT UP (COPIE DAQUI ATÉ O FIM DO BLOCO)
-                 ========================================================= -->
+            <!-- JOGO 01 -->
             <a href="beatitup.html" target="_blank" class="game-card">
                 <div class="game-image-wrapper">
-                    <!-- URL DA IMAGEM ABAIXO -->
-                    <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/gameplay-beatitup.gif" class="game-image" alt="Jogo Imponderability">
+                    <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/gameplay-beatitup.gif" class="game-image" alt="Beat it Up">
                 </div>
                 <div class="game-content">
-                    <span class="game-number">01</span> <!-- Número do Jogo -->
-                    <h2 class="game-title">BEAT IT UP!</h2> <!-- Título do Jogo -->
+                    <span class="game-number">01</span>
+                    <h2 class="game-title">BEAT IT UP!</h2>
                     <div class="game-meta">
-                        <span>Beat 'em Up + Rhythm Game</span> <!-- Categoria -->
-                        <span>Unity / C#</span> <!-- Tecnologia -->
-                        <span>2025</span> <!-- Ano -->
+                        <span>Beat 'em Up + Rhythm Game</span>
+                        <span>Unity / C#</span>
+                        <span>2025</span>
                     </div>
                 </div>
             </a>
-            <!-- FIM DO BLOCO DE JOGO BEAT IT UP -->
 
-
-            <!-- ==========================================
-                 BLOCO DE JOGO KURMATRON
-                 ========================================== -->
+            <!-- JOGO 02 -->
             <a href="kurmatron.html" target="_blank" class="game-card">
                 <div class="game-image-wrapper">
-                    <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/kurma-maior-irado.gif" class="game-image" alt="Jogo Neon Drift">
+                    <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/kurma-maior-irado.gif" class="game-image" alt="Kurmatron">
                 </div>
                 <div class="game-content">
                     <span class="game-number">02</span>
@@ -190,15 +190,11 @@
                     </div>
                 </div>
             </a>
-            <!-- FIM DO BLOCO DE JOGO KURMATRON -->
 
-
-            <!-- ==========================================
-                 BLOCO DE JOGO GHOSTEIN
-                 ========================================== -->
+            <!-- JOGO 03 -->
             <a href="https://www.ghostein.com/" target="_blank" class="game-card">
                 <div class="game-image-wrapper">
-                    <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/cena-fantasma-voltando.gif" class="game-image" alt="Jogo Deep Texture">
+                    <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/cena-fantasma-voltando.gif" class="game-image" alt="Ghostein">
                 </div>
                 <div class="game-content">
                     <span class="game-number">03</span>
@@ -210,14 +206,11 @@
                     </div>
                 </div>
             </a>
-            <!-- FIM DO BLOCO DE JOGO GHOSTEIN -->
 
-            <!-- ==========================================
-                 BLOCO DE JOGO GAME DE OFERTAS MM
-                 ========================================== -->
+            <!-- JOGO 04 -->
             <a href="https://gamedeoferta.flaviofurtado.com/" target="_blank" class="game-card">
                 <div class="game-image-wrapper">
-                    <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/game-de-oferta.png" class="game-image" alt="Jogo Deep Texture">
+                    <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/game-de-oferta.png" class="game-image" alt="Game de Ofertas MM">
                 </div>
                 <div class="game-content">
                     <span class="game-number">04</span>
@@ -229,10 +222,6 @@
                     </div>
                 </div>
             </a>
-            <!-- FIM DO BLOCO DE GAME DE OFERTAS -->
-
-            <!-- PARA ADICIONAR UM NOVO JOGO:
-                 Basta colar o bloco acima aqui, mudar o href, a img src e os textos. -->
 
         </section>
 
@@ -241,7 +230,6 @@
                 Design é a solução. Games são o questionamento.
             </div>
             <div class="flex gap-12">
-                <!-- LINKS SOCIAIS/LOJAS ABAIXO -->
                 <a href="#" class="text-[10px] font-black uppercase tracking-widest hover:opacity-50 transition-opacity">Itch.io</a>
                 <a href="#" class="text-[10px] font-black uppercase tracking-widest hover:opacity-50 transition-opacity">Steam</a>
             </div>
@@ -249,7 +237,6 @@
     </main>
 
     <script>
-        // --- CONFIGURAÇÃO DO THREE.JS (FUNDO 3D) ---
         let scene, camera, renderer, particles, cubes = [];
         let scrollSpeed = 0;
         let mouseX = 0, mouseY = 0;
@@ -263,7 +250,6 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-            // Partículas (Poeira Digital)
             const particlesGeometry = new THREE.BufferGeometry();
             const particlesCount = 2000;
             const posArray = new Float32Array(particlesCount * 3);
@@ -275,7 +261,6 @@
             particles = new THREE.Points(particlesGeometry, particlesMaterial);
             scene.add(particles);
 
-            // Cubos Wireframe (Elementos de Game Design)
             const cubeGeom = new THREE.BoxGeometry(0.5, 0.5, 0.5);
             const cubeMat = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.05 });
             for(let i = 0; i < 15; i++) {
@@ -314,7 +299,6 @@
             mouseY = (e.clientY / window.innerHeight) * 2 - 1;
         });
 
-        // --- LENIS & GSAP (SCROLL E PARALAXE) ---
         const lenis = new Lenis({
             duration: 1.2,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
@@ -330,7 +314,6 @@
         }
         requestAnimationFrame(raf);
 
-        // Cursor Follower
         const cursor = document.getElementById('cursor');
         const follower = document.getElementById('cursor-follower');
         window.addEventListener('mousemove', (e) => {
@@ -340,7 +323,6 @@
 
         gsap.registerPlugin(ScrollTrigger);
 
-        // Entrada do cabeçalho
         gsap.to('.mask-v', {
             clipPath: 'inset(0% 0 0 0)',
             duration: 1.2,
@@ -348,12 +330,10 @@
             stagger: 0.1
         });
 
-        // Loop para aplicar paralaxe em cada bloco de jogo detectado na página
         gsap.utils.toArray('.game-card').forEach((card) => {
             const wrapper = card.querySelector('.game-image-wrapper');
             const content = card.querySelector('.game-content');
 
-            // Paralaxe da Imagem de Fundo
             gsap.fromTo(wrapper, 
                 { y: "-10%" }, 
                 {
@@ -368,7 +348,6 @@
                 }
             );
 
-            // Paralaxe do Texto/Legenda (Flutuação)
             gsap.fromTo(content,
                 { y: 50, opacity: 0 },
                 {
