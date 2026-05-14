@@ -75,28 +75,15 @@
             z-index: 1;
         }
 
-        /* NOVO EFEITO: DESFOCADO E MUITO SATURADO NA COR */
+        /* Estado inicial da imagem (será controlado pelo JS agora) */
         .game-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            /* Aumentamos a opacidade inicial para a cor aparecer mais */
-            opacity: 0.5;
-            /* Começa SUPER saturado na cor, escuro e com desfoque */
-            filter: saturate(3) brightness(0.6) blur(3px);
+            opacity: 0.4;
+            filter: saturate(4) brightness(0.5) blur(10px);
             transform: scale(1.1);
-            transition: 
-                opacity 1s cubic-bezier(0.19, 1, 0.22, 1), 
-                filter 1s cubic-bezier(0.19, 1, 0.22, 1),
-                transform 1.2s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-
-        .game-card:hover .game-image {
-            /* Fica mais visível no hover */
-            opacity: 0.8;
-            /* Volta à saturação normal, nitidez e brilho total */
-            filter: saturate(1) brightness(1) blur(0px);
-            transform: scale(1);
+            will-change: filter, opacity, transform;
         }
 
         .game-content {
@@ -161,7 +148,6 @@
 
         <section class="game-container">
             
-            <!-- JOGO 01 -->
             <a href="beatitup.html" target="_blank" class="game-card">
                 <div class="game-image-wrapper">
                     <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/gameplay-beatitup.gif" class="game-image" alt="Beat it Up">
@@ -177,7 +163,6 @@
                 </div>
             </a>
 
-            <!-- JOGO 02 -->
             <a href="kurmatron.html" target="_blank" class="game-card">
                 <div class="game-image-wrapper">
                     <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/kurma-maior-irado.gif" class="game-image" alt="Kurmatron">
@@ -193,7 +178,6 @@
                 </div>
             </a>
 
-            <!-- JOGO 03 -->
             <a href="https://www.ghostein.com/" target="_blank" class="game-card">
                 <div class="game-image-wrapper">
                     <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/cena-fantasma-voltando.gif" class="game-image" alt="Ghostein">
@@ -209,7 +193,6 @@
                 </div>
             </a>
 
-            <!-- JOGO 04 -->
             <a href="https://gamedeoferta.flaviofurtado.com/" target="_blank" class="game-card">
                 <div class="game-image-wrapper">
                     <img src="https://raw.githubusercontent.com/flavioparah/flavio-furtado-portfolio/main/game-de-oferta.png" class="game-image" alt="Game de Ofertas MM">
@@ -239,6 +222,7 @@
     </main>
 
     <script>
+        // --- THREE.JS ---
         let scene, camera, renderer, particles, cubes = [];
         let scrollSpeed = 0;
         let mouseX = 0, mouseY = 0;
@@ -247,7 +231,6 @@
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.z = 5;
-
             renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas-webgl'), antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -255,12 +238,9 @@
             const particlesGeometry = new THREE.BufferGeometry();
             const particlesCount = 2000;
             const posArray = new Float32Array(particlesCount * 3);
-            for(let i = 0; i < particlesCount * 3; i++) {
-                posArray[i] = (Math.random() - 0.5) * 15;
-            }
+            for(let i = 0; i < particlesCount * 3; i++) posArray[i] = (Math.random() - 0.5) * 15;
             particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            const particlesMaterial = new THREE.PointsMaterial({ size: 0.005, color: 0xffffff, transparent: true, opacity: 0.5 });
-            particles = new THREE.Points(particlesGeometry, particlesMaterial);
+            particles = new THREE.Points(particlesGeometry, new THREE.PointsMaterial({ size: 0.005, color: 0xffffff, transparent: true, opacity: 0.5 }));
             scene.add(particles);
 
             const cubeGeom = new THREE.BoxGeometry(0.5, 0.5, 0.5);
@@ -268,7 +248,6 @@
             for(let i = 0; i < 15; i++) {
                 const cube = new THREE.Mesh(cubeGeom, cubeMat);
                 cube.position.set((Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10);
-                cube.rotation.set(Math.random(), Math.random(), 0);
                 scene.add(cube);
                 cubes.push(cube);
             }
@@ -279,9 +258,7 @@
             requestAnimationFrame(animateThree);
             particles.rotation.y += 0.001 + (scrollSpeed * 0.05);
             cubes.forEach(cube => {
-                cube.rotation.x += 0.005;
-                cube.rotation.y += 0.005;
-                cube.position.z += 0.005 + (scrollSpeed * 0.1);
+                cube.rotation.x += 0.005; cube.rotation.y += 0.005; cube.position.z += 0.005 + (scrollSpeed * 0.1);
                 if(cube.position.z > 5) cube.position.z = -5;
             });
             camera.position.x += (mouseX * 0.2 - camera.position.x) * 0.05;
@@ -290,32 +267,16 @@
             renderer.render(scene, camera);
         }
 
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        window.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-            mouseY = (e.clientY / window.innerHeight) * 2 - 1;
-        });
-
-        const lenis = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
-        });
-        
-        lenis.on('scroll', (e) => {
-            scrollSpeed = Math.abs(e.velocity) * 0.01;
-        });
-
-        function raf(time) { 
-            lenis.raf(time); 
-            requestAnimationFrame(raf); 
-        }
+        // --- LENIS SCROLL ---
+        const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+        lenis.on('scroll', (e) => { scrollSpeed = Math.abs(e.velocity) * 0.01; });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
         requestAnimationFrame(raf);
 
+        // --- GSAP ANIMATIONS ---
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Cursor
         const cursor = document.getElementById('cursor');
         const follower = document.getElementById('cursor-follower');
         window.addEventListener('mousemove', (e) => {
@@ -323,50 +284,54 @@
             gsap.to(follower, { x: e.clientX - 20, y: e.clientY - 20, duration: 0.15 });
         });
 
-        gsap.registerPlugin(ScrollTrigger);
+        // Header Title
+        gsap.to('.mask-v', { clipPath: 'inset(0% 0 0 0)', duration: 1.2, ease: 'power4.out', stagger: 0.1 });
 
-        gsap.to('.mask-v', {
-            clipPath: 'inset(0% 0 0 0)',
-            duration: 1.2,
-            ease: 'power4.out',
-            stagger: 0.1
-        });
-
+        // Game Cards Logic
         gsap.utils.toArray('.game-card').forEach((card) => {
             const wrapper = card.querySelector('.game-image-wrapper');
+            const img = card.querySelector('.game-image');
             const content = card.querySelector('.game-content');
 
-            gsap.fromTo(wrapper, 
-                { y: "-10%" }, 
-                {
-                    y: "10%",
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: card,
-                        start: "top bottom",
-                        end: "bottom top",
-                        scrub: true
-                    }
-                }
-            );
+            // 1. Paralaxe do fundo (já existia)
+            gsap.fromTo(wrapper, { y: "-10%" }, {
+                y: "10%", ease: "none",
+                scrollTrigger: { trigger: card, start: "top bottom", end: "bottom top", scrub: true }
+            });
 
-            gsap.fromTo(content,
-                { y: 50, opacity: 0 },
-                {
-                    y: -50,
-                    opacity: 1,
-                    ease: "power2.out",
-                    scrollTrigger: {
-                        trigger: card,
-                        start: "top 90%",
-                        end: "bottom 10%",
-                        scrub: 1
-                    }
+            // 2. FOCO NO CENTRO DA TELA (Scroll-based Focus)
+            // A imagem foca quando o card está no centro (center center)
+            gsap.to(img, {
+                filter: "saturate(1) brightness(1) blur(0px)",
+                opacity: 0.8,
+                scale: 1,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 80%",   // Começa a focar quando o topo do card entra 80% da tela
+                    end: "top 20%",     // Foco máximo quando o card está bem no meio
+                    scrub: 1,           // Suaviza a transição
+                    toggleActions: "play reverse play reverse"
                 }
-            );
+            });
+
+            // 3. Paralaxe do Conteúdo (Texto)
+            gsap.fromTo(content, { y: 100, opacity: 0 }, {
+                y: -100, opacity: 1, ease: "power2.out",
+                scrollTrigger: { trigger: card, start: "top 90%", end: "bottom 10%", scrub: 1 }
+            });
         });
 
         window.onload = initThree;
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        window.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+            mouseY = (e.clientY / window.innerHeight) * 2 - 1;
+        });
     </script>
 </body>
 </html>
