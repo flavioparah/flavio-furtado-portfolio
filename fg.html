@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Faculdade FG — Flavio Furtado</title>
+  
+  <!-- Fontes Premium: Inter para dados técnicos e Playfair Display para o toque orgânico/itálico -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;900&family=Playfair+Display:ital,wght@1,300&display=swap" rel="stylesheet" />
+  
+  <!-- Bibliotecas de Performance e Animação -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    /* PALETA ACADÊMICA PREMIUM E INTELECTUAL */
+    :root { 
+      --bg: #070b13; /* Azul escuro quase preto, profundo e institucional */
+      --fg: #f3f4f6; /* Off-white cinza suave para tipografia limpa */
+      --accent: #f97316; /* Laranja FG - cor das ideias e da transformação */
+      --accent-muted: rgba(249, 115, 22, 0.2);
+    }
+    
+    body { 
+      background-color: var(--bg); 
+      color: var(--fg); 
+      font-family: 'Inter', sans-serif; 
+      margin: 0; 
+      overflow-x: hidden; 
+      cursor: none; /* Oculta cursor padrão para usarmos a mira de precisão */
+    }
+
+    /* Tela interativa de fundo: Rede de Conexões e Escolhas */
+    #connection-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none; /* Permite interações normais com o conteúdo da página */
+    }
+
+    /* Cursor personalizado estilo lente intelectual */
+    #cursor { 
+      position: fixed; 
+      width: 6px; 
+      height: 6px; 
+      background: var(--accent); 
+      border-radius: 50%; 
+      pointer-events: none; 
+      z-index: 9999; 
+    }
+    #cursor-follower { 
+      position: fixed; 
+      width: 44px; 
+      height: 44px; 
+      border: 1px solid var(--accent-muted); 
+      border-radius: 50%; 
+      pointer-events: none; 
+      z-index: 9998;
+      transition: transform 0.08s ease-out; 
+    }
+
+    /* Tipografias Brutalistas */
+    .giant-title { font-size: clamp(3rem, 10vw, 12rem); font-weight: 900; line-height: 0.8; letter-spacing: -0.05em; text-transform: uppercase; }
+    .serif-italic { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 300; text-transform: lowercase; }
+
+    main { position: relative; z-index: 10; }
+    
+    /* ENVELOPE DAS ARTES: Estilo de molduras de museu / editoria contemporânea */
+    .art-card { position: relative; width: 100%; margin-bottom: 16vh; opacity: 0; transform: translateY(40px); }
+    .art-wrapper { 
+      position: relative; 
+      width: 100%; 
+      display: block; 
+      border: 1px solid rgba(249, 115, 22, 0.15);
+      padding: 12px;
+      background: rgba(7, 11, 19, 0.85);
+      backdrop-filter: blur(8px);
+    }
+
+    /* Cantoneiras orgânicas simulando brackets de design técnico de prancheta */
+    .art-wrapper::before, .art-wrapper::after {
+      content: '';
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border: 1px solid var(--accent);
+      pointer-events: none;
+      opacity: 0.6;
+    }
+    .art-wrapper::before { top: -3px; left: -3px; border-right: none; border-bottom: none; }
+    .art-wrapper::after { bottom: -3px; right: -3px; border-left: none; border-top: none; }
+
+    /* Exibição integral das proporções para não cortar nenhuma mídia */
+    .art-wrapper img, .art-wrapper video {
+      width: 100%; 
+      height: auto; 
+      display: block;
+      border-radius: 1px;
+      transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .art-card:hover img { transform: scale(1.01); }
+
+    /* Legendas Técnicas das Campanhas */
+    .art-info {
+      padding: 1.5rem 0; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: baseline;
+      border-bottom: 1px dashed rgba(249, 115, 22, 0.15);
+    }
+
+    /* Botão Voltar Fixo */
+    .back-btn {
+      position: fixed; bottom: 40px; left: 40px; z-index: 100; font-size: 10px; font-weight: 900;
+      letter-spacing: 0.4em; text-transform: uppercase; padding: 15px 30px;
+      border: 1px solid rgba(249, 115, 22, 0.3); backdrop-filter: blur(10px);
+      transition: all 0.3s ease; background: rgba(7, 11, 19, 0.85);
+      color: var(--accent);
+    }
+    .back-btn:hover { background: var(--accent); color: #070b13; }
+
+    @media (max-width: 768px) {
+      .back-btn { left: 20px; bottom: 20px; padding: 10px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Canvas interativo de conexões/escolhas de fundo -->
+  <canvas id="connection-canvas"></canvas>
+
+  <!-- Elementos do Cursor Orgânico de Precisão -->
+  <div id="cursor"></div>
+  <div id="cursor-follower"></div>
+
+  <!-- Header Superior Minimalista -->
+  <nav class="fixed top-0 left-0 w-full p-8 z-[100] flex justify-between items-start mix-blend-difference">
+    <div class="font-black text-xl tracking-tighter text-[#f3f4f6]">FF / FACULDADE FG</div>
+    <div class="text-[10px] font-black uppercase tracking-[0.5em] opacity-60 text-[#f97316]">Uma Escolha Transforma o Mundo</div>
+  </nav>
+
+  <!-- Botão de retorno para a galeria geral -->
+  <a href="ads.html" class="back-btn">Projetos</a>
+
+  <main class="px-[5vw] pt-[25vh] pb-[20vh]">
+    
+    <!-- Cabeçalho Principal -->
+    <header class="mb-[15vh]">
+      <span class="text-xs uppercase tracking-[0.6em] text-[#f97316] block mb-4">Case Study — Campanha de Posicionamento</span>
+      <h1 class="giant-title text-white">UMA ESCOLHA</h1>
+      <h1 class="giant-title serif-italic text-[#f97316]">certa transforma o mundo</h1>
+    </header>
+
+    <!-- GRELHA DOS PROJETOS DA CAMPANHA -->
+    <div class="grid grid-cols-12 gap-x-12">
+      
+      <!-- =========================================================================
+           VÍDEO INSTITUCIONAL DA CAMPANHA (YOUTUBE)
+           URL: https://www.youtube.com/watch?v=5Bb-0BMmQM0
+           Tamanho: col-span-12 (Ocupa a largura total para imersão cinematográfica)
+           ========================================================================= -->
+      <div class="art-card col-span-12 md:col-span-10">
+        <div class="art-wrapper">
+          <div class="aspect-video w-full overflow-hidden rounded-[1px]">
+            <iframe 
+              class="w-full h-full" 
+              src="https://www.youtube.com/embed/5Bb-0BMmQM0?modestbranding=1&rel=0&autoplay=0" 
+              title="FG — Filme Campanha Institucional"
+              allowfullscreen>
+            </iframe>
+          </div>
+        </div>
+        <div class="art-info">
+          <div>
+            <h3 class="text-xl font-black uppercase tracking-tighter text-white">Faculdade FG — Filme Manifesto</h3>
+            <p class="text-[10px] text-[#f3f4f6] opacity-60 font-mono mt-1">DIREÇÃO DE CRIAÇÃO // COMERCIAL INSTITUCIONAL</p>
+          </div>
+          <span class="text-[10px] opacity-40 font-mono">youtube/5Bb-0BMmQM0</span>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           BLOCO CONCEITUAL: O PODER DAS DECISÕES
+           Tamanho: col-span-12 md:col-span-5 (Cria contraste textual e estético)
+           ========================================================================= -->
+      <div class="art-card col-span-12 md:col-span-5 flex flex-col justify-center pr-6 my-10">
+        <span class="text-xs uppercase tracking-[0.4em] text-[#f97316] opacity-60 mb-4">Estratégia & Conceito</span>
+        <h2 class="text-3xl md:text-5xl font-black uppercase tracking-tight mb-6 leading-tight">
+          As grandes mentes da história começaram com uma simples escolha.
+        </h2>
+        <p class="text-lg opacity-75 font-light leading-relaxed mb-6 text-gray-300">
+          Einstein quase escolheu a música. Karl Marx quase seguiu a advocacia pura. Galileu Galilei hesitou antes de mudar os olhos da física sobre o firmamento. A campanha para a Faculdade FG celebra o momento sagrado da escolha profissional do estudante, mostrando que as suas decisões têm o poder de moldar e revolucionar as gerações futuras.
+        </p>
+        <div class="border-t border-[#f97316]/30 pt-6">
+          <h4 class="font-black uppercase text-sm text-white">TRANSFORMAR A REALIDADE ATRAVÉS DO ENSINO</h4>
+          <p class="text-[10px] opacity-50 uppercase tracking-widest mt-1">Vestibular & Campanhas de Alto Impacto</p>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           TAKE EM GIF: galileu.gif
+           Caminho do arquivo: galileu.gif (na raiz)
+           Tamanho: col-span-12 md:col-span-7 (Lado a lado com o bloco textual)
+           ========================================================================= -->
+      <div class="art-card col-span-12 md:col-span-7">
+        <div class="art-wrapper">
+          <img src="galileu.gif" alt="Faculdade FG — Galileu Galilei GIF" onerror="this.onerror=null; this.src='https://placehold.co/800x450/080c14/f97316?text=galileu.gif';">
+        </div>
+        <div class="art-info">
+          <div>
+            <h3 class="text-lg font-black uppercase tracking-tighter text-white">Galileu Galilei — Take do Comercial</h3>
+            <p class="text-[10px] text-[#f3f4f6] opacity-60 font-mono mt-1">CONTEÚDO DINÂMICO // CINEMATOGRÁFICO LOOP</p>
+          </div>
+          <span class="text-[10px] opacity-40 font-mono">galileu.gif</span>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           CARD DE ARTWORK 1: EINSTEIN OUTDOOR
+           Caminho do arquivo: outdoor-einstein-FG.jpeg (na raiz)
+           Tamanho: col-span-12 md:col-span-10 (Destaque principal no scroll)
+           ========================================================================= -->
+      <div class="art-card col-span-12 md:col-span-10">
+        <div class="art-wrapper">
+          <img src="outdoor-einstein-FG.jpeg" alt="Faculdade FG — Einstein Outdoor Mockup" onerror="this.onerror=null; this.src='https://placehold.co/1200x800/080c14/f97316?text=outdoor-einstein-FG.jpeg';">
+        </div>
+        <div class="art-info">
+          <div>
+            <h3 class="text-xl font-black uppercase tracking-tighter text-white">Outdoor Einstein — "Se não fosse físico..."</h3>
+            <p class="text-[10px] text-[#f3f4f6] opacity-60 font-mono mt-1">MOCKUP URBANO // VEICULAÇÃO OOH</p>
+          </div>
+          <span class="text-[10px] opacity-40 font-mono">outdoor-einstein-FG.jpeg</span>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           CARD DE ARTWORK 2: ANÚNCIO MARX
+           Caminho do arquivo: anuncio-FG-marx.jpeg (na raiz)
+           Tamanho: col-span-12 md:col-span-8 md:col-start-2 (Foco centralizado elegante)
+           ========================================================================= -->
+      <div class="art-card col-span-12 md:col-span-8 md:col-start-2">
+        <div class="art-wrapper">
+          <img src="anuncio-FG-marx.jpeg" alt="Faculdade FG — Karl Marx Mockup" onerror="this.onerror=null; this.src='https://placehold.co/1000x1200/080c14/f97316?text=anuncio-FG-marx.jpeg';">
+        </div>
+        <div class="art-info">
+          <div>
+            <h3 class="text-xl font-black uppercase tracking-tighter text-white">Anúncio Karl Marx — "Filosofia & Escolhas"</h3>
+            <p class="text-[10px] text-[#f3f4f6] opacity-60 font-mono mt-1">ANÚNCIO EDITORIAL // REVISTA & IMPRESSO</p>
+          </div>
+          <span class="text-[10px] opacity-40 font-mono">anuncio-FG-marx.jpeg</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Seção de Encerramento e Navegação para as outras seções -->
+    <section class="mt-[20vh] text-center border-t border-[#f97316]/20 pt-20 relative z-10">
+      <p class="text-xs uppercase tracking-[0.8em] opacity-40 mb-8">Fim do Case Study</p>
+      <a href="ads.html" class="text-[6vw] font-black hover:italic transition-all text-white hover:text-[#f97316]">VOLTAR AOS PROJETOS</a>
+    </section>
+
+  </main>
+
+  <script>
+    // Inicialização do motor Lenis para rolagem física e suave
+    const lenis = new Lenis();
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
+
+    // Registro do cursor personalizado de precisão acadêmica
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursor-follower');
+    
+    // Coordenadas do mouse
+    let mouseX = -100;
+    let mouseY = -100;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      gsap.to(cursor, { x: mouseX, y: mouseY, duration: 0 });
+      gsap.to(follower, { x: mouseX - 22, y: mouseY - 22, duration: 0.1 });
+    });
+
+    // Animação das imagens aparecendo quando o usuário desce o scroll
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray('.art-card').forEach(card => {
+      gsap.to(card, {
+        opacity: 1,
+        y: 0,
+        duration: 1.4,
+        ease: "power4.out",
+        scrollTrigger: {
+          trigger: card,
+          start: 'top 85%',
+          toggleActions: "play none none none"
+        }
+      });
+    });
+
+    // =========================================================================
+    // SISTEMA DE PARTÍCULAS EM CANVAS: CONSTELAÇÃO DE ESCOLHAS & CONEXÕES
+    // =========================================================================
+    const canvas = document.getElementById('connection-canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Dimensionar o Canvas de acordo com o tamanho da janela do navegador
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Vetor de nódulos intelectuais (partículas)
+    const nodes = [];
+    const maxNodes = 65; // Densidade ideal para gerar conexões elegantes sem sobrecarregar a GPU
+
+    class IntellectNode {
+      constructor() {
+        this.reset();
+        // Distribui homogeneamente na inicialização
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height + 20; // Nasce logo abaixo
+        this.size = Math.random() * 2.5 + 1; // Nódulos delicados
+        this.speedX = Math.random() * 0.4 - 0.2; // Deriva lateral sutil
+        this.speedY = -(Math.random() * 0.7 + 0.3); // Ascensão lenta
+        this.opacity = Math.random() * 0.3 + 0.15; // Brilho variável
+      }
+
+      update(scrollDelta, mx, my) {
+        // Movimentação orbital suave e flutuação
+        this.x += this.speedX;
+        
+        // Rolagem de página impulsiona ligeiramente as partículas para cima
+        let scrollWind = scrollDelta * -0.08;
+        this.y += this.speedY + scrollWind;
+
+        // FÍSICA DE INTERAÇÃO COM O CURSOR (REPULSÃO SUAVE)
+        const dx = this.x - mx;
+        const dy = this.y - my;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const maxRepulseDist = 140; // Raio de influência intelectual do mouse
+
+        if (distance < maxRepulseDist) {
+          const force = (maxRepulseDist - distance) / maxRepulseDist;
+          // Força de afastamento sutil para passar a ideia de escolha e redirecionamento de caminhos
+          const forceX = (dx / distance) * force * 3;
+          const forceY = (dy / distance) * force * 3;
+
+          this.x += forceX;
+          this.y += forceY;
+        }
+
+        // Se sair das bordas laterais ou do topo, reseta na parte inferior
+        if (this.y < -20 || this.x < -20 || this.x > canvas.width + 20) {
+          this.reset();
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        ctx.fillStyle = '#f97316'; // Laranja FG sutil nos nós de conexão
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // Inicialização da malha de conexões
+    for (let i = 0; i < maxNodes; i++) {
+      nodes.push(new IntellectNode());
+    }
+
+    // Variáveis de Scroll
+    let lastScrollY = window.scrollY;
+    let scrollDelta = 0;
+
+    // Função de desenho de linhas conectivas entre mentes/ideias próximas
+    function drawConnections() {
+      const maxConnectDist = 110; // Distância máxima para traçar o link da escolha
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const dx = nodes[i].x - nodes[j].x;
+          const dy = nodes[i].y - nodes[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < maxConnectDist) {
+            // A opacidade da linha diminui conforme a distância aumenta
+            const alpha = (1 - (dist / maxConnectDist)) * 0.12;
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.strokeStyle = '#f3f4f6'; // Linhas em tom neutro claro de caminho
+            ctx.lineWidth = 0.6;
+            ctx.beginPath();
+            ctx.moveTo(nodes[i].x, nodes[i].y);
+            ctx.lineTo(nodes[j].x, nodes[j].y);
+            ctx.stroke();
+            ctx.restore();
+          }
+        }
+      }
+    }
+
+    // Loop de Renderização Cinematográfico (60fps estável)
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Calcula a velocidade de rolagem da página
+      const currentScrollY = window.scrollY;
+      scrollDelta = Math.abs(currentScrollY - lastScrollY);
+      lastScrollY = currentScrollY;
+
+      // Desaceleração gradual
+      scrollDelta *= 0.94;
+
+      // Desenhar linhas conectivas primeiro para as partículas ficarem por cima
+      drawConnections();
+
+      // Atualizar e desenhar nódulos
+      for (let i = 0; i < nodes.length; i++) {
+        nodes[i].update(scrollDelta, mouseX, mouseY);
+        nodes[i].draw();
+      }
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+</body>
+</html>
