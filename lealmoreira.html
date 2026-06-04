@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leal Moreira — Flavio Furtado</title>
+  
+  <!-- FONTES: Inter para os textos técnicos e Playfair Display para o estilo itálico artístico -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;900&family=Playfair+Display:ital,wght@1,300&display=swap" rel="stylesheet" />
+  
+  <!-- UTILS: Tailwind CSS (estilos rápidos), Lenis (rolagem suave) e GSAP (efeito de revelação no scroll) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    /* VARIÁVEIS DE COR DO BLUEPRINT */
+    :root { 
+      --bg: #071224; /* Azul de papel heliográfico / blueprint clássico */
+      --fg: #ffffff; 
+      --line-color: rgba(0, 140, 255, 0.12); /* Linhas finas do papel milimetrado */
+      --line-accent: rgba(0, 140, 255, 0.25); /* Linhas principais de divisão da grade */
+    }
+    
+    body { 
+      background-color: var(--bg); 
+      color: var(--fg); 
+      font-family: 'Inter', sans-serif; 
+      margin: 0; 
+      overflow-x: hidden; 
+      cursor: none; /* Esconde o cursor padrão para usarmos o estilo CAD */
+    }
+
+    /* ESTILIZAÇÃO DO PAPEL MILIMETRADO (BLUEPRINT) */
+    .blueprint-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      background-image: 
+        linear-gradient(var(--line-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line-color) 1px, transparent 1px),
+        linear-gradient(var(--line-accent) 2px, transparent 2px),
+        linear-gradient(90deg, var(--line-accent) 2px, transparent 2px);
+      background-size: 40px 40px, 40px 40px, 200px 200px, 200px 200px;
+      opacity: 0.85;
+    }
+
+    /* BORDA TÉCNICA MARGINAL (LINHA DO DESENHO) */
+    .blueprint-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      border: 1px solid rgba(0, 140, 255, 0.2);
+      margin: 20px;
+      width: calc(100% - 40px);
+      height: calc(100% - 40px);
+    }
+
+    /* CURSOR ESTILO MIRA DE DESENHO TÉCNICO (CAD) */
+    #cursor { position: fixed; width: 6px; height: 6px; background: #0099ff; border-radius: 50%; pointer-events: none; z-index: 9999; }
+    #cursor-follower { 
+      position: fixed; width: 44px; height: 44px; border: 1px dashed rgba(0, 150, 255, 0.5); border-radius: 50%; pointer-events: none; z-index: 9998;
+      transition: transform 0.08s ease-out; 
+    }
+
+    /* ESTILOS DE TÍTULOS */
+    .giant-title { font-size: clamp(3rem, 10vw, 12rem); font-weight: 900; line-height: 0.8; letter-spacing: -0.05em; text-transform: uppercase; }
+    .serif-italic { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 300; text-transform: lowercase; }
+
+    main { position: relative; z-index: 10; }
+    
+    /* ENVELOPE TÉCNICO DAS IMAGENS: Cria a sensação de prancheta de desenho */
+    .art-card { position: relative; width: 100%; margin-bottom: 16vh; opacity: 0; transform: translateY(40px); }
+    .art-wrapper { 
+      position: relative; 
+      width: 100%; 
+      display: block; 
+      border: 1px solid rgba(0, 140, 255, 0.3);
+      padding: 10px;
+      background: rgba(7, 18, 36, 0.8);
+    }
+
+    /* CANTONEIRAS EM L NO ESTILO MIRA DE VETOR */
+    .art-wrapper::before, .art-wrapper::after {
+      content: '';
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      border: 1px solid #0099ff;
+      pointer-events: none;
+    }
+    .art-wrapper::before { top: -3px; left: -3px; border-right: none; border-bottom: none; }
+    .art-wrapper::after { bottom: -3px; right: -3px; border-left: none; border-top: none; }
+
+    /* Exibição integral das proporções originais da imagem (não corta nenhuma peça) */
+    .art-wrapper img {
+      width: 100%; 
+      height: auto; 
+      display: block;
+      border-radius: 1px;
+      transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    /* Zoom sutil ao passar o mouse */
+    .art-card:hover img { transform: scale(1.015); }
+
+    /* LEGENDA DE PROJETOS */
+    .art-info {
+      padding: 1.5rem 0; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: baseline;
+      border-bottom: 1px dashed rgba(0, 140, 255, 0.2);
+    }
+
+    /* BOTÃO VOLTAR FIXO */
+    .back-btn {
+      position: fixed; bottom: 40px; left: 40px; z-index: 100; font-size: 10px; font-weight: 900;
+      letter-spacing: 0.4em; text-transform: uppercase; padding: 15px 30px;
+      border: 1px solid rgba(0, 140, 255, 0.3); backdrop-filter: blur(10px);
+      transition: all 0.3s ease; background: rgba(7, 18, 36, 0.8);
+      color: #0099ff;
+    }
+    .back-btn:hover { background: #0099ff; color: white; }
+
+    /* Responsivo para telemóveis */
+    @media (max-width: 768px) {
+      .back-btn { left: 20px; bottom: 20px; padding: 10px 20px; }
+      .blueprint-overlay { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Camadas do Fundo Técnico Blueprint -->
+  <div class="blueprint-bg"></div>
+  <div class="blueprint-overlay"></div>
+
+  <!-- Marcadores e Dados Técnicos de Canto (Estilo CAD) -->
+  <div class="fixed top-8 right-12 z-[100] text-[8px] font-mono text-blue-400 opacity-40 select-none hidden md:block text-right">
+    SYS_REF: LM_PORTFOLIO_2026 // PROJ_REV_05<br>
+    COORD_X: 48.29312 // COORD_Y: -1.20392
+  </div>
+
+  <!-- Elementos do Cursor customizado -->
+  <div id="cursor"></div>
+  <div id="cursor-follower"></div>
+
+  <!-- Header Superior Técnico -->
+  <nav class="fixed top-0 left-0 w-full p-8 z-[100] flex justify-between items-start mix-blend-difference">
+    <div class="font-black text-xl tracking-tighter text-blue-400">FF / LEAL MOREIRA</div>
+    <div class="text-[10px] font-black uppercase tracking-[0.5em] opacity-40">Luxury Real Estate</div>
+  </nav>
+
+  <!-- Retornar à página de Campanhas/Projetos -->
+  <a href="ads.html" class="back-btn">Projetos</a>
+
+  <main class="px-[5vw] pt-[25vh] pb-[20vh]">
+    
+    <!-- Título Principal do Case -->
+    <header class="mb-[15vh]">
+      <span class="text-xs uppercase tracking-[0.6em] text-blue-400 block mb-4">Case Study — Identidade & Arquitetura</span>
+      <h1 class="giant-title text-white">CONSTRUIR</h1>
+      <h1 class="giant-title serif-italic text-blue-400">arte & concreto</h1>
+    </header>
+
+    <!-- GRELHA DE CAMPANHAS (Sistema de Grid de 12 colunas do Tailwind) -->
+    <div class="grid grid-cols-12 gap-x-12">
+      
+      <!-- =========================================================================
+           CARD 1: INSTITUCIONAL - CONEXÃO LEAL (Spread 1)
+           COMO EDITAR: Altere a propriedade 'src' abaixo para alterar o arquivo
+           Largura: col-span-12 (Largura total no móvel) md:col-span-10 (Quase tela inteira no desktop)
+           ========================================================================= -->
+      <div class="art-card col-span-12 md:col-span-10">
+        <div class="art-wrapper">
+          <img src="leal-moreira/3duplas_Institucional_LM_LiV68.jpg" alt="Conexão Leal Moreira — Spread 1">
+        </div>
+        <div class="art-info">
+          <div>
+            <h3 class="text-xl font-black uppercase tracking-tighter text-white">Conexão Leal — Spread 01</h3>
+            <p class="text-[10px] text-blue-400 font-mono mt-1">PROJETO_A3 // INSTITUCIONAL</p>
+          </div>
+          <span class="text-[10px] opacity-40 font-mono">leal-moreira/3duplas_Institucional_LM_LiV68.jpg</span>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           CARD 2: CONEXÃO LEAL (Spread 2)
+           Largura: md:col-span-6 (Metade da tela no desktop)
+           Espaçamento superior extra: mt-[10vh] (Cria o desnível visual)
+           ========================================================================= -->
+      <div class="art-card col-span-12 md:col-span-6 mt-[10vh]">
+        <div class="art-wrapper">
+          <img src="leal-moreira/3duplas_Institucional_LM_LiV682.jpg" alt="Conexão Leal Moreira — Spread 2">
+        </div>
+        <div class="art-info">
+          <div>
+            <h3 class="text-lg font-black uppercase tracking-tighter text-white">Conexão Leal — Spread 02</h3>
+            <p class="text-[10px] text-blue-400 font-mono mt-1">RESTAURAR & VIVER</p>
+          </div>
+          <span class="text-[10px] opacity-40 font-mono">leal-moreira/3duplas_Institucional_LM_LiV682.jpg</span>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           CARD 3: CONEXÃO LEAL (Spread 3)
+           Largura: md:col-span-6 (Metade da tela no desktop)
+           Espaçamento superior extra: mt-[25vh] (Desnível mais acentuado)
+           ========================================================================= -->
+      <div class="art-card col-span-12 md:col-span-6 mt-[25vh]">
+        <div class="art-wrapper">
+          <img src="leal-moreira/3duplas_Institucional_LM_LiV683.jpg" alt="Conexão Leal Moreira — Spread 3">
+        </div>
+        <div class="art-info">
+          <div>
+            <h3 class="text-lg font-black uppercase tracking-tighter text-white">Conexão Leal — Spread 03</h3>
+            <p class="text-[10px] text-blue-400 font-mono mt-1">PLAYGROUNDS & VIVÊNCIAS</p>
+          </div>
+          <span class="text-[10px] opacity-40 font-mono">leal-moreira/3duplas_Institucional_LM_LiV683.jpg</span>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           CARD 4: ASSINATURA DE MARCA
+           Largura: md:col-span-8 (Ocupa 8 das 12 colunas no desktop)
+           Alinhamento central: md:col-start-2 (Pula a primeira coluna para centralizar)
+           ========================================================================= -->
+      <div class="art-card col-span-12 md:col-span-8 md:col-start-2 my-[10vh]">
+        <div class="art-wrapper">
+          <img src="leal-moreira/assinatura.jpg" alt="Só a Leal Faz um Leal">
+        </div>
+        <div class="art-info">
+          <div>
+            <h3 class="text-xl font-black uppercase tracking-tighter text-white">Só a Leal faz um Leal</h3>
+            <p class="text-[10px] text-blue-400 font-mono mt-1">ASSINATURA DE MARCA // CAMPAIGN SIGNATURE</p>
+          </div>
+          <span class="text-[10px] opacity-40 font-mono">leal-moreira/assinatura.jpg</span>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           CARD 5: CONCEPT ART BASQUIAT (Spread 4)
+           Largura: col-span-12 (Largura total no desktop para visualização de banner)
+           ========================================================================= -->
+      <div class="art-card col-span-12 my-[5vh]">
+        <div class="art-wrapper">
+          <img src="leal-moreira/peça-conceito-basquiat4.jpg" alt="Campanha Basquiat">
+        </div>
+        <div class="art-info">
+          <div>
+            <h3 class="text-2xl font-black uppercase tracking-tighter text-white">Basquiat — Peça Conceito 04</h3>
+            <p class="text-[10px] text-blue-400 font-mono mt-1">INTEGRAÇÃO ENTRE ARTE E URBANISMO</p>
+          </div>
+          <span class="text-[10px] opacity-40 font-mono">leal-moreira/peça-conceito-basquiat4.jpg</span>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           CARD 6: LOGOTIPO BASQUIAT
+           Largura: md:col-span-4 (Tamanho menor focado em logos e ícones)
+           ========================================================================= -->
+      <div class="art-card col-span-12 md:col-span-4 mt-[5vh]">
+        <div class="art-wrapper">
+          <img src="leal-moreira/Basquiat-ID-logo.jpg" alt="Logo Basquiat">
+        </div>
+        <div class="art-info">
+          <h4 class="font-black uppercase tracking-tighter text-white">Basquiat Calligraphy</h4>
+          <span class="text-[10px] opacity-40 font-mono">leal-moreira/Basquiat-ID-logo.jpg</span>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           CARD 7: SKYE TOWER - WORKOUT CONCEPT (Oliveira Belo 4)
+           Largura: md:col-span-8
+           ========================================================================= -->
+      <div class="art-card col-span-12 md:col-span-8 mt-[15vh]">
+        <div class="art-wrapper">
+          <img src="leal-moreira/Oliveira-Belo-peça-conceito-4.jpg" alt="Skye Tower - Workout">
+        </div>
+        <div class="art-info">
+          <div>
+            <h3 class="text-xl font-black uppercase tracking-tighter text-white">Skye Tower — Oliveira Belo 04</h3>
+            <p class="text-[10px] text-blue-400 font-mono mt-1">CAMPANHA INSTITUCIONAL / WELLNESS PROFILE</p>
+          </div>
+          <span class="text-[10px] opacity-40 font-mono">leal-moreira/Oliveira-Belo-peça-conceito-4.jpg</span>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           CARD 8: SKYE TOWER - POOL CONCEPT (Oliveira Belo 2)
+           Largura: md:col-span-12 (Exibição horizontal completa de alta resolução)
+           ========================================================================= -->
+      <div class="art-card col-span-12 md:col-span-12 mt-[10vh]">
+        <div class="art-wrapper">
+          <img src="leal-moreira/Oliveira-Belo-peça-conceito-2.jpg" alt="Skye Tower - Pool lounge">
+        </div>
+        <div class="art-info">
+          <div>
+            <h3 class="text-xl font-black uppercase tracking-tighter text-white">Skye Tower — Oliveira Belo 02</h3>
+            <p class="text-[10px] text-blue-400 font-mono mt-1">CAMPANHA INSTITUCIONAL / LUXURY WATER RESIDENCE</p>
+          </div>
+          <span class="text-[10px] opacity-40 font-mono">leal-moreira/Oliveira-Belo-peça-conceito-2.jpg</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Seção de Encerramento e Navegação para as outras seções -->
+    <section class="mt-[20vh] text-center border-t border-blue-500/20 pt-20">
+      <p class="text-xs uppercase tracking-[0.8em] text-blue-400 opacity-40 mb-8">Fim do Memorial Técnico</p>
+      <a href="ads.html" class="text-[6vw] font-black hover:italic transition-all text-white hover:text-blue-400">VOLTAR AOS PROJETOS</a>
+    </section>
+
+  </main>
+
+  <script>
+    /* =========================================================================
+       SCRIPTS: CONTROLADORES DE ROLAGEM, EFEITO DO CURSOR E ANIMAÇÕES GSAP
+       ========================================================================= */
+
+    // Inicialização do motor Lenis para rolagem física e suave
+    const lenis = new Lenis();
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
+
+    // Movimentação em tempo real do cursor mira CAD
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursor-follower');
+    window.addEventListener('mousemove', (e) => {
+      gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0 });
+      gsap.to(follower, { x: e.clientX - 22, y: e.clientY - 22, duration: 0.1 });
+    });
+
+    // Registra o plugin de detecção de rolagem do GSAP (ScrollTrigger)
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Varre todos os cards de imagens para revelá-los suavemente quando entrarem no viewport do usuário
+    gsap.utils.toArray('.art-card').forEach(card => {
+      gsap.to(card, {
+        opacity: 1,
+        y: 0,
+        duration: 1.4,
+        ease: "power4.out",
+        scrollTrigger: {
+          trigger: card,
+          start: 'top 85%', // Dispara quando o card atinge 85% do viewport
+          toggleActions: "play none none none"
+        }
+      });
+    });
+  </script>
+</body>
+</html>
