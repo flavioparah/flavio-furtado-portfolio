@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exposição de Artes & Conceitos — Flavio Furtado</title>
+  
+  <!-- Fontes Premium: Cinzel para uma atmosfera clássica de museu/galeria e Inter para informações de curadoria -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Inter:wght@300;400;700&family=Playfair+Display:ital,wght@1,300&display=swap" rel="stylesheet" />
+  
+  <!-- Bibliotecas de Performance e Animação -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    :root { 
+      --bg-wall: #0a0a0a; /* Parede escura de galeria contemporânea */
+      --fg-paper: #eae6df; /* Papel algodão texturizado/passe-partout */
+      --accent-gold: #bfa15f; /* Latão escovado / ouro de curadoria */
+      --accent-gold-muted: rgba(191, 161, 95, 0.15);
+    }
+    
+    body { 
+      background-color: var(--bg-wall); 
+      color: var(--fg-paper); 
+      font-family: 'Inter', sans-serif; 
+      margin: 0; 
+      overflow-x: hidden; 
+      cursor: none; /* Cursor de precisão de museu */
+    }
+
+    /* Parede física de galeria com textura e spot de iluminação dinâmico */
+    .gallery-wall {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      background: 
+        radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(35, 30, 25, 0.6) 0%, rgba(10, 10, 10, 1) 70%),
+        repeating-linear-gradient(45deg, rgba(255,255,255,0.01) 0px, rgba(255,255,255,0.01) 1px, transparent 1px, transparent 10px);
+    }
+
+    /* Canvas para simular partículas de poeira flutuando nos feixes de iluminação da galeria */
+    #gallery-lights {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* Cursor estilo mira de curador/restaurador */
+    #cursor { 
+      position: fixed; 
+      width: 4px; 
+      height: 4px; 
+      background: var(--accent-gold); 
+      border-radius: 50%; 
+      pointer-events: none; 
+      z-index: 9999; 
+    }
+    #cursor-follower { 
+      position: fixed; 
+      width: 32px; 
+      height: 32px; 
+      border: 1px solid var(--accent-gold-muted); 
+      border-radius: 50%; 
+      pointer-events: none; 
+      z-index: 9998;
+      transition: transform 0.08s ease-out; 
+    }
+
+    /* Tipografia de Curadoria */
+    .gallery-title { font-family: 'Cinzel', serif; font-weight: 900; letter-spacing: -0.02em; text-transform: uppercase; }
+    .serif-italic { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 300; text-transform: lowercase; }
+
+    main { position: relative; z-index: 10; }
+    
+    /* ENVELOPE DE EXPOSIÇÃO (PASSE-PARTOUT DE LUXO COM SOMBRA PROJETADA) */
+    .art-frame { 
+      position: relative; 
+      width: 100%; 
+      margin-bottom: 22vh; 
+      opacity: 0; 
+      transform: translateY(60px); 
+      transition: filter 0.5s ease;
+    }
+    
+    /* Moldura física de madeira escura com filete dourado interno */
+    .physical-frame {
+      position: relative;
+      background: #121212;
+      border: 18px solid #1c1a17; /* Moldura de madeira maciça */
+      box-shadow: 
+        0 30px 70px rgba(0, 0, 0, 0.8), 
+        0 10px 20px rgba(0, 0, 0, 0.5),
+        inset 0 0 10px rgba(0,0,0,0.8);
+      padding: 24px; /* Espaço do passe-partout */
+      display: inline-block;
+      width: 100%;
+    }
+
+    /* Filete interno de ouro escovado que divide a moldura do passe-partout */
+    .physical-frame::before {
+      content: '';
+      position: absolute;
+      top: 2px; left: 2px; right: 2px; bottom: 2px;
+      border: 1px solid var(--accent-gold);
+      pointer-events: none;
+      opacity: 0.35;
+    }
+
+    /* Textura de papel algodão fino de gravura para o passe-partout */
+    .passe-partout {
+      background-color: #1a1917;
+      border: 1px solid rgba(0,0,0,0.4);
+      padding: 16px;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.9);
+    }
+
+    .passe-partout img {
+      width: 100%;
+      height: auto;
+      display: block;
+      filter: brightness(0.92) contrast(1.03);
+      transition: filter 0.8s ease, transform 0.8s ease;
+    }
+
+    /* Ao focar/passar o mouse na obra, ela recebe iluminação direta (ilumina o quadro) */
+    .art-frame:hover img {
+      filter: brightness(1.05) contrast(1);
+      transform: scale(1.005);
+    }
+
+    /* PLACA DE IDENTIFICAÇÃO DE LATÃO (MUSEUM BRASS PLATE) */
+    .museum-plate {
+      background: linear-gradient(135deg, #222220 0%, #151514 100%);
+      border: 1px solid rgba(191, 161, 95, 0.3);
+      border-left: 2px solid var(--accent-gold);
+      box-shadow: 2px 4px 10px rgba(0,0,0,0.5);
+      padding: 15px 20px;
+      margin-top: 20px;
+      max-width: 450px;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    /* Botão Voltar Galeria */
+    .back-btn {
+      position: fixed; bottom: 40px; left: 40px; z-index: 100; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.4em; text-transform: uppercase; padding: 15px 30px;
+      border: 1px solid var(--accent-gold-muted); backdrop-filter: blur(10px);
+      transition: all 0.3s ease; background: rgba(10, 10, 10, 0.9);
+      color: var(--accent-gold);
+    }
+    .back-btn:hover { background: var(--accent-gold); color: #0a0a0a; border-color: var(--accent-gold); }
+
+    @media (max-width: 768px) {
+      .back-btn { left: 20px; bottom: 20px; padding: 10px 20px; }
+      .physical-frame { border-width: 10px; padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Parede interativa de Galeria e Luzes Spot -->
+  <div class="gallery-wall" id="wall"></div>
+  <canvas id="gallery-lights"></canvas>
+
+  <!-- Elementos do Cursor Estilo Mira -->
+  <div id="cursor"></div>
+  <div id="cursor-follower"></div>
+
+  <!-- Header Superior da Galeria -->
+  <nav class="fixed top-0 left-0 w-full p-8 z-[100] flex justify-between items-start mix-blend-difference">
+    <div class="font-black text-xl tracking-tighter text-[#eae6df]">FF / CURADORIA</div>
+    <div class="text-[10px] font-black uppercase tracking-[0.5em] text-amber-500">Exposição Autoral</div>
+  </nav>
+
+  <!-- Botão de retorno para a galeria geral -->
+  <a href="ads.html" class="back-btn">Projetos</a>
+
+  <main class="px-[5vw] pt-[25vh] pb-[20vh]">
+    
+    <!-- Cabeçalho Principal da Exposição -->
+    <header class="mb-[22vh] border-b border-stone-800 pb-12 max-w-5xl">
+      <span class="text-xs uppercase tracking-[0.6em] text-amber-600 block mb-4">GIBI, JOGOS & CONCEPT ART</span>
+      <h1 class="gallery-title text-5xl md:text-8xl text-white leading-none">MEMÓRIA &</h1>
+      <h1 class="gallery-title text-4xl md:text-7xl serif-italic text-amber-500">mitologia védica</h1>
+      <p class="text-sm text-stone-400 max-w-xl mt-6 leading-relaxed">
+        Bem-vindo à ala reservada de ilustrações. Abaixo, as obras estão dispostas sob iluminação direcionada. A coleção se divide entre as ilustrações históricas para o jogo <strong class="text-amber-500">Minemósine</strong> e estudos conceituais sobre a antiga engenharia cósmica e divindades védicas.
+      </p>
+    </header>
+
+    <!-- GRELHA DA EXPOSIÇÃO (Grid de 12 colunas) -->
+    <div class="grid grid-cols-12 gap-y-24 md:gap-x-12">
+      
+      <!-- =========================================================================
+           SALA 1: O JOGO HISTÓRICO "MINEMÓSINE"
+           ========================================================================= -->
+      <div class="col-span-12 mb-8 border-l-2 border-amber-600 pl-4">
+        <h2 class="gallery-title text-2xl text-amber-500">Sala I: O Jogo Minemósine</h2>
+        <p class="text-xs text-stone-500 uppercase tracking-widest mt-1">Ilustrações Editoriais e Didáticas de Resgate Histórico</p>
+      </div>
+
+      
+      <!-- PEÇA 1: AMÉRICA LATINA SOB TORMENTA
+           Caminho: ilustras/card360_1914.jpg -->
+      <div class="art-frame col-span-12 md:col-span-6">
+        <div class="physical-frame">
+          <div class="passe-partout">
+            <img src="ilustras/card360_1914.jpg" alt="América Latina sob Tormenta - Jogo Minemósine" onerror="this.onerror=null; this.src='https://placehold.co/800x800/141414/bfa15f?text=ilustras/card360_1914.jpg';">
+          </div>
+        </div>
+        <div class="museum-plate">
+          <span class="text-amber-500 font-mono text-[9px] uppercase tracking-widest block mb-1">PROJETO MINEMÓSINE</span>
+          <h4 class="font-bold text-sm text-[#eae6df] uppercase">América Latina sob Tormenta</h4>
+          <p class="text-stone-400 mt-2 font-light">
+            Técnica: Vetor e Pintura Digital Editorial. <br>
+            Ano de Produção: 2024. <br>
+            Contexto: Carta de evento representando a instabilidade sociopolítica das repúblicas latino-americanas em barris de pólvora durante as tormentas do início do Século XX.
+          </p>
+          <span class="text-[9px] text-stone-600 font-mono block mt-2">ID_REGISTRO: MIN_CARD_360_1914</span>
+        </div>
+      </div>
+
+      <!-- PEÇA 2: SIMÓN BOLÍVAR - PÁTRIA GRANDE
+           Caminho: ilustras/card151_1826.jpg -->
+      <div class="art-frame col-span-12 md:col-span-6 md:mt-[15vh]">
+        <div class="physical-frame">
+          <div class="passe-partout">
+            <img src="ilustras/card151_1826.jpg" alt="Simón Bolívar - Jogo Minemósine" onerror="this.onerror=null; this.src='https://placehold.co/800x800/141414/bfa15f?text=ilustras/card151_1826.jpg';">
+          </div>
+        </div>
+        <div class="museum-plate">
+          <span class="text-amber-500 font-mono text-[9px] uppercase tracking-widest block mb-1">PROJETO MINEMÓSINE</span>
+          <h4 class="font-bold text-sm text-[#eae6df] uppercase">O Sonho de Bolívar (Pátria Grande)</h4>
+          <p class="text-stone-400 mt-2 font-light">
+            Técnica: Arte Vetorial Limpa. <br>
+            Ano de Produção: 2024. <br>
+            Contexto: Retrato de Simón Bolívar e o símbolo da integração latino-americana idealizado no Congresso do Panamá em 1826.
+          </p>
+          <span class="text-[9px] text-stone-600 font-mono block mt-2">ID_REGISTRO: MIN_CARD_151_1826</span>
+        </div>
+      </div>
+
+      <!-- PEÇA 3: D. PEDRO I RASGANDO A CONSTITUIÇÃO
+           Caminho: ilustras/card141_1823.jpg -->
+      <div class="art-frame col-span-12 md:col-span-6">
+        <div class="physical-frame">
+          <div class="passe-partout">
+            <img src="ilustras/card141_1823.jpg" alt="D. Pedro I e a Primeira Constituição - Jogo Minemósine" onerror="this.onerror=null; this.src='https://placehold.co/800x800/141414/bfa15f?text=ilustras/card141_1823.jpg';">
+          </div>
+        </div>
+        <div class="museum-plate">
+          <span class="text-amber-500 font-mono text-[9px] uppercase tracking-widest block mb-1">PROJETO MINEMÓSINE</span>
+          <h4 class="font-bold text-sm text-[#eae6df] uppercase">Outorga da Constituição de 1823</h4>
+          <p class="text-stone-400 mt-2 font-light">
+            Técnica: Ilustração Didática Vetorial. <br>
+            Ano de Produção: 2024. <br>
+            Contexto: Dom Pedro I rasgando o projeto constitucional da Assembleia Constituinte, antecedendo a outorga imperial absolutista de 1824.
+          </p>
+          <span class="text-[9px] text-stone-600 font-mono block mt-2">ID_REGISTRO: MIN_CARD_141_1823</span>
+        </div>
+      </div>
+
+      <!-- PEÇA 4: O OLHAR COLONIALISTA
+           Caminho: ilustras/_card013_1535.jpg -->
+      <div class="art-frame col-span-12 md:col-span-6 md:mt-[10vh]">
+        <div class="physical-frame">
+          <div class="passe-partout">
+            <img src="ilustras/_card013_1535.jpg" alt="O Olhar Colonialista - Jogo Minemósine" onerror="this.onerror=null; this.src='https://placehold.co/800x800/141414/bfa15f?text=ilustras/_card013_1535.jpg';">
+          </div>
+        </div>
+        <div class="museum-plate">
+          <span class="text-amber-500 font-mono text-[9px] uppercase tracking-widest block mb-1">PROJETO MINEMÓSINE</span>
+          <h4 class="font-bold text-sm text-[#eae6df] uppercase">Luneta e Território: O Olhar Colonizador</h4>
+          <p class="text-stone-400 mt-2 font-light">
+            Técnica: Vetor Flat de Alto Impacto. <br>
+            Ano de Produção: 2024. <br>
+            Contexto: Representação crítica do olhar europeu de apropriação sobre o corpo indígena e os limites da terra de exploração no Brasil do século XVI.
+          </p>
+          <span class="text-[9px] text-stone-600 font-mono block mt-2">ID_REGISTRO: MIN_CARD_013_1535</span>
+        </div>
+      </div>
+
+      <!-- PEÇA 5: CICLO DO AÇÚCAR
+           Caminho: ilustras/card005_1500.jpg -->
+      <div class="art-frame col-span-12 md:col-span-8 md:col-start-2">
+        <div class="physical-frame">
+          <div class="passe-partout">
+            <img src="ilustras/card005_1500.jpg" alt="Ciclo do Açúcar e Aguardente - Jogo Minemósine" onerror="this.onerror=null; this.src='https://placehold.co/1000x1000/141414/bfa15f?text=ilustras/card005_1500.jpg';">
+          </div>
+        </div>
+        <div class="museum-plate">
+          <span class="text-amber-500 font-mono text-[9px] uppercase tracking-widest block mb-1">PROJETO MINEMÓSINE</span>
+          <h4 class="font-bold text-sm text-[#eae6df] uppercase">Cana, Destilados e Economia Colonial</h4>
+          <p class="text-stone-400 mt-2 font-light">
+            Técnica: Ilustração Didático-Sátira. <br>
+            Ano de Produção: 2024. <br>
+            Contexto: A relação intrínseca do plantio da cana-de-açúcar, a produção da cachaça e sua influência psicossocial e econômica na formação mercantilista do Brasil.
+          </p>
+          <span class="text-[9px] text-stone-600 font-mono block mt-2">ID_REGISTRO: MIN_CARD_005_1500</span>
+        </div>
+      </div>
+
+
+      <!-- =========================================================================
+           SALA 2: ARTE CONCEITUAL E MITOLOGIA VÉDICA (VIMANAS & RAHU)
+           ========================================================================= -->
+      <div class="col-span-12 mt-20 mb-8 border-l-2 border-amber-600 pl-4">
+        <h2 class="gallery-title text-2xl text-amber-500">Sala II: Cosmologia & Mitologia Védica</h2>
+        <p class="text-xs text-stone-500 uppercase tracking-widest mt-1">Concept Art, Engenharia Cósmica Antiga e Divindades</p>
+      </div>
+
+      <!-- PEÇA 6: RAHU (O Devorador de Sol e Lua)
+           Caminho: ilustras/Rahu.jpg -->
+      <div class="art-frame col-span-12 md:col-span-10 md:col-start-1">
+        <div class="physical-frame">
+          <div class="passe-partout">
+            <img src="ilustras/Rahu.jpg" alt="Rahu Eclipse Deity - Flavio Furtado" onerror="this.onerror=null; this.src='https://placehold.co/1200x900/141414/bfa15f?text=ilustras/Rahu.jpg';">
+          </div>
+        </div>
+        <div class="museum-plate">
+          <span class="text-amber-500 font-mono text-[9px] uppercase tracking-widest block mb-1">CURADORIA VÉDICA</span>
+          <h4 class="font-bold text-sm text-[#eae6df] uppercase">Rahu: O Devorador Cósmico do Eclipse</h4>
+          <p class="text-stone-400 mt-2 font-light">
+            Técnica: Pintura Digital de Altura de Contraste. <br>
+            Ano de Produção: 2025. <br>
+            Contexto: Representação conceitual do demônio Rahu, a cabeça asurada que persegue o Sol e a Lua no céu, gerando os eclipses cíclicos da cosmologia védica antiga.
+          </p>
+          <span class="text-[9px] text-stone-600 font-mono block mt-2">ID_REGISTRO: MIT_RAHU_2025</span>
+        </div>
+      </div>
+
+      <!-- PEÇA 7: JAGAD VIMANA (Espaçonave Dourada)
+           Caminho: ilustras/vimana.jpg -->
+      <div class="art-frame col-span-12">
+        <div class="physical-frame">
+          <div class="passe-partout">
+            <img src="ilustras/vimana.jpg" alt="Jagad Vimana Golden Spaceship - Flavio Furtado" onerror="this.onerror=null; this.src='https://placehold.co/1200x500/141414/bfa15f?text=ilustras/vimana.jpg';">
+          </div>
+        </div>
+        <div class="museum-plate">
+          <span class="text-amber-500 font-mono text-[9px] uppercase tracking-widest block mb-1">CONCEPT ART VIMANAS</span>
+          <h4 class="font-bold text-sm text-[#eae6df] uppercase">Jagad Vimana: O Carro Voador Antigo</h4>
+          <p class="text-stone-400 mt-2 font-light">
+            Técnica: Pintura de Textura e Ouro Orgânico. <br>
+            Ano de Produção: 2025. <br>
+            Contexto: Estudo conceitual e diagramação livre da espaçonave Jagad Vimana descrita nos textos antigos hindus do Vaimanika Shastra.
+          </p>
+          <span class="text-[9px] text-stone-600 font-mono block mt-2">ID_REGISTRO: VIM_JAGAD_01</span>
+        </div>
+      </div>
+
+      <!-- PEÇA 8: VIMANA CHARACTER (Guerreiro do Trovão)
+           Caminho: ilustras/vimana character.jpg -->
+      <div class="art-frame col-span-12 md:col-span-6">
+        <div class="physical-frame">
+          <div class="passe-partout">
+            <img src="ilustras/vimana character.jpg" alt="Vimana Guardian Character Design" onerror="this.onerror=null; this.src='https://placehold.co/800x1000/141414/bfa15f?text=ilustras/vimana+character.jpg';">
+          </div>
+        </div>
+        <div class="museum-plate">
+          <span class="text-amber-500 font-mono text-[9px] uppercase tracking-widest block mb-1">CONCEPT ART VIMANAS</span>
+          <h4 class="font-bold text-sm text-[#eae6df] uppercase">Vardhan: O Guardião de Raio</h4>
+          <p class="text-stone-400 mt-2 font-light">
+            Técnica: Character Concept Design / Tinta Digital. <br>
+            Ano de Produção: 2025. <br>
+            Contexto: Guerreiro sagrado de armadura de ouro dotado de uma lança de arco voltaico de plasma e raios purificadores.
+          </p>
+          <span class="text-[9px] text-stone-600 font-mono block mt-2">ID_REGISTRO: VIM_CHAR_VARDHAN</span>
+        </div>
+      </div>
+
+      <!-- PEÇA 9: CONCEPT VIMANAS (Ilhas Flutuantes)
+           Caminho: ilustras/Concept Vimanas.jpeg -->
+      <div class="art-frame col-span-12 md:col-span-6 md:mt-[20vh]">
+        <div class="physical-frame">
+          <div class="passe-partout">
+            <img src="ilustras/Concept Vimanas.jpeg" alt="Floating Islands Vimana Concept" onerror="this.onerror=null; this.src='https://placehold.co/900x700/141414/bfa15f?text=ilustras/Concept+Vimanas.jpeg';">
+          </div>
+        </div>
+        <div class="museum-plate">
+          <span class="text-amber-500 font-mono text-[9px] uppercase tracking-widest block mb-1">SALA DE CONCEITO DE AMBIENTE</span>
+          <h4 class="font-bold text-sm text-[#eae6df] uppercase">Os Reinos Elevados de Vimana</h4>
+          <p class="text-stone-400 mt-2 font-light">
+            Técnica: Pintura Matte Digital / Cenários de RPG. <br>
+            Ano de Produção: 2025. <br>
+            Contexto: Visão panorâmica de ilhas flutuantes sagradas, templos suspensos por magnetismo e guardiões de lâmina dupla em eterna vigília cósmica.
+          </p>
+          <span class="text-[9px] text-stone-600 font-mono block mt-2">ID_REGISTRO: VIM_ENV_FLOATING</span>
+        </div>
+      </div>
+
+      <!-- PEÇA 10: WARRIOR MEDIEVAL SCI-FI
+           Caminho: ilustras/warrior-medieval-sci-fi-concept.jpg -->
+      <div class="art-frame col-span-12 my-[10vh]">
+        <div class="physical-frame">
+          <div class="passe-partout">
+            <img src="ilustras/warrior-medieval-sci-fi-concept.jpg" alt="Warrior Medieval Sci Fi Concept" onerror="this.onerror=null; this.src='https://placehold.co/1200x675/141414/bfa15f?text=ilustras/warrior-medieval-sci-fi-concept.jpg';">
+          </div>
+        </div>
+        <div class="museum-plate">
+          <span class="text-amber-500 font-mono text-[9px] uppercase tracking-widest block mb-1">PROJETOS PARALELOS</span>
+          <h4 class="font-bold text-sm text-[#eae6df] uppercase">Dystopian Cyber Knight</h4>
+          <p class="text-stone-400 mt-2 font-light">
+            Técnica: Guia Conceitual de Jogo. <br>
+            Ano de Produção: 2023. <br>
+            Contexto: Protótipo de design de personagem fundindo elementos medievais e cibernéticos para um universo futurista distópico.
+          </p>
+          <span class="text-[9px] text-stone-600 font-mono block mt-2">ID_REGISTRO: CYBER_WARRIOR_009</span>
+        </div>
+      </div>
+
+      <!-- PEÇA 11: IMPONDERABILITY (Surrealismo Cósmico)
+           Caminho: ilustras/imponderability.jpg -->
+      <div class="art-frame col-span-12 md:col-span-8 md:col-start-2">
+        <div class="physical-frame">
+          <div class="passe-partout">
+            <img src="ilustras/imponderability.jpg" alt="Imponderability Artwork - Flavio Furtado" onerror="this.onerror=null; this.src='https://placehold.co/1200x850/141414/bfa15f?text=ilustras/imponderability.jpg';">
+          </div>
+        </div>
+        <div class="museum-plate">
+          <span class="text-amber-500 font-mono text-[9px] uppercase tracking-widest block mb-1">EXPOSIÇÃO SURREALISTA</span>
+          <h4 class="font-bold text-sm text-[#eae6df] uppercase">Imponderabilidade Cósmica</h4>
+          <p class="text-stone-400 mt-2 font-light">
+            Técnica: Pintura Digital Figurativa Complexa. <br>
+            Ano de Produção: 2024. <br>
+            Contexto: Um astronauta imerso no fluxo circular do tempo, orbitando templos e deidades em suspensão absoluta, representando a união da exploração espacial com a espiritualidade.
+          </p>
+          <span class="text-[9px] text-stone-600 font-mono block mt-2">ID_REGISTRO: MIT_IMPONDER_2024</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Seção de Encerramento e Navegação para as outras seções -->
+    <section class="mt-[20vh] text-center border-t border-stone-800 pt-20 relative z-10">
+      <p class="text-xs uppercase tracking-[0.8em] text-amber-500/60 mb-8">Fim do Roteiro de Exposição</p>
+      <a href="ads.html" class="text-[5vw] font-black hover:italic transition-all text-white hover:text-amber-500 gallery-title">SAIR DA GALERIA</a>
+    </section>
+
+  </main>
+
+  <script>
+    // Inicialização do motor Lenis para rolagem física e suave de galeria
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+    });
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
+
+    // Registro do cursor personalizado e mira técnica
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursor-follower');
+    const wall = document.getElementById('wall');
+    
+    // Coordenadas em tempo real
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      
+      // Movimentação dos cursores
+      gsap.to(cursor, { x: mouseX, y: mouseY, duration: 0 });
+      gsap.to(follower, { x: mouseX - 16, y: mouseY - 16, duration: 0.1 });
+
+      // Atualiza variáveis CSS do background dinâmico (efeito holofote spotlight)
+      const xPct = (mouseX / window.innerWidth) * 100;
+      const yPct = (mouseY / window.innerHeight) * 100;
+      wall.style.setProperty('--mouse-x', `${xPct}%`);
+      wall.style.setProperty('--mouse-y', `${yPct}%`);
+    });
+
+    // Revelação suave e luxuosa das molduras (fade de museu no scroll)
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray('.art-frame').forEach(frame => {
+      gsap.to(frame, {
+        opacity: 1,
+        y: 0,
+        duration: 1.6,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: frame,
+          start: 'top 85%',
+          toggleActions: "play none none none"
+        }
+      });
+    });
+
+    // =========================================================================
+    // SISTEMA DE INTERAÇÃO DO HOLOFOTE: POEIRA FLUTUANDO SOB OS SPOTS DE LUZ
+    // =========================================================================
+    const canvas = document.getElementById('gallery-lights');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Partículas de poeira microscopicamente elegantes
+    const dustMotes = [];
+    const maxMotes = 110;
+
+    class DustMote {
+      constructor() {
+        this.reset();
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height + 10;
+        this.size = Math.random() * 1.5 + 0.5; // Partícula sutil
+        this.speedX = Math.random() * 0.4 - 0.2;
+        this.speedY = -(Math.random() * 0.4 + 0.1); // Ascensão sutil em ar quente de galeria
+        this.opacity = Math.random() * 0.4 + 0.1;
+        this.angle = Math.random() * Math.PI * 2;
+        this.angleSpeed = Math.random() * 0.01 - 0.005;
+      }
+
+      update(scrollSpeed, mx, my) {
+        // Movimentação orbital suave
+        this.x += this.speedX + Math.sin(this.angle) * 0.1;
+        this.y += this.speedY - (scrollSpeed * 0.08);
+        this.angle += this.angleSpeed;
+
+        // FÍSICA DE ATRAÇÃO/REPELÃO COM O CURSOR (O MOUSE CRIA PEQUENO REDEMOINHO)
+        const dx = this.x - mx;
+        const dy = this.y - my;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const influence = 180;
+
+        if (dist < influence) {
+          const force = (influence - dist) / influence;
+          // Puxa as cinzas/poeira levemente em direção ao holofote do cursor
+          this.x += (dx / dist) * force * 1.5;
+          this.y += (dy / dist) * force * 1.5;
+        }
+
+        // Reciclagem de mídias quando saem da galeria
+        if (this.y < -10 || this.x < -10 || this.x > canvas.width + 10) {
+          this.reset();
+        }
+      }
+
+      draw() {
+        // Brilho dourado se as partículas passarem próximas ao spotlight
+        const dx = this.x - mouseX;
+        const dy = this.y - mouseY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const insideSpotlight = dist < 250;
+
+        ctx.save();
+        ctx.globalAlpha = insideSpotlight ? this.opacity * 1.8 : this.opacity;
+        ctx.fillStyle = insideSpotlight ? '#bfa15f' : '#888580';
+        ctx.shadowBlur = insideSpotlight ? 6 : 0;
+        ctx.shadowColor = '#bfa15f';
+
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // Inicialização da poeira de museu
+    for (let i = 0; i < maxMotes; i++) {
+      dustMotes.push(new DustMote());
+    }
+
+    let lastScroll = window.scrollY;
+    let scrollDelta = 0;
+
+    // Loop de renderização fluida (60 FPS estável)
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const currentScroll = window.scrollY;
+      scrollDelta = Math.abs(currentScroll - lastScroll);
+      lastScroll = currentScroll;
+      scrollDelta *= 0.92; // Gradual damping
+
+      for (let i = 0; i < dustMotes.length; i++) {
+        dustMotes[i].update(scrollDelta, mouseX, mouseY);
+        dustMotes[i].draw();
+      }
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+</body>
+</html>
