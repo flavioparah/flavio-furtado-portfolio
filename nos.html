@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nós Soluções Sustentáveis — Flavio Furtado</title>
+  
+  <!-- Fontes Premium: Inter para dados técnicos e Playfair Display para o toque orgânico/itálico -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;900&family=Playfair+Display:ital,wght@1,300&display=swap" rel="stylesheet" />
+  
+  <!-- Bibliotecas: Tailwind CSS, Lenis (scroll físico suave) e GSAP para animações refinadas -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    /* DEFINIÇÃO DA PALETA ORGÂNICA DA FLORESTA */
+    :root { 
+      --bg: #091a10; /* Verde-escuro profundo (Floresta de noite) */
+      --fg: #f4efe6; /* Bege terra/papel reciclado premium */
+      --accent: #8cb88b; /* Verde broto */
+    }
+    
+    body { 
+      background-color: var(--bg); 
+      color: var(--fg); 
+      font-family: 'Inter', sans-serif; 
+      margin: 0; 
+      overflow-x: hidden; 
+      cursor: none; /* Cursor padrão ocultado para usarmos a mira natural */
+    }
+
+    /* Tela interativa de fundo para as folhas flutuantes */
+    #leaves-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none; /* Permite clicar nos elementos atrás do canvas */
+    }
+
+    /* Cursor personalizado em estilo semente/mira orgânica */
+    #cursor { position: fixed; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 9999; }
+    #cursor-follower { 
+      position: fixed; width: 40px; height: 40px; border: 1px solid rgba(140, 184, 139, 0.4); border-radius: 50%; pointer-events: none; z-index: 9998;
+      transition: transform 0.08s ease-out; 
+    }
+
+    /* Tipografia e Títulos Brutalistas */
+    .giant-title { font-size: clamp(3rem, 10vw, 12rem); font-weight: 900; line-height: 0.8; letter-spacing: -0.05em; text-transform: uppercase; }
+    .serif-italic { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 300; text-transform: lowercase; }
+
+    main { position: relative; z-index: 10; }
+    
+    /* ENVELOPE DAS ARTES: Estilo de molduras de museu naturalista */
+    .art-card { position: relative; width: 100%; margin-bottom: 16vh; opacity: 0; transform: translateY(40px); }
+    .art-wrapper { 
+      position: relative; 
+      width: 100%; 
+      display: block; 
+      border: 1px solid rgba(140, 184, 139, 0.2);
+      padding: 12px;
+      background: rgba(9, 26, 16, 0.85);
+      backdrop-filter: blur(8px);
+    }
+
+    /* Cantoneiras orgânicas simulando moldura artesanal */
+    .art-wrapper::before, .art-wrapper::after {
+      content: '';
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border: 1px solid var(--accent);
+      pointer-events: none;
+    }
+    .art-wrapper::before { top: -3px; left: -3px; border-right: none; border-bottom: none; }
+    .art-wrapper::after { bottom: -3px; right: -3px; border-left: none; border-top: none; }
+
+    /* Exibição integral das proporções para não cortar nenhuma foto */
+    .art-wrapper img {
+      width: 100%; 
+      height: auto; 
+      display: block;
+      border-radius: 1px;
+      transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .art-card:hover img { transform: scale(1.01); }
+
+    /* Legendas Técnicas */
+    .art-info {
+      padding: 1.5rem 0; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: baseline;
+      border-bottom: 1px dashed rgba(140, 184, 139, 0.2);
+    }
+
+    /* Botão Voltar Fixo Estilo Semente */
+    .back-btn {
+      position: fixed; bottom: 40px; left: 40px; z-index: 100; font-size: 10px; font-weight: 900;
+      letter-spacing: 0.4em; text-transform: uppercase; padding: 15px 30px;
+      border: 1px solid rgba(140, 184, 139, 0.3); backdrop-filter: blur(10px);
+      transition: all 0.3s ease; background: rgba(9, 26, 16, 0.85);
+      color: var(--accent);
+    }
+    .back-btn:hover { background: var(--accent); color: #091a10; }
+
+    @media (max-width: 768px) {
+      .back-btn { left: 20px; bottom: 20px; padding: 10px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Canvas das Folhas Interativas de Fundo -->
+  <canvas id="leaves-canvas"></canvas>
+
+  <!-- Elementos do Cursor Orgânico -->
+  <div id="cursor"></div>
+  <div id="cursor-follower"></div>
+
+  <!-- Header Superior Técnico -->
+  <nav class="fixed top-0 left-0 w-full p-8 z-[100] flex justify-between items-start mix-blend-difference">
+    <div class="font-black text-xl tracking-tighter text-[#8cb88b]">FF / NÓS</div>
+    <div class="text-[10px] font-black uppercase tracking-[0.5em] opacity-50">Sustentabilidade & Floresta</div>
+  </nav>
+
+  <!-- Botão de retorno para a galeria geral -->
+  <a href="ads.html" class="back-btn">Projetos</a>
+
+  <main class="px-[5vw] pt-[25vh] pb-[20vh]">
+    
+    <!-- Cabeçalho Principal -->
+    <header class="mb-[15vh]">
+      <span class="text-xs uppercase tracking-[0.6em] text-[#8cb88b] block mb-4">Case Study — Impacto Sócio-Ambiental</span>
+      <h1 class="giant-title text-white">NÓS SOMOS</h1>
+      <h1 class="giant-title serif-italic text-[#8cb88b]">a amazônia</h1>
+    </header>
+
+    <!-- GRELHA DOS PROJETOS (Puxando os arquivos da pasta 'nos/') -->
+    <div class="grid grid-cols-12 gap-x-12">
+      
+      <!-- =========================================================================
+           CARD 1: NOS-1 (Spread Inicial de Identidade)
+           Caminho do arquivo: nos/nos-1.jpg
+           Tamanho: col-span-12 (Ocupa largura total)
+           ========================================================================= -->
+      <div class="art-card col-span-12 md:col-span-10">
+        <div class="art-wrapper">
+          <img src="nos/nos-1.jpg" alt="Nós somos a Amazônia — Spread 1">
+        </div>
+        <div class="art-info">
+          <div>
+            <h3 class="text-xl font-black uppercase tracking-tighter text-white">Nós Somos a Amazônia — Spread 01</h3>
+            <p class="text-[10px] text-[#8cb88b] font-mono mt-1">NÓS_KEY_VISUAL // COOPERATIVA</p>
+          </div>
+          <span class="text-[10px] opacity-40 font-mono">nos/nos-1.jpg</span>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           VÍDEO MANIFESTO INSTITUCIONAL
+           URL do YouTube: https://youtu.be/zVfFoHrGJEg
+           Tamanho: col-span-12 (Ocupa largura total para máximo impacto cinematográfico)
+           ========================================================================= -->
+      <div class="art-card col-span-12 md:col-span-10">
+        <div class="art-wrapper">
+          <div class="aspect-video w-full overflow-hidden rounded-[1px]">
+            <iframe 
+              class="w-full h-full" 
+              src="https://www.youtube.com/embed/zVfFoHrGJEg?modestbranding=1&rel=0&autoplay=0" 
+              title="Nós somos a Amazônia — Vídeo Manifesto"
+              allowfullscreen>
+            </iframe>
+          </div>
+        </div>
+        <div class="art-info">
+          <div>
+            <h3 class="text-xl font-black uppercase tracking-tighter text-white">Nós Somos a Amazônia — Filme Manifesto</h3>
+            <p class="text-[10px] text-[#8cb88b] font-mono mt-1">PRODUÇÃO AUDIOVISUAL // FILME INSTITUCIONAL</p>
+          </div>
+          <span class="text-[10px] opacity-40 font-mono">youtube/zVfFoHrGJEg</span>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           CARD 2: PRODUTOS DA FLORESTA (Retrato sábio)
+           Caminho do arquivo: nos/produtos-da-floresta.jpg
+           Tamanho: md:col-span-6 (Metade da tela, com desnível superior mt-[10vh])
+           ========================================================================= -->
+      <div class="art-card col-span-12 md:col-span-6 mt-[10vh]">
+        <div class="art-wrapper">
+          <img src="nos/produtos-da-floresta.jpg" alt="Produtos da Floresta">
+        </div>
+        <div class="art-info">
+          <div>
+            <h3 class="text-lg font-black uppercase tracking-tighter text-white">Produtos da Floresta</h3>
+            <p class="text-[10px] text-[#8cb88b] font-mono mt-1">SABER E VIVÊNCIA // BIOECONOMIA</p>
+          </div>
+          <span class="text-[10px] opacity-40 font-mono">nos/produtos-da-floresta.jpg</span>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           CARD 3: COOPERADOS E SUA SABEDORIA (Retrato cooperada)
+           Caminho do arquivo: nos/cooperados-e-sua-sabedoria.jpg
+           Tamanho: md:col-span-6 (Metade da tela, com desnível acentuado mt-[25vh])
+           ========================================================================= -->
+      <div class="art-card col-span-12 md:col-span-6 mt-[25vh]">
+        <div class="art-wrapper">
+          <img src="nos/cooperados-e-sua-sabedoria.jpg" alt="Cooperados e sua Sabedoria">
+        </div>
+        <div class="art-info">
+          <div>
+            <h3 class="text-lg font-black uppercase tracking-tighter text-white">Cooperados e sua Sabedoria</h3>
+            <p class="text-[10px] text-[#8cb88b] font-mono mt-1">MATRIARCAS DA BIOECONOMIA</p>
+          </div>
+          <span class="text-[10px] opacity-40 font-mono">nos/cooperados-e-sua-sabedoria.jpg</span>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           CARD 4: ESTUDO DE CASO (Retrato jovem indígena)
+           Caminho do arquivo: nos/estudo-de-caso.jpg
+           Tamanho: md:col-span-8 md:col-start-2 (Ocupa 8 colunas centralizadas)
+           ========================================================================= -->
+      <div class="art-card col-span-12 md:col-span-8 md:col-start-2 my-[10vh]">
+        <div class="art-wrapper">
+          <img src="nos/estudo-de-caso.jpg" alt="Estudo de Caso - Coopaiter">
+        </div>
+        <div class="art-info">
+          <div>
+            <h3 class="text-xl font-black uppercase tracking-tighter text-white">Estudo de Caso — Coopaiter</h3>
+            <p class="text-[10px] text-[#8cb88b] font-mono mt-1">GENTE DE VERDADE // CASTANHA DA AMAZÔNIA</p>
+          </div>
+          <span class="text-[10px] opacity-40 font-mono">nos/estudo-de-caso.jpg</span>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           CARD 5: DIA A DIA (Trabalho na plantação)
+           Caminho do arquivo: nos/dia-a-dia.jpg
+           Tamanho: md:col-span-6
+           ========================================================================= -->
+      <div class="art-card col-span-12 md:col-span-6">
+        <div class="art-wrapper">
+          <img src="nos/dia-a-dia.jpg" alt="Dia a Dia com pé no chão">
+        </div>
+        <div class="art-info">
+          <div>
+            <h3 class="text-lg font-black uppercase tracking-tighter text-white">Dia-a-Dia</h3>
+            <p class="text-[10px] text-[#8cb88b] font-mono mt-1">TRABALHO COLETIVO // CULTIVO SUSTENTÁVEL</p>
+          </div>
+          <span class="text-[10px] opacity-40 font-mono">nos/dia-a-dia.jpg</span>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           CARD 6: ID NÓS (Marca e embalagens)
+           Caminho do arquivo: nos/id-nos.jpg
+           Tamanho: md:col-span-6 mt-[15vh] (Deslocamento lateral e vertical)
+           ========================================================================= -->
+      <div class="art-card col-span-12 md:col-span-6 mt-[15vh]">
+        <div class="art-wrapper">
+          <img src="nos/id-nos.jpg" alt="Identidade Visual Nós">
+        </div>
+        <div class="art-info">
+          <div>
+            <h3 class="text-lg font-black uppercase tracking-tighter text-white">Identidade de Marca</h3>
+            <p class="text-[10px] text-[#8cb88b] font-mono mt-1">CRAFT CORPORATIVO // PRODUTOS COOPERATIVOS</p>
+          </div>
+          <span class="text-[10px] opacity-40 font-mono">nos/id-nos.jpg</span>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           CARD 7: BIODIVERSIDADE (Curva do rio aérea)
+           Caminho do arquivo: nos/biodiversidade.jpg
+           Tamanho: col-span-12 (Tamanho completo horizontal)
+           ========================================================================= -->
+      <div class="art-card col-span-12 my-[5vh]">
+        <div class="art-wrapper">
+          <img src="nos/biodiversidade.jpg" alt="Biodiversidade e Bioeconomia">
+        </div>
+        <div class="art-info">
+          <div>
+            <h3 class="text-2xl font-black uppercase tracking-tighter text-white">Biodiversidade & Bioeconomia</h3>
+            <p class="text-[10px] text-[#8cb88b] font-mono mt-1">SISTEMA VIVO DE PRESERVAÇÃO</p>
+          </div>
+          <span class="text-[10px] opacity-40 font-mono">nos/biodiversidade.jpg</span>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           CARD 8: SUSTENTABILIDADE (Copa das árvores)
+           Caminho do arquivo: nos/sustentabilidade.jpg
+           Tamanho: md:col-span-10 md:col-start-2
+           ========================================================================= -->
+      <div class="art-card col-span-12 md:col-span-10 md:col-start-2">
+        <div class="art-wrapper">
+          <img src="nos/sustentabilidade.jpg" alt="Sustentabilidade é a Floresta de Pé">
+        </div>
+        <div class="art-info">
+          <div>
+            <h3 class="text-xl font-black uppercase tracking-tighter text-white">Sustentabilidade</h3>
+            <p class="text-[10px] text-[#8cb88b] font-mono mt-1">A FLORESTA DE PÉ // CARBONO NEUTRO</p>
+          </div>
+          <span class="text-[10px] opacity-40 font-mono">nos/sustentabilidade.jpg</span>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           CARD 9: NOS-2 (Spread Final)
+           Caminho do arquivo: nos/nos-2.jpg
+           Tamanho: col-span-12 (Full Screen Banner)
+           ========================================================================= -->
+      <div class="art-card col-span-12 mt-[10vh]">
+        <div class="art-wrapper">
+          <img src="nos/nos-2.jpg" alt="Nós somos a Amazônia — Spread 2">
+        </div>
+        <div class="art-info">
+          <div>
+            <h3 class="text-2xl font-black uppercase tracking-tighter text-white">Nós Somos a Amazônia — Spread 02</h3>
+            <p class="text-[10px] text-[#8cb88b] font-mono mt-1">PRESERVAÇÃO DO POVO E DA TERRA</p>
+          </div>
+          <span class="text-[10px] opacity-40 font-mono">nos/nos-2.jpg</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Seção de Encerramento e Navegação para as outras seções -->
+    <section class="mt-[20vh] text-center border-t border-[#8cb88b]/20 pt-20 relative z-10">
+      <p class="text-xs uppercase tracking-[0.8em] text-[#8cb88b] opacity-40 mb-8">Fim do Memorial de Impacto</p>
+      <a href="ads.html" class="text-[6vw] font-black hover:italic transition-all text-white hover:text-[#8cb88b]">VOLTAR AOS PROJETOS</a>
+    </section>
+
+  </main>
+
+  <script>
+    // Inicialização do motor Lenis para rolagem física e suave
+    const lenis = new Lenis();
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
+
+    // Registro do cursor personalizado
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursor-follower');
+    
+    // Coordenadas do mouse
+    let mouseX = -100;
+    let mouseY = -100;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      gsap.to(cursor, { x: mouseX, y: mouseY, duration: 0 });
+      gsap.to(follower, { x: mouseX - 20, y: mouseY - 20, duration: 0.1 });
+    });
+
+    // Animação das imagens aparecendo quando o usuário desce o scroll
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray('.art-card').forEach(card => {
+      gsap.to(card, {
+        opacity: 1,
+        y: 0,
+        duration: 1.4,
+        ease: "power4.out",
+        scrollTrigger: {
+          trigger: card,
+          start: 'top 85%',
+          toggleActions: "play none none none"
+        }
+      });
+    });
+
+    // =========================================================================
+    // SISTEMA DE PARTÍCULAS EM CANVAS: FOLHAS DA FLORESTA INTERATIVAS
+    // =========================================================================
+    const canvas = document.getElementById('leaves-canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Dimensionar o Canvas de acordo com o tamanho da janela do navegador
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Vetor de partículas de folhas
+    const leaves = [];
+    const maxLeaves = 40; // Quantidade ideal para performance excelente
+
+    // Estrutura física de cada folha
+    class Leaf {
+      constructor() {
+        this.reset();
+        // Começa em posições aleatórias da tela na inicialização
+        this.y = Math.random() * canvas.height;
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = -50; // Começa um pouco acima do topo
+        this.size = Math.random() * 15 + 10; // Tamanho entre 10px e 25px
+        this.speedX = Math.random() * 1.5 - 0.75; // Velocidade lateral inicial
+        this.speedY = Math.random() * 1.5 + 0.8;   // Velocidade de descida inicial
+        this.baseSpeedY = this.speedY;
+        this.rotation = Math.random() * Math.PI * 2;
+        this.rotationSpeed = Math.random() * 0.02 - 0.01;
+        this.opacity = Math.random() * 0.35 + 0.15; // Folhas em diferentes opacidades para dar profundidade
+        this.oscillationSpeed = Math.random() * 0.02 + 0.005;
+        this.oscillationOffset = Math.random() * 100;
+      }
+
+      update(scrollDelta, mx, my) {
+        // Balanço lateral suave simulando vento orgânico
+        this.x += this.speedX + Math.sin(this.oscillationOffset) * 0.4;
+        this.oscillationOffset += this.oscillationSpeed;
+
+        // Efeito de velocidade no scroll: quanto mais rápido desce, mais as folhas caem rápido ou espalham
+        let scrollWind = scrollDelta * 0.15;
+        this.y += this.speedY + scrollWind;
+
+        // Rotação natural da folha caindo
+        this.rotation += this.rotationSpeed;
+
+        // FÍSICA DE INTERAÇÃO COM O CURSOR (AFRASTAMENTO)
+        const dx = this.x - mx;
+        const dy = this.y - my;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const maxRepulseDist = 130; // Distância de detecção do mouse
+
+        if (distance < maxRepulseDist) {
+          // Calcula a força com base no quão próximo o cursor está
+          const force = (maxRepulseDist - distance) / maxRepulseDist;
+          const forceX = (dx / distance) * force * 5;
+          const forceY = (dy / distance) * force * 5;
+
+          this.x += forceX;
+          this.y += forceY;
+        }
+
+        // Se a folha sair da tela (embaixo ou nas laterais), renasce no topo
+        if (this.y > canvas.height + 50 || this.x < -50 || this.x > canvas.width + 50) {
+          this.reset();
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+        ctx.globalAlpha = this.opacity;
+        
+        // Cor orgânica de folha de cacau/cooperativismo amazônico
+        ctx.fillStyle = '#8cb88b'; 
+
+        // Desenhar silhueta perfeita de uma folha usando curvas de Bezier
+        ctx.beginPath();
+        ctx.moveTo(0, -this.size);
+        // Lado direito da folha
+        ctx.quadraticCurveTo(this.size * 0.6, -this.size * 0.2, 0, this.size);
+        // Lado esquerdo da folha
+        ctx.quadraticCurveTo(-this.size * 0.6, -this.size * 0.2, 0, -this.size);
+        ctx.fill();
+
+        // Linha central de nervura da folha
+        ctx.strokeStyle = '#091a10';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, -this.size);
+        ctx.lineTo(0, this.size * 0.9);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+    }
+
+    // Inicializa a coleção de folhas flutuantes
+    for (let i = 0; i < maxLeaves; i++) {
+      leaves.push(new Leaf());
+    }
+
+    // Variáveis para rastrear a velocidade do scroll (delta)
+    let lastScrollY = window.scrollY;
+    let scrollDelta = 0;
+
+    // Loop principal de Renderização do Canvas (60fps estável)
+    function animate() {
+      // Limpar o canvas a cada quadro
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Calcular variação (velocidade) de rolagem atual
+      const currentScrollY = window.scrollY;
+      scrollDelta = Math.abs(currentScrollY - lastScrollY);
+      lastScrollY = currentScrollY;
+
+      // Amortecer a desaceleração do scroll para as folhas não pararem de forma brusca
+      scrollDelta *= 0.95;
+
+      // Atualizar e desenhar cada folha
+      for (let i = 0; i < leaves.length; i++) {
+        leaves[i].update(scrollDelta, mouseX, mouseY);
+        leaves[i].draw();
+      }
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+</body>
+</html>
